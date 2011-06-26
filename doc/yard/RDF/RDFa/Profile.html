@@ -1,0 +1,1498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Class: RDF::RDFa::Profile</title>
+<link rel="stylesheet" href="../../css/style.css" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="../../css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '../..';
+  if (relpath != '') relpath += '/';
+</script>
+<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../../_index.html">Index (P)</a> &raquo; 
+    <span class='title'><span class='object_link'><a href="../../RDF.html" title="RDF (module)">RDF</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../RDFa.html" title="RDF::RDFa (module)">RDFa</a></span></span>
+     &raquo; 
+    <span class="title">Profile</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  <a id="class_list_link" href="#">Class List</a>
+  <a id="method_list_link" href="#">Method List</a>
+  <a id ="file_list_link" href="#">File List</a>
+</div>
+
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><h1>Class: RDF::RDFa::Profile
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">RDF::RDFa::Profile</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/rdf/rdfa/profile.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Profile representation existing of a hash of terms, prefixes, a default vocabulary and a URI.</p>
+
+<p>Profiles are used for storing RDFa profile representations. A representation is created
+by serializing a profile graph (typically also in RDFa, but may be in other representations).</p>
+
+<p>The class may be backed by an RDF::Repository, which will be used to retrieve a profile graph
+or to load into, if no such graph exists</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+</div>
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prefixes-instance_method" title="#prefixes (instance method)">- (Hash{Symbol =&gt; RDF::URI}) <strong>prefixes</strong> </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title readonly">readonly</span>
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prefix mappings defined in this profile.</p></div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#terms-instance_method" title="#terms (instance method)">- (Hash{Symbol =&gt; RDF::URI}) <strong>terms</strong> </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title readonly">readonly</span>
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Term mappings defined in this profile.</p></div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#uri-instance_method" title="#uri (instance method)">- (RDF::URI) <strong>uri</strong> </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title readonly">readonly</span>
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>URI defining this profile.</p></div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#vocabulary-instance_method" title="#vocabulary (instance method)">- (RDF::URI) <strong>vocabulary</strong> </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title readonly">readonly</span>
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Default URI defined for this vocabulary.</p></div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#find-class_method" title="find (class method)">+ (RDF::RDFa::Profile) <strong>find</strong>(uri) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Return a profile faulting through the cache.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#load-class_method" title="load (class method)">+ (Object) <strong>load</strong>(uri) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Load profile into repository.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#repository-class_method" title="repository (class method)">+ (RDF::Repository) <strong>repository</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Repository used for saving profiles.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#repository%3D-class_method" title="repository= (class method)">+ (RDF::Repository) <strong>repository=</strong>(repo) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Set repository used for saving profiles.</p></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (RDF::RDFa::Profile) <strong>initialize</strong>(uri, options = {}) {|profile| ... }</a>
+    
+
+    
+  </span>
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Initialize a new profile from the given URI.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parse-instance_method" title="#parse (instance method)">- <strong>parse</strong>(enumerable) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extract vocabulary, prefix mappings and terms from a enumerable object into an instance.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prefix-instance_method" title="#prefix (instance method)">- (RDF::URI) <strong>prefix</strong>(name, uri = nil) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Defines the given named URI prefix for this profile.</p></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#repository-instance_method" title="#repository (instance method)">- (RDF::Repository) <strong>repository</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#term-instance_method" title="#term (instance method)">- (RDF::URI) <strong>term</strong>(name, uri = nil) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Defines the given named URI term for this profile.</p></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <p class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="RDF::RDFa::Profile (class)">RDF::RDFa::Profile</a></span></tt>) <strong>initialize</strong>(uri, options = {}) {|profile| ... }
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Initialize a new profile from the given URI.</p>
+
+<p>Parses the profile and places it in the repository and cache</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>uri</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>URI of profile to be represented</p></div>
+      
+    </li>
+  
+</ul>
+<h3>Yields:</h3>
+<ul class="yield">
+  
+    <li>
+      
+        <span class='type'>(<tt>profile</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Yield Parameters:</h3>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="RDF::RDFa::Profile (class)">RDF::RDFa::Profile</a></span></tt>)</span>
+      
+      
+        <span class='name'>profile</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Yield Returns:</h3>
+<ul class="yieldreturn">
+  
+    <li>
+      
+        <span class='type'>(<tt>void</tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>ignored</p></div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39
+40
+41
+42
+43
+44
+45</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 37</span>
+
+<span class='def def kw'>def</span> <span class='initialize identifier id'>initialize</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='comma token'>,</span> <span class='options identifier id'>options</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='comma token'>,</span> <span class='bitand op'>&amp;</span><span class='block identifier id'>block</span><span class='rparen token'>)</span>
+  <span class='@uri ivar id'>@uri</span> <span class='assign token'>=</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='URI constant id'>URI</span><span class='dot token'>.</span><span class='intern identifier id'>intern</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  <span class='@prefixes ivar id'>@prefixes</span> <span class='assign token'>=</span> <span class='options identifier id'>options</span><span class='dot token'>.</span><span class='fetch identifier id'>fetch</span><span class='lparen token'>(</span><span class='symbol val'>:prefixes</span><span class='comma token'>,</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='@terms ivar id'>@terms</span> <span class='assign token'>=</span> <span class='options identifier id'>options</span><span class='dot token'>.</span><span class='fetch identifier id'>fetch</span><span class='lparen token'>(</span><span class='symbol val'>:terms</span><span class='comma token'>,</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='@vocabulary ivar id'>@vocabulary</span> <span class='assign token'>=</span> <span class='options identifier id'>options</span><span class='lbrack token'>[</span><span class='symbol val'>:vocabulary</span><span class='rbrack token'>]</span>
+  
+  <span class='yield yield kw'>yield</span><span class='lparen token'>(</span><span class='self self kw'>self</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='block_given? fid id'>block_given?</span>
+  <span class='self self kw'>self</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <span id="prefixes-instance_method"></span>
+      <div class="method_details first">
+  <p class="signature first" id="prefixes-instance_method">
+  
+    - (<tt>Hash{Symbol =&gt; RDF::URI}</tt>) <strong>prefixes</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Prefix mappings defined in this profile</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash{Symbol =&gt; RDF::URI}</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 13</span>
+
+<span class='def def kw'>def</span> <span class='prefixes identifier id'>prefixes</span>
+  <span class='@prefixes ivar id'>@prefixes</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <span id="terms-instance_method"></span>
+      <div class="method_details ">
+  <p class="signature " id="terms-instance_method">
+  
+    - (<tt>Hash{Symbol =&gt; RDF::URI}</tt>) <strong>terms</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Term mappings defined in this profile</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash{Symbol =&gt; RDF::URI}</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+17
+18
+19</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 17</span>
+
+<span class='def def kw'>def</span> <span class='terms identifier id'>terms</span>
+  <span class='@terms ivar id'>@terms</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <span id="uri-instance_method"></span>
+      <div class="method_details ">
+  <p class="signature " id="uri-instance_method">
+  
+    - (<tt>RDF::URI</tt>) <strong>uri</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>URI defining this profile</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 25</span>
+
+<span class='def def kw'>def</span> <span class='uri identifier id'>uri</span>
+  <span class='@uri ivar id'>@uri</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <span id="vocabulary-instance_method"></span>
+      <div class="method_details ">
+  <p class="signature " id="vocabulary-instance_method">
+  
+    - (<tt>RDF::URI</tt>) <strong>vocabulary</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Default URI defined for this vocabulary</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 21</span>
+
+<span class='def def kw'>def</span> <span class='vocabulary identifier id'>vocabulary</span>
+  <span class='@vocabulary ivar id'>@vocabulary</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="find-class_method">
+  
+    + (<tt><span class='object_link'><a href="" title="RDF::RDFa::Profile (class)">RDF::RDFa::Profile</a></span></tt>) <strong>find</strong>(uri) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Return a profile faulting through the cache</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="RDF::RDFa::Profile (class)">RDF::RDFa::Profile</a></span></tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Raises:</h3>
+<ul class="raise">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ProfileError.html" title="RDF::RDFa::ProfileError (class)">ProfileError</a></span></tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 76</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='find identifier id'>find</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  <span class='uri identifier id'>uri</span> <span class='assign token'>=</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='URI constant id'>URI</span><span class='dot token'>.</span><span class='intern identifier id'>intern</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  
+  <span class='return return kw'>return</span> <span class='cache identifier id'>cache</span><span class='lbrack token'>[</span><span class='uri identifier id'>uri</span><span class='rbrack token'>]</span> <span class='unless unless_mod kw'>unless</span> <span class='cache identifier id'>cache</span><span class='lbrack token'>[</span><span class='uri identifier id'>uri</span><span class='rbrack token'>]</span><span class='dot token'>.</span><span class='nil? fid id'>nil?</span>
+  
+  <span class='comment val'># Two part creation to prevent re-entrancy problems if p1 =&gt; p2 and p2 =&gt; p1</span>
+  <span class='comment val'># Return something to make the caller happy if we're re-entered</span>
+  <span class='cache identifier id'>cache</span><span class='lbrack token'>[</span><span class='uri identifier id'>uri</span><span class='rbrack token'>]</span> <span class='assign token'>=</span> <span class='Struct constant id'>Struct</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='symbol val'>:prefixes</span><span class='comma token'>,</span> <span class='symbol val'>:terms</span><span class='comma token'>,</span> <span class='symbol val'>:vocabulary</span><span class='rparen token'>)</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='comma token'>,</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='comma token'>,</span> <span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
+  <span class='comment val'># Now do the actual load</span>
+  <span class='cache identifier id'>cache</span><span class='lbrack token'>[</span><span class='uri identifier id'>uri</span><span class='rbrack token'>]</span> <span class='assign token'>=</span> <span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span> <span class='do do kw'>do</span> <span class='bitor op'>|</span><span class='profile identifier id'>profile</span><span class='bitor op'>|</span>
+    <span class='STDERR constant id'>STDERR</span><span class='dot token'>.</span><span class='puts identifier id'>puts</span><span class='lparen token'>(</span><span class='dstring node'>&quot;process_profile: retrieve profile &lt;#{uri}&gt;&quot;</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='RDFa constant id'>RDFa</span><span class='dot token'>.</span><span class='debug? fid id'>debug?</span>
+    <span class='Profile constant id'>Profile</span><span class='dot token'>.</span><span class='load identifier id'>load</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+    <span class='profile identifier id'>profile</span><span class='dot token'>.</span><span class='parse identifier id'>parse</span><span class='lparen token'>(</span><span class='repository identifier id'>repository</span><span class='dot token'>.</span><span class='query identifier id'>query</span><span class='lparen token'>(</span><span class='symbol val'>:context</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span><span class='rparen token'>)</span>
+  <span class='end end kw'>end</span>
+<span class='rescue rescue kw'>rescue</span> <span class='Exception constant id'>Exception</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='e identifier id'>e</span>
+  <span class='raise identifier id'>raise</span> <span class='ProfileError constant id'>ProfileError</span><span class='comma token'>,</span> <span class='dstring node'>&quot;Profile #{uri}: #{e.message}&quot;</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="load-class_method">
+  
+    + (<tt>Object</tt>) <strong>load</strong>(uri) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Load profile into repository</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+95
+96
+97
+98</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 95</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='load identifier id'>load</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  <span class='uri identifier id'>uri</span> <span class='assign token'>=</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='URI constant id'>URI</span><span class='dot token'>.</span><span class='intern identifier id'>intern</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  <span class='repository identifier id'>repository</span><span class='dot token'>.</span><span class='load identifier id'>load</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='comma token'>,</span> <span class='symbol val'>:base_uri</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='uri identifier id'>uri</span><span class='comma token'>,</span> <span class='symbol val'>:context</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span> <span class='unless unless_mod kw'>unless</span> <span class='repository identifier id'>repository</span><span class='dot token'>.</span><span class='has_context? fid id'>has_context?</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="repository-class_method">
+  
+    + (<tt>RDF::Repository</tt>) <strong>repository</strong> 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Repository used for saving profiles</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::Repository</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Raises:</h3>
+<ul class="raise">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ProfileError.html" title="RDF::RDFa::ProfileError (class)">RDF::RDFa::ProfileError</a></span></tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>if profile does not support contexts</p></div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+61
+62
+63</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 61</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='repository identifier id'>repository</span>
+  <span class='@repository ivar id'>@repository</span> <span class='opasgn op'>||=</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='Repository constant id'>Repository</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='symbol val'>:title</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>&quot;RDFa Profiles&quot;</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="repository=-class_method">
+  
+    + (<tt>RDF::Repository</tt>) <strong>repository=</strong>(repo) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Set repository used for saving profiles</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::Repository</tt>)</span>
+      
+      
+        <span class='name'>repo</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::Repository</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+<h3>Raises:</h3>
+<ul class="raise">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ProfileError.html" title="RDF::RDFa::ProfileError (class)">ProfileError</a></span></tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+69
+70
+71
+72</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 69</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='repository identifier id'>repository</span><span class='assign token'>=</span><span class='lparen token'>(</span><span class='repo identifier id'>repo</span><span class='rparen token'>)</span>
+  <span class='raise identifier id'>raise</span> <span class='ProfileError constant id'>ProfileError</span><span class='comma token'>,</span> <span class='string val'>&quot;Profile Repository must support context&quot;</span> <span class='unless unless_mod kw'>unless</span> <span class='repo identifier id'>repo</span><span class='dot token'>.</span><span class='supports? fid id'>supports?</span><span class='lparen token'>(</span><span class='symbol val'>:context</span><span class='rparen token'>)</span>
+  <span class='@repository ivar id'>@repository</span> <span class='assign token'>=</span> <span class='repo identifier id'>repo</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="parse-instance_method">
+  
+    - <strong>parse</strong>(enumerable) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Extract vocabulary, prefix mappings and terms from a enumerable object into an instance</p>
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::Enumerable</tt>, <tt>Enumerator</tt>)</span>
+      
+      
+        <span class='name'>queryable</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 154</span>
+
+<span class='def def kw'>def</span> <span class='parse identifier id'>parse</span><span class='lparen token'>(</span><span class='enumerable identifier id'>enumerable</span><span class='rparen token'>)</span>
+  <span class='STDERR constant id'>STDERR</span><span class='dot token'>.</span><span class='puts identifier id'>puts</span><span class='lparen token'>(</span><span class='dstring node'>&quot;process_profile: parse profile &lt;#{uri}&gt;&quot;</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='RDFa constant id'>RDFa</span><span class='dot token'>.</span><span class='debug? fid id'>debug?</span>
+  <span class='resource_info identifier id'>resource_info</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span>
+  <span class='enumerable identifier id'>enumerable</span><span class='dot token'>.</span><span class='each identifier id'>each</span> <span class='do do kw'>do</span> <span class='bitor op'>|</span><span class='statement identifier id'>statement</span><span class='bitor op'>|</span>
+    <span class='res identifier id'>res</span> <span class='assign token'>=</span> <span class='resource_info identifier id'>resource_info</span><span class='lbrack token'>[</span><span class='statement identifier id'>statement</span><span class='dot token'>.</span><span class='subject identifier id'>subject</span><span class='rbrack token'>]</span> <span class='opasgn op'>||=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span>
+    <span class='next next kw'>next</span> <span class='unless unless_mod kw'>unless</span> <span class='statement identifier id'>statement</span><span class='dot token'>.</span><span class='object identifier id'>object</span><span class='dot token'>.</span><span class='is_a? fid id'>is_a?</span><span class='lparen token'>(</span><span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='Literal constant id'>Literal</span><span class='rparen token'>)</span>
+    <span class='STDERR constant id'>STDERR</span><span class='dot token'>.</span><span class='puts identifier id'>puts</span><span class='lparen token'>(</span><span class='dstring node'>&quot;process_profile: statement=#{statement.inspect}&quot;</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='RDFa constant id'>RDFa</span><span class='dot token'>.</span><span class='debug? fid id'>debug?</span>
+    <span class='dstring node'>%w(uri term prefix vocabulary)</span><span class='dot token'>.</span><span class='each identifier id'>each</span> <span class='do do kw'>do</span> <span class='bitor op'>|</span><span class='term identifier id'>term</span><span class='bitor op'>|</span>
+      <span class='res identifier id'>res</span><span class='lbrack token'>[</span><span class='term identifier id'>term</span><span class='rbrack token'>]</span> <span class='opasgn op'>||=</span> <span class='statement identifier id'>statement</span><span class='dot token'>.</span><span class='object identifier id'>object</span><span class='dot token'>.</span><span class='value identifier id'>value</span> <span class='if if_mod kw'>if</span> <span class='statement identifier id'>statement</span><span class='dot token'>.</span><span class='predicate identifier id'>predicate</span> <span class='eq op'>==</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='RDFA constant id'>RDFA</span><span class='lbrack token'>[</span><span class='term identifier id'>term</span><span class='rbrack token'>]</span>
+    <span class='end end kw'>end</span>
+  <span class='end end kw'>end</span>
+
+  <span class='resource_info identifier id'>resource_info</span><span class='dot token'>.</span><span class='values identifier id'>values</span><span class='dot token'>.</span><span class='each identifier id'>each</span> <span class='do do kw'>do</span> <span class='bitor op'>|</span><span class='res identifier id'>res</span><span class='bitor op'>|</span>
+    <span class='comment val'># If one of the objects is not a Literal or if there are additional rdfa:uri or rdfa:term</span>
+    <span class='comment val'># predicates sharing the same subject, no mapping is created.</span>
+    <span class='uri identifier id'>uri</span> <span class='assign token'>=</span> <span class='res identifier id'>res</span><span class='lbrack token'>[</span><span class='string val'>&quot;uri&quot;</span><span class='rbrack token'>]</span>
+    <span class='term identifier id'>term</span> <span class='assign token'>=</span> <span class='res identifier id'>res</span><span class='lbrack token'>[</span><span class='string val'>&quot;term&quot;</span><span class='rbrack token'>]</span>
+    <span class='prefix identifier id'>prefix</span> <span class='assign token'>=</span> <span class='res identifier id'>res</span><span class='lbrack token'>[</span><span class='string val'>&quot;prefix&quot;</span><span class='rbrack token'>]</span>
+    <span class='vocab identifier id'>vocab</span> <span class='assign token'>=</span> <span class='res identifier id'>res</span><span class='lbrack token'>[</span><span class='string val'>&quot;vocabulary&quot;</span><span class='rbrack token'>]</span>
+    <span class='STDERR constant id'>STDERR</span><span class='dot token'>.</span><span class='puts identifier id'>puts</span><span class='lparen token'>(</span><span class='dstring node'>&quot;process_profile: uri=#{uri.inspect}, term=#{term.inspect}, prefix=#{prefix.inspect}, vocabulary=#{vocab.inspect}&quot;</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='RDFa constant id'>RDFa</span><span class='dot token'>.</span><span class='debug? fid id'>debug?</span>
+
+    <span class='@vocabulary ivar id'>@vocabulary</span> <span class='assign token'>=</span> <span class='vocab identifier id'>vocab</span> <span class='if if_mod kw'>if</span> <span class='vocab identifier id'>vocab</span>
+    
+    <span class='comment val'># For every extracted triple that is the common subject of an rdfa:prefix and an rdfa:uri</span>
+    <span class='comment val'># predicate, create a mapping from the object literal of the rdfa:prefix predicate to the</span>
+    <span class='comment val'># object literal of the rdfa:uri predicate. Add or update this mapping in the local list of</span>
+    <span class='comment val'># URI mappings after transforming the 'prefix' component to lower-case.</span>
+    <span class='comment val'># For every extracted</span>
+    <span class='prefix identifier id'>prefix</span><span class='lparen token'>(</span><span class='prefix identifier id'>prefix</span><span class='dot token'>.</span><span class='downcase identifier id'>downcase</span><span class='comma token'>,</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='uri identifier id'>uri</span> <span class='andop op'>&amp;&amp;</span> <span class='prefix identifier id'>prefix</span> <span class='andop op'>&amp;&amp;</span> <span class='prefix identifier id'>prefix</span> <span class='neq op'>!=</span> <span class='string val'>&quot;_&quot;</span>
+  
+    <span class='comment val'># triple that is the common subject of an rdfa:term and an rdfa:uri predicate, create a</span>
+    <span class='comment val'># mapping from the object literal of the rdfa:term predicate to the object literal of the</span>
+    <span class='comment val'># rdfa:uri predicate. Add or update this mapping in the local term mappings.</span>
+    <span class='term identifier id'>term</span><span class='lparen token'>(</span><span class='term identifier id'>term</span><span class='comma token'>,</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span> <span class='if if_mod kw'>if</span> <span class='term identifier id'>term</span> <span class='andop op'>&amp;&amp;</span> <span class='uri identifier id'>uri</span>
+  <span class='end end kw'>end</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="prefix-instance_method">
+  
+    
+      <span class="overload">- (<tt>Object</tt>) <strong>prefix</strong>(name, uri) </span>
+    
+      <span class="overload">- (<tt>Object</tt>) <strong>prefix</strong>(name) </span>
+    
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Defines the given named URI prefix for this profile.</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h3>Examples:</h3>
+    
+      <h4><div class='inline'><p>Defining a URI prefix</p></div></h4>
+      <pre class="example code"><span class='profile identifier id'>profile</span><span class='dot token'>.</span><span class='prefix identifier id'>prefix</span> <span class='symbol val'>:dc</span><span class='comma token'>,</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='URI constant id'>URI</span><span class='lparen token'>(</span><span class='string val'>'http://purl.org/dc/terms/'</span><span class='rparen token'>)</span>
+</pre>
+    
+      <h4><div class='inline'><p>Returning a URI prefix</p></div></h4>
+      <pre class="example code"><span class='profile identifier id'>profile</span><span class='dot token'>.</span><span class='prefix identifier id'>prefix</span><span class='lparen token'>(</span><span class='symbol val'>:dc</span><span class='rparen token'>)</span>    <span class='comment val'>#=&gt; RDF::URI('http://purl.org/dc/terms/')</span>
+</pre>
+    
+  </div>
+
+  <h3>Overloads:</h3>
+  <ul class="overload">
+    
+      
+      <li class="overload_item">
+        <span class="signature">- (<tt>Object</tt>) <strong>prefix</strong>(name, uri) </span>
+        <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>name</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>uri</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+      </li>
+    
+      
+      <li class="overload_item">
+        <span class="signature">- (<tt>Object</tt>) <strong>prefix</strong>(name) </span>
+        <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>name</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+      </li>
+    
+  </ul>
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122
+123
+124
+125</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 122</span>
+
+<span class='def def kw'>def</span> <span class='prefix identifier id'>prefix</span><span class='lparen token'>(</span><span class='name identifier id'>name</span><span class='comma token'>,</span> <span class='uri identifier id'>uri</span> <span class='assign token'>=</span> <span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
+  <span class='name identifier id'>name</span> <span class='assign token'>=</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='dot token'>.</span><span class='empty? fid id'>empty?</span> <span class='integer val'>? </span><span class='nil nil kw'>nil</span> <span class='colon op'>:</span> <span class='lparen token'>(</span><span class='name identifier id'>name</span><span class='dot token'>.</span><span class='respond_to? fid id'>respond_to?</span><span class='lparen token'>(</span><span class='symbol val'>:to_sym</span><span class='rparen token'>)</span> <span class='question op'>?</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_sym identifier id'>to_sym</span> <span class='colon op'>:</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='dot token'>.</span><span class='to_sym identifier id'>to_sym</span><span class='rparen token'>)</span>
+  <span class='uri identifier id'>uri</span><span class='dot token'>.</span><span class='nil? fid id'>nil?</span> <span class='integer val'>? </span><span class='prefixes identifier id'>prefixes</span><span class='lbrack token'>[</span><span class='name identifier id'>name</span><span class='rbrack token'>]</span> <span class='colon op'>:</span> <span class='prefixes identifier id'>prefixes</span><span class='lbrack token'>[</span><span class='name identifier id'>name</span><span class='rbrack token'>]</span> <span class='assign token'>=</span> <span class='uri identifier id'>uri</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="repository-instance_method">
+  
+    - (<tt>RDF::Repository</tt>) <strong>repository</strong> 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::Repository</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+101
+102
+103</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 101</span>
+
+<span class='def def kw'>def</span> <span class='repository identifier id'>repository</span>
+  <span class='Profile constant id'>Profile</span><span class='dot token'>.</span><span class='repository identifier id'>repository</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="term-instance_method">
+  
+    
+      <span class="overload">- (<tt>Object</tt>) <strong>term</strong>(name, uri) </span>
+    
+      <span class="overload">- (<tt>Object</tt>) <strong>term</strong>(name) </span>
+    
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>Defines the given named URI term for this profile.</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h3>Examples:</h3>
+    
+      <h4><div class='inline'><p>Defining a URI term</p></div></h4>
+      <pre class="example code"><span class='profile identifier id'>profile</span><span class='dot token'>.</span><span class='term identifier id'>term</span> <span class='symbol val'>:title</span><span class='comma token'>,</span> <span class='RDF constant id'>RDF</span><span class='colon2 op'>::</span><span class='URI constant id'>URI</span><span class='lparen token'>(</span><span class='string val'>'http://purl.org/dc/terms/title'</span><span class='rparen token'>)</span>
+</pre>
+    
+      <h4><div class='inline'><p>Returning a URI profile</p></div></h4>
+      <pre class="example code"><span class='profile identifier id'>profile</span><span class='dot token'>.</span><span class='term identifier id'>term</span><span class='lparen token'>(</span><span class='symbol val'>:title</span><span class='rparen token'>)</span>    <span class='comment val'>#=&gt; RDF::URI('http://purl.org/dc/terms/TITLE')</span>
+</pre>
+    
+  </div>
+
+  <h3>Overloads:</h3>
+  <ul class="overload">
+    
+      
+      <li class="overload_item">
+        <span class="signature">- (<tt>Object</tt>) <strong>term</strong>(name, uri) </span>
+        <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>name</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>uri</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+      </li>
+    
+      
+      <li class="overload_item">
+        <span class="signature">- (<tt>Object</tt>) <strong>term</strong>(name) </span>
+        <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>#to_s</tt>)</span>
+      
+      
+        <span class='name'>name</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+      </li>
+    
+  </ul>
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>RDF::URI</tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+144
+145
+146
+147</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/rdf/rdfa/profile.rb', line 144</span>
+
+<span class='def def kw'>def</span> <span class='term identifier id'>term</span><span class='lparen token'>(</span><span class='name identifier id'>name</span><span class='comma token'>,</span> <span class='uri identifier id'>uri</span> <span class='assign token'>=</span> <span class='nil nil kw'>nil</span><span class='rparen token'>)</span>
+  <span class='name identifier id'>name</span> <span class='assign token'>=</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='dot token'>.</span><span class='empty? fid id'>empty?</span> <span class='integer val'>? </span><span class='nil nil kw'>nil</span> <span class='colon op'>:</span> <span class='lparen token'>(</span><span class='name identifier id'>name</span><span class='dot token'>.</span><span class='respond_to? fid id'>respond_to?</span><span class='lparen token'>(</span><span class='symbol val'>:to_sym</span><span class='rparen token'>)</span> <span class='question op'>?</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_sym identifier id'>to_sym</span> <span class='colon op'>:</span> <span class='name identifier id'>name</span><span class='dot token'>.</span><span class='to_s identifier id'>to_s</span><span class='dot token'>.</span><span class='to_sym identifier id'>to_sym</span><span class='rparen token'>)</span>
+  <span class='uri identifier id'>uri</span><span class='dot token'>.</span><span class='nil? fid id'>nil?</span> <span class='integer val'>? </span><span class='terms identifier id'>terms</span><span class='lbrack token'>[</span><span class='name identifier id'>name</span><span class='rbrack token'>]</span> <span class='colon op'>:</span> <span class='terms identifier id'>terms</span><span class='lbrack token'>[</span><span class='name identifier id'>name</span><span class='rbrack token'>]</span> <span class='assign token'>=</span> <span class='uri identifier id'>uri</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+    
+    <div id="footer">
+  Generated on Fri Apr 29 10:44:46 2011 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.6.5 (ruby-1.8.7).
+</div>
+
+  </body>
+</html>

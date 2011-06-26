@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>File: History</title>
+<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '';
+  if (relpath != '') relpath += '/';
+</script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html" title="Index">Index</a> &raquo; 
+    <span class="title">File: History</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  <a id="class_list_link" href="#">Class List</a>
+  <a id="method_list_link" href="#">Method List</a>
+  <a id ="file_list_link" href="#">File List</a>
+</div>
+
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><div id='filecontents'><h3>0.3.3.2</h3>
+
+<ul>
+<li>In Reader:
+
+<ul>
+<li>Ensure that encoding is set to utf-8 if not specified.</li>
+<li>Look for encoding from input and HTML meta tags.</li>
+<li>Look for content-type from input and HTML meta tags.</li>
+<li>Retrieve @xmlns, @xml:lang and @lang as attributes when doing HTML parsing.</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>0.3.3.1</h3>
+
+<ul>
+<li>Improve format detection.</li>
+<li>Use HTML parser instead of XML if format is determined to be html4 or html5.</li>
+</ul>
+
+
+<h3>0.3.3</h3>
+
+<ul>
+<li>Major update to writer using Haml templates, rather than Nokogiri node creation.</li>
+</ul>
+
+
+<h3>0.3.2</h3>
+
+<ul>
+<li>Added RDFa Writer, to perform templated serialization of RDF content to RDFa.
+
+<ul>
+<li>Uses Haml to define default and minimal templates for RDFa serialization.</li>
+<li>Allows templates to be specified on invocation, for arbitrary RDFa serialization.</li>
+</ul>
+</li>
+<li>Update to pre-LC2 drafts of RDFa</li>
+<li>Add support for cached profiles, and include cached profiles for XML+RDFa and XHTML+RDFa.
+
+<ul>
+<li>Profiles are processed left to right</li>
+<li>Detect 1.0 using @version</li>
+<li>Automatically load profiles based on host language</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>0.3.1.2</h3>
+
+<ul>
+<li>Assert :html and xhtml as a format types (by creating RDF::RDFa::HTML/XHTML as a sub-class of Format that uses RDFa::Reader/Writer)</li>
+<li>Added :svg format, image/svg+xml and .svg as looks for RDFa parser as well.</li>
+</ul>
+
+
+<h3>0.3.1</h3>
+
+<ul>
+<li>Bug fix relating to datatypes in literals being ignored.</li>
+<li>Bug fix parsing non-RDFa profiles to ensure they don't cause processing to terminate (or recurse).</li>
+</ul>
+
+
+<h3>0.3.0</h3>
+
+<ul>
+<li>RDF.rb 0.3.0 compatibility updates
+
+<ul>
+<li>Remove literal<em>normalization and qname</em>hacks, add back uri_hacks (until 0.3.0)</li>
+<li>URI canonicalization and validation.</li>
+<li>Added :canonicalize, and :intern options.</li>
+<li>Change :strict option to :validate.</li>
+<li>Add check to ensure that predicates are not literals, it's not legal in any RDF variant.</li>
+<li>Collect prefixes when extracting mappings.</li>
+</ul>
+</li>
+<li>Added :profile_repository option to RDF::RDFa::Reader.initialize. This MUST be an RDF::Repository and will be used to save profiles that are encountered.
+
+<ul>
+<li>Fixme, for now, retrieval should include HTTP headers and perform appropriate HTTP cache control and check for potential updates.</li>
+</ul>
+</li>
+<li>Update to 2010-10-26 LC version of RDFa Core 1.1
+
+<ul>
+<li>Deep processing of XMLLiterals</li>
+<li>Case sensitive Terms</li>
+<li>Updated processor graph vocabulary</li>
+<li>Upgrade for changes to RDFa 1.1 test suite</li>
+<li>Allow use of xml:base for non-HTML languages</li>
+<li>XHTML has no default vocabulary.</li>
+<li>No longer pass vocabularies, prefixes or terms when creating XMLLiterals. Only namespaces derived via xmlns are passed to Literal#typed.</li>
+</ul>
+</li>
+<li>Literal::XML
+
+<ul>
+<li>Add all in-scope namespaces, not just those that seem to be used.</li>
+</ul>
+</li>
+<li>RSpec 2 compatibility.</li>
+</ul>
+
+
+<h3>0.2.2</h3>
+
+<ul>
+<li>Ruby 1.9.2 compatibility</li>
+<li>Added script/parse as command-line option for parsing files.</li>
+<li>Add back support for RDFa 1.0 as well as RDFa 1.1. Parser checks @version to determine which</li>
+<li>Update RDFa processing to WD-rdfa-core-20100803 semantics
+
+<ul>
+<li>Added Processor Graph and required output</li>
+<li>Reverse order of processing profiles</li>
+<li>Don't process element if any profile fails</li>
+<li>XMLLiterals must be explicitly specified as @datatype</li>
+<li>TERMorCURIEorAbsURI requires an absolute URI, not document relative</li>
+<li>Extract a new default vocabulary from @profile.</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>0.2.1</h3>
+
+<ul>
+<li>Update for RDF 0.2.1</li>
+</ul>
+
+
+<h3>0.2.0</h3>
+
+<ul>
+<li>Updates for RDF 0.2.0
+
+<ul>
+<li>Use URI#intern instead of URI#new</li>
+<li>Change use of Graph#predicates and Graph#objects to use as enumerables</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>0.0.3</h3>
+
+<ul>
+<li>Removed internal graph in Reader and implement each<em>triple &amp; each</em>statement to perform parsing</li>
+</ul>
+
+
+<h3>0.0.2</h3>
+
+<ul>
+<li>Remove dependency on Namespace</li>
+<li>Changed to RDF::RDFa, and moved files accordingly.</li>
+<li>Added vocab definitions for RDA, XHV, XML, XSI and OWL</li>
+</ul>
+
+
+<h3>0.0.1</h3>
+
+<ul>
+<li>First port from RdfContext version 0.5.4</li>
+</ul>
+</div></div>
+    
+    <div id="footer">
+  Generated on Fri Apr 29 10:44:44 2011 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.6.5 (ruby-1.8.7).
+</div>
+
+  </body>
+</html>
