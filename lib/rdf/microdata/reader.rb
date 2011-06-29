@@ -61,7 +61,8 @@ module RDF::Microdata
           add_error(nil, "Empty document")
           raise RDF::ReaderError, "Empty Document"
         end
-        add_warning(nil, "Synax errors:\n#{@doc.errors}", RDF::RDFA.DocumentError) if !@doc.errors.empty? && validate?
+        errors = @doc.errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
+        add_error(nil, "Synax errors:\n#{@doc.errors}") if !errors.empty? && validate?
 
         block.call(self) if block_given?
       end
@@ -148,6 +149,8 @@ module RDF::Microdata
         base = base.to_s.split('#').first
         base = @options[:base_uri] = uri(base)
         add_debug(base_el, "parse_whole_doc: base='#{base}'")
+      else
+        base = RDF::URI("")
       end
       
       ##
@@ -160,7 +163,7 @@ module RDF::Microdata
       #            the language of the title element, if it is not unknown. 
       doc.css('html>head>title').each do |title|
         lang = title.attribute('language')
-        add_triple(title, base, DC.title, title.inner_text)
+        add_triple(title, base, RDF::DC.title, title.inner_text)
       end
       
       # 2. For each a, area, and link element in the Document, run these substeps:
@@ -264,10 +267,10 @@ module RDF::Microdata
       subject = if memory.include?(item)
         memory[item][:subject]
       elsif item.has_attribute?('itemid')
-        memory[item] = {}
         u = uri(item.attribute('itemid'))
         u.absolute? && u
       end || RDF::Node.new
+      memory[item] ||= {}
 
       add_debug(item, "gentrips: subject=#{subject.inspect}")
 
@@ -292,7 +295,7 @@ module RDF::Microdata
         # 5.3. If type does not have a : after its #, append a : to type.
         type += ':' unless type.to_s.match(/\#:/)
         # 5.4. If the last character of type is not a :, %20 to type.
-        type += '%20' unless type[-1] == ':'
+        type += '%20' unless type.to_s[-1] == ':'
         # 5.5. Append the fragment-escaped value of fallback name to type.
         type += fallback_name.to_s.gsub('#', '%23')
       end
@@ -306,13 +309,15 @@ module RDF::Microdata
 
       # 6.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
-        element.attribute('itemprop').split(' ').each do |name|
+        element.attribute('itemprop').to_s.split(' ').each do |name|
           add_debug(item, "gentrips: name=#{name.inspect}")
           # If type is the empty string and name is not an absolute URL, then abort these substeps.
           name_uri = RDF::URI(name)
           next if type == '' && !name_uri.absolute?
 
           value = property_value(element)
+          add_debug(element, "gentrips value=#{value.inspect}")
+          
           if value.is_a?(Hash)
             value = generate_triples(element, memory, :fallback_type => type, :fallback_property => name) 
           end
@@ -322,7 +327,7 @@ module RDF::Microdata
           predicate = if name_uri.absolute?
             name_uri
           elsif !name.include?(':')
-            s = type
+            s = type.to_s
             s += '%20' unless s[-1] == ':'
             s += name.gsub('#', '%23')
             RDF::MD[s.gsub('#', '%23')]
@@ -345,6 +350,7 @@ module RDF::Microdata
     # @return [Array<Nokogiri::XML::Element>]
     #   List of property elements for an item
     def item_properties(item)
+      add_debug(item, "item_properties")
       results, errors = crawl_properties(item, [])
       raise CrawlFailure, "item_props: errors=#{errors}" if errors > 0
       results
@@ -369,15 +375,17 @@ module RDF::Microdata
       # 2. Collect all the elements in the item root; let results be the resulting
       #    list of elements, and errors be the resulting count of errors.
       results, errors = elements_in_item(root)
+      add_debug(root, "crawl_properties results=#{results.inspect}, errors=#{errors}")
+
       # 3. Remove any elements from results that do not have an itemprop attribute specified.
-      results = results.select {|e| e.has_attribute('itemprop')}
+      results = results.select {|e| e.has_attribute?('itemprop')}
       
       # 4. Let new memory be a new list consisting of the old list memory with the addition of root.
       new_memory = memory + [root]
       
       # 5. For each element in results that has an itemscope attribute specified,
       #    crawl the properties of the element, with new memory as the memory.
-      results.select {|e| e.has_attribute('itemscope')}.each do |element|
+      results.select {|e| e.has_attribute?('itemscope')}.each do |element|
         begin
           crawl_properties(element, new_memory)
         rescue CrawlFailure => e
@@ -410,33 +418,36 @@ module RDF::Microdata
       # If root has an itemref attribute, split the value of that itemref attribute on spaces.
       # For each resulting token ID, 
       root.attribute('itemref').to_s.split(' ').each do |id|
+        add_debug(root, "elements_in_item itemref id #{id}")
         # if there is an element in the home subtree of root with the ID ID,
         # then add the first such element to pending.
         pending << id_elem  if id_elem = root.at_css("#{id}")
-        
-        # Loop: Remove an element from pending and let current be that element.
-        while current = pending.shift
-          if results.include?(current)
-            # If current is already in results, increment errors.
-            add_error(current, "elements_in_item: results already includes #{current.inspect}")
-            errors += 1
-          elsif !current.has_attribute?('itemscope')
-            # If current is not already in results and current does not have an itemscope attribute,
-            # then: add all the child elements of current to pending.
-            pending += current.elements
-          end
-          
-          # If current is not already in results, then: add current to results.
-          results << current unless results.include?(current)
-        end
       end
-      
+      add_debug(root, "elements_in_item pending #{pending.inspect}")
+
+      # Loop: Remove an element from pending and let current be that element.
+      while current = pending.shift
+        if results.include?(current)
+          # If current is already in results, increment errors.
+          add_error(current, "elements_in_item: results already includes #{current.inspect}")
+          errors += 1
+        elsif !current.has_attribute?('itemscope')
+          # If current is not already in results and current does not have an itemscope attribute,
+          # then: add all the child elements of current to pending.
+          pending += current.elements
+        end
+        
+        # If current is not already in results, then: add current to results.
+        results << current unless results.include?(current)
+      end
+
       [results, errors]
     end
 
     ##
     #
     def property_value(element)
+      add_debug(element, "property_value(#{element.inspect})")
       case
       when element.has_attribute?('itemscope')
         {}
@@ -448,7 +459,7 @@ module RDF::Microdata
         uri(element.attribute('href'), element.base)
       when %w(object).include?(element.name)
         uri(element.attribute('data'), element.base)
-      when %w(time).include?(element.name) && element.has_attribute('datetime')
+      when %w(time).include?(element.name) && element.has_attribute?('datetime')
         RDF::Literal::DateTime.new(element.attribute('datetime'))
       else
         RDF::Literal.new(element.text, :language => element.language)
