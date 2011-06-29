@@ -176,32 +176,33 @@ module RDF::Microdata
         rel, href = el.attribute('rel'), el.attribute('href')
         next unless rel && href
         href = uri(href, el.base || base)
-        next unless href.absolute?
-        
+        add_debug(el, "a: rel=#{rel.inspect}, href=#{href}")
+
         # Otherwise, split the value of the element's rel attribute on spaces, obtaining list of tokens.
         # Coalesce duplicate tokens in list of tokens.
         tokens = rel.to_s.split(/\s+/).map do |tok|
           # Convert each token in list of tokens that does not contain a U+003A COLON characters (:)
           # to ASCII lowercase.
-          tok.lower if tok =~ /:/
+          tok =~ /:/ ? tok : tok.downcase
         end.uniq
 
         # If list of tokens contains both the tokens alternate and stylesheet,
         # then remove them both and replace them with the single (uppercase) token
         # ALTERNATE-STYLESHEET.
-        if tokens.include('alternate') && tokens.include?('stylesheet')
+        if tokens.include?('alternate') && tokens.include?('stylesheet')
           tokens = tokens - %w(alternate stylesheet)
           tokens << 'ALTERNATE-STYLESHEET'
         end
         
         tokens.each do |tok|
-          if tok =~ /:/
-            # For each token token in list of tokens that is an absolute URL, generate the following triple:
-            add_triple(el, base, tok, href)
-          else
+          tok_uri = RDF::URI(tok)
+          if tok !~ /:/
             # For each token token in list of tokens that contains no U+003A COLON characters (:),
             # generate the following triple:
-            add_triple(el, base, XHV[tok], href.gsub('#', '%23'))
+            add_triple(el, base, RDF::XHV[tok.gsub('#', '%23')], href)
+          elsif tok_uri.absolute?
+            # For each token token in list of tokens that is an absolute URL, generate the following triple:
+            add_triple(el, base, tok_uri, href)
           end
         end
       end
@@ -209,12 +210,13 @@ module RDF::Microdata
       # 3. For each meta element in the Document that has a name attribute and a content attribute,
       doc.css('meta[name][content]').each do |el|
         name, content = el.attribute('name'), el.attribute('content')
+        name = name.to_s
         name_uri = uri(name, el.base || base)
         add_debug(el, "meta: name=#{name.inspect}")
         if name !~ /:/
           # If the value of the name attribute contains no U+003A COLON characters (:),
           # generate the following triple:
-          add_triple(el, base, XHV[name.gsub('#', '%23')], RDF::Literal(content, :language => el.language))
+          add_triple(el, base, RDF::XHV[name.downcase.gsub('#', '%23')], RDF::Literal(content, :language => el.language))
         elsif name_uri.absolute?
           # If the value of the name attribute contains no U+003A COLON characters (:),
           # generate the following triple:
@@ -226,7 +228,8 @@ module RDF::Microdata
       #    successfully relative to the element, generate the following triple:
       doc.css('blockquote[cite], q[cite]').each do |el|
         object = uri(el.attribute('cite'), el.base || base)
-        add_triple(el, base, RDF::DC.source, object) if object.absolute?
+        add_debug(el, "blockquote: cite=#{object}")
+        add_triple(el, base, RDF::DC.source, object)
       end
 
 
@@ -246,7 +249,7 @@ module RDF::Microdata
           add_triple(el, base, RDF::MD.item, object)
       end
 
-      add_debug(doc, "parse_whole_doc: traversal complete'")
+      add_debug(doc, "parse_whole_doc: traversal complete")
     end
 
     ##
@@ -268,11 +271,10 @@ module RDF::Microdata
         memory[item][:subject]
       elsif item.has_attribute?('itemid')
         u = uri(item.attribute('itemid'))
-        u.absolute? && u
       end || RDF::Node.new
       memory[item] ||= {}
 
-      add_debug(item, "gentrips: subject=#{subject.inspect}")
+      add_debug(item, "gentrips(2): subject=#{subject.inspect}")
 
       # 2. Add a mapping from item to subject in memory, if there isn't one already.
       memory[item][:subject] ||= subject
@@ -280,7 +282,7 @@ module RDF::Microdata
       # 3. If item has an item type and that item type is an absolute URL, let type be that item type.
       #    Otherwise, let type be the empty string.
       type = uri(item.attribute('itemtype'))
-      type = "" unless type.absolute?
+      type = '' unless type.absolute?
       
       if type != ''
         add_triple(item, subject, RDF.type, type)
@@ -289,6 +291,7 @@ module RDF::Microdata
         # 4.3. If type does not have a : after its #, append a : to type.
         type += ':' unless type.to_s.match(/\#:/)
       elsif fallback_type
+        add_debug(item, "gentrips(5.2): fallback_type=#{fallback_type}, fallback_name=#{fallback_name}")
         type = fallback_type
         # 5.2. If type does not contain a U+0023 NUMBER SIGN character (#), then append a # to type.
         type += '#' unless type.to_s.include?('#')
@@ -300,7 +303,7 @@ module RDF::Microdata
         type += fallback_name.to_s.gsub('#', '%23')
       end
 
-      add_debug(item, "gentrips: type=#{type.inspect}")
+      add_debug(item, "gentrips(6): type=#{type.inspect}")
       
       # 6. For each element _element_ that has one or more property names and is one of the
       #    properties of the item _item_, in the order those elements are given by the algorithm
@@ -310,28 +313,29 @@ module RDF::Microdata
       # 6.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').each do |name|
-          add_debug(item, "gentrips: name=#{name.inspect}")
+          add_debug(element, "gentrips(6.1): name=#{name.inspect}")
           # If type is the empty string and name is not an absolute URL, then abort these substeps.
           name_uri = RDF::URI(name)
           next if type == '' && !name_uri.absolute?
 
           value = property_value(element)
-          add_debug(element, "gentrips value=#{value.inspect}")
+          add_debug(element, "gentrips(6.1.2) value=#{value.inspect}")
           
           if value.is_a?(Hash)
-            value = generate_triples(element, memory, :fallback_type => type, :fallback_property => name) 
+            value = generate_triples(element, memory, :fallback_type => type, :fallback_name => name) 
           end
           
-          add_debug(item, "gentrips: value=#{value.inspect}")
+          add_debug(element, "gentrips(6.1.3): value=#{value.inspect}")
 
           predicate = if name_uri.absolute?
             name_uri
           elsif !name.include?(':')
             s = type.to_s
             s += '%20' unless s[-1] == ':'
-            s += name.gsub('#', '%23')
+            s += name
             RDF::MD[s.gsub('#', '%23')]
           end
+          add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
           
           add_triple(element, subject, predicate, value) if predicate
         end
@@ -421,7 +425,8 @@ module RDF::Microdata
         add_debug(root, "elements_in_item itemref id #{id}")
         # if there is an element in the home subtree of root with the ID ID,
         # then add the first such element to pending.
-        pending << id_elem  if id_elem = root.at_css("#{id}")
+        id_elem = @doc.at_css("##{id}")
+        pending << id_elem if id_elem
       end
       add_debug(root, "elements_in_item pending #{pending.inspect}")
 

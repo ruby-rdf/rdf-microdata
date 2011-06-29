@@ -2,9 +2,11 @@
 @prefix dce: <http://purl.org/dc/elements/1.1/> .
 @prefix frbr: <http://purl.org/vocab/frbr/core#> .
 
+<> <http://www.w3.org/1999/xhtml/microdata#item> <http://books.example.com/works/45U8QJGZSQKDH8N> .
+
 <http://books.example.com/works/45U8QJGZSQKDH8N> a frbr:Work ;
-     dce:creator "Wil Wheaton"@en ;
-     dct:title "Just a Geek"@en ;
+     dce:creator "Wil Wheaton" ;
+     dct:title "Just a Geek" ;
      frbr:realization <http://books.example.com/products/9780596007683.BOOK>,
          <http://books.example.com/products/9780596802189.EBOOK> .
 

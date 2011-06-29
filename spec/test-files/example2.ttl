@@ -6,13 +6,12 @@
    <http://www.w3.org/1999/xhtml/microdata#item> _:n1 .
 _:n0  rdf:type <http://microformats.org/profile/hcard> ;
       hcard:fn "Princeton" ;
-      hcard:n _:n0a
+      hcard:n _:n0a ;
       hcard:adr _:n2 .
-_:n0a hcard:n%20given-name "Princeton" .
+_:n0a <http://www.w3.org/1999/xhtml/microdata#http://microformats.org/profile/hcard%23:n%20given-name> "Princeton" .
 _:n1  rdf:type <http://microformats.org/profile/hcard> ;
       hcard:fn "Trekkie" ;
-      hcard:n _:n1a
+      hcard:n _:n1a ;
       hcard:adr _:n2 .
-_:n1a hcard:n%20given-name "Trekkie" .
-_:n2  hcard:adr%20street-address "Avenue Q" ;
-      hcard:adr%20street-address "Avenue Q" .
+_:n1a <http://www.w3.org/1999/xhtml/microdata#http://microformats.org/profile/hcard%23:n%20given-name> "Trekkie" .
+_:n2  <http://www.w3.org/1999/xhtml/microdata#http://microformats.org/profile/hcard%23:adr%20street-address> "Avenue Q" .
