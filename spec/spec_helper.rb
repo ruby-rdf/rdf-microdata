@@ -1,21 +1,14 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $:.unshift File.dirname(__FILE__)
 
-require "bundler/setup"
 require 'rubygems'
 require 'rspec'
-require 'bigdecimal'  # XXX Remove Me
-require 'rdf/rdfa'
+require 'rdf/isomorphic'
+require 'rdf/microdata'
+require 'rdf/n3'
 require 'rdf/spec'
 require 'rdf/spec/matchers'
-require 'rdf/isomorphic'
-require 'open-uri/cached'
 require 'matchers'
-
-# Create and maintain a cache of downloaded URIs
-URI_CACHE = File.expand_path(File.join(File.dirname(__FILE__), "uri-cache"))
-Dir.mkdir(URI_CACHE) unless File.directory?(URI_CACHE)
-OpenURI::Cache.class_eval { @cache_path = URI_CACHE }
 
 ::RSpec.configure do |c|
   c.filter_run :focus => true
@@ -39,8 +32,8 @@ def detect_format(stream)
     string = stream.to_s
   end
   case string
-  when /<html/i   then RDF::RDFa::Reader
+  when /<html/i   then RDF::Microdatea::Reader
   when /@prefix/i then RDF::N3::Reader
-  else                 RDF::NTriples::Reader
+  else                 RDF::N3::Reader
   end
 end

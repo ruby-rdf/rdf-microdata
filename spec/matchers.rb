@@ -1,5 +1,5 @@
+require 'rdf/isomorphic'
 require 'rspec/matchers'
-require 'sparql/grammar'
 
 RSpec::Matchers.define :have_xpath do |xpath, value|
   match do |actual|
@@ -75,32 +75,5 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
     "Unsorted Expected:\n#{@expected.dump(:ntriples)}" +
     "Unsorted Results:\n#{@actual.dump(:ntriples)}" +
     (@info.trace ? "\nDebug:\n#{@info.trace}" : "")
-  end  
-end
-
-RSpec::Matchers.define :pass_query do |expected, info|
-  match do |actual|
-    @expected = expected.read
-    query = SPARQL::Grammar.parse(@expected)
-    @results = query.execute(actual)
-
-    @results.should == info.expectedResults
-  end
-  
-  failure_message_for_should do |actual|
-    information = info.respond_to?(:information) ? info.information : ""
-    "#{information + "\n" unless information.empty?}" +
-    if @results.nil?
-      "Query failed to return results"
-    elsif !@results.is_a?(RDF::Literal::Boolean)
-      "Query returned non-boolean results"
-    elsif info.expectedResults
-      "Query returned false"
-    else
-      "Query returned true (expected false)"
-    end +
-    "\n#{@expected}" +
-    "\nResults:\n#{@actual.dump(:ntriples)}" +
-    "\nDebug:\n#{info.trace}"
   end  
 end
