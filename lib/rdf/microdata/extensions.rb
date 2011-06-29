@@ -4,17 +4,17 @@ class Nokogiri::XML::Node
   # Language, taken recursively from element and ancestors
   def language
     @lang ||= attribute('lang') ||
-      attribuite('xml:lang') ||
-      attribute('xml:lang', 'xml' => 'http://www.w3.org/XML/1998/namespace') ||
-      (parent && parent.language)
+      attributes["lang"] ||
+      attributes["xml:lang"] ||
+      (parent && parent.element? && parent.language)
   end
   
   ##
   # Get any xml:base in effect for this element
   def base
     if @base.nil?
-      @base = attribute('xml:base', 'xml' => 'http://www.w3.org/XML/1998/namespace') ||
-      (parent && parent.base) ||
+      @base = attributes['xml:base'] ||
+      (parent && parent.element? && parent.base) ||
       false
     end
     
