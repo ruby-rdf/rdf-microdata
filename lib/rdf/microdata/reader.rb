@@ -17,6 +17,12 @@ module RDF::Microdata
     end
 
     ##
+    # Returns the base URI determined by this reader.
+    #
+    # @attr [RDF::URI]
+    attr_reader :base_uri
+
+    ##
     # Initializes the Microdata reader instance.
     #
     # @param  [Nokogiri::HTML::Document, Nokogiri::XML::Document, IO, File, String] input
@@ -147,7 +153,7 @@ module RDF::Microdata
       if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
-        base = @options[:base_uri] = uri(base)
+        base = @base_uri = uri(base)
         add_debug(base_el, "parse_whole_doc: base='#{base}'")
       else
         base = RDF::URI("")
@@ -298,7 +304,7 @@ module RDF::Microdata
         # 5.3. If type does not have a : after its #, append a : to type.
         type += ':' unless type.to_s.match(/\#:/)
         # 5.4. If the last character of type is not a :, %20 to type.
-        type += '%20' unless type.to_s[-1] == ':'
+        type += '%20' unless type.to_s[-1,1] == ':'
         # 5.5. Append the fragment-escaped value of fallback name to type.
         type += fallback_name.to_s.gsub('#', '%23')
       end
@@ -331,7 +337,7 @@ module RDF::Microdata
             name_uri
           elsif !name.include?(':')
             s = type.to_s
-            s += '%20' unless s[-1] == ':'
+            s += '%20' unless s[-1,1] == ':'
             s += name
             RDF::MD[s.gsub('#', '%23')]
           end

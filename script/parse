@@ -3,6 +3,7 @@ require 'rubygems'
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
 require 'rdf/microdata'
 require 'rdf/n3' rescue nil
+require 'rdf/rdfa' rescue nil
 require 'getoptlong'
 require 'open-uri'
 
