@@ -21,7 +21,7 @@ Install with 'gem install rdf-microdata'
 
 ### Generating RDF friendly URIs from terms
 As defined, Microdata creates ugly (and even illegal) URIs for `@itemprop` entries that are a simple
-term, and not already a URI. {RDF::RDFa::Reader} implements a `:rdf\_terms` option which uses an alternative
+term, and not already a URI. {RDF::Microdata::Reader} implements a `:rdf\_terms` option which uses an alternative
 process for creating URIs from terms: If the `@itemprop` is included within an item having an `@itemtype`,
 the URI of the `@itemtype` will be used for generating a term URI. The type URI will be trimmed following
 the last '#' or '/' character, and the term will be appended to the resulting URI. This is in keeping
@@ -59,7 +59,7 @@ Full documentation available on [RubyForge](http://rdf.rubyforge.org/microdata)
 * {RDF::Microdata::Format}
   * {RDF::Microdata::HTML}
     Asserts :html format, text/html mime-type and .html file extension.
-* {RDF::RDFa::Reader}
+* {RDF::Microdata::Reader}
 
 ### Additional vocabularies
 

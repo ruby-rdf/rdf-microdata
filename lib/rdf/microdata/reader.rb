@@ -147,7 +147,7 @@ module RDF::Microdata
       @callback.call(statement)
     end
 
-    # Parsing an RDFa document (this is *not* the recursive method)
+    # Parsing a Microdata document (this is *not* the recursive method)
     def parse_whole_document(doc, base)
       base_el = doc.at_css('html>head>base')
       base = base_el.attribute('href').to_s.split('#').first if base_el
