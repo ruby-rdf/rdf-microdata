@@ -15,9 +15,38 @@ Install with 'gem install rdf-microdata'
 
 ## Usage
 
-### Reading RDF data in the RDFa format
+### Reading RDF data in the Microdata format
 
     graph = RDF::Graph.load("etc/foaf.html", :format => :microdata)
+
+### Generating RDF friendly URIs from terms
+As defined, Microdata creates ugly (and even illegal) URIs for `@itemprop` entries that are a simple
+term, and not already a URI. {RDF::RDFa::Reader} implements a `:rdf\_terms` option which uses an alternative
+process for creating URIs from terms: If the `@itemprop` is included within an item having an `@itemtype`,
+the URI of the `@itemtype` will be used for generating a term URI. The type URI will be trimmed following
+the last '#' or '/' character, and the term will be appended to the resulting URI. This is in keeping
+with standard convention for defining properties and classes within an RDFS or OWL vocabulary.
+
+For example:
+
+    <div itemscope itemtype="http://schema.org/Person">
+      My name is <span itemprop="name">Gregg</span>
+    </div>
+
+Without the `:rdf\_terms` option, this would create the following statements:
+
+    @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
+    @prefix schema: <http://schema.org/> .
+    <> md:item [
+      a schema:Person;
+      <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg"
+    ] .
+
+With the `:rdf\_terms` option, this becomes:
+
+    @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
+    @prefix schema: <http://schema.org/> .
+    <> md:item [ a schema:Person; schema:name "Gregg" ] .
 
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.3)

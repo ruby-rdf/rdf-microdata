@@ -301,6 +301,89 @@ describe "RDF::Microdata::Reader" do
       end
     end
 
+    context "rdf terms" do
+      [
+        [
+          %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
+          %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
+        ],
+        [
+          %q(
+          <p>My name is <span itemprop="name">Gregg</span></p>
+          <p>My name is <span itemprop="name">Kellogg</span></p>
+          ),
+          %q(_:a <http://schema.org/name> "Gregg", "Kellogg" .)
+        ],
+        [
+          %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
+          %q(
+            _:a <http://schema.org/name> "Gregg Kellogg" .
+            _:a <http://schema.org/fullName> "Gregg Kellogg" .
+          )
+        ],
+        [
+          %q(<p>My name is <span itemprop="http://schema.org/name">Gregg Kellogg</span></p>),
+          %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
+        ],
+        [
+          %q(<audio itemprop="audio" src="foo"></audio>),
+          %q(_:a <http://schema.org/audio> <foo> .)
+        ],
+        [
+          %q(<embed itemprop="embed" src="foo"></embed>),
+          %q(_:a <http://schema.org/embed> <foo> .)
+        ],
+        [
+          %q(<iframe itemprop="iframe" src="foo"></iframe>),
+          %q(_:a <http://schema.org/iframe> <foo> .)
+        ],
+        [
+          %q(<img itemprop="img" src="foo"/>),
+          %q(_:a <http://schema.org/img> <foo> .)
+        ],
+        [
+          %q(<source itemprop="source" src="foo"/>),
+          %q(_:a <http://schema.org/source> <foo> .)
+        ],
+        [
+          %q(<track itemprop="track" src="foo"/>),
+          %q(_:a <http://schema.org/track> <foo> .)
+        ],
+        [
+          %q(<video itemprop="video" src="foo"></video>),
+          %q(_:a <http://schema.org/video> <foo> .)
+        ],
+        [
+          %q(<a itemprop="a" href="foo"></a>),
+          %q(_:a <http://schema.org/a> <foo> .)
+        ],
+        [
+          %q(<area itemprop="area" href="foo"/>),
+          %q(_:a <http://schema.org/area> <foo> .)
+        ],
+        [
+          %q(<link itemprop="link" href="foo"/>),
+          %q(_:a <http://schema.org/link> <foo> .)
+        ],
+        [
+          %q(<object itemprop="object" data="foo"/>),
+          %q(_:a <http://schema.org/object> <foo> .)
+        ],
+        #[
+        #  %q(<time itemprop="time" datetime="2011-06-28">28 June 2011</time>),
+        #  %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
+        #],
+        [
+          %q(<div itemprop="knows" itemscope><a href="http://manu.sporny.org/">Manu</a></div>),
+          %q(_:a <http://schema.org/knows> _:b .)
+        ],
+      ].each do |(md, nt)|
+        it "parses #{md}" do
+          parse(@md_ctx % md, :rdf_terms => true).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+        end
+      end
+    end
+
     context "itemid" do
       before :each do 
         @md_ctx = %q(

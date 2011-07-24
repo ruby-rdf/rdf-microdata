@@ -39,6 +39,8 @@ module RDF::Microdata
     #   whether to intern all parsed URIs
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
+    # @option options [Boolean]  :rdf_terms     (false)
+    #   Generate URIs for itemprop terms based on namespace of itemtype
     # @option options [Array] :debug
     #   Array to place debug messages
     # @return [reader]
@@ -238,7 +240,6 @@ module RDF::Microdata
         add_triple(el, base, RDF::DC.source, object)
       end
 
-
       # 5. Let memory be a mapping of items to subjects, initially empty.
       # 6. For each element that is also a top-level microdata item, run the following steps:
       #    * Generate the triples for the item. Pass a reference to memory as the item/subject list.
@@ -287,7 +288,7 @@ module RDF::Microdata
       
       # 3. If item has an item type and that item type is an absolute URL, let type be that item type.
       #    Otherwise, let type be the empty string.
-      type = uri(item.attribute('itemtype'))
+      rdf_type = type = uri(item.attribute('itemtype'))
       type = '' unless type.absolute?
       
       if type != ''
@@ -298,7 +299,7 @@ module RDF::Microdata
         type += ':' unless type.to_s.match(/\#:/)
       elsif fallback_type
         add_debug(item, "gentrips(5.2): fallback_type=#{fallback_type}, fallback_name=#{fallback_name}")
-        type = fallback_type
+        rdf_type = type = fallback_type
         # 5.2. If type does not contain a U+0023 NUMBER SIGN character (#), then append a # to type.
         type += '#' unless type.to_s.include?('#')
         # 5.3. If type does not have a : after its #, append a : to type.
@@ -335,6 +336,10 @@ module RDF::Microdata
 
           predicate = if name_uri.absolute?
             name_uri
+          elsif @options[:rdf_terms]
+            # Use the URI of the type to create URIs for @itemprop terms
+            add_debug(element, "gentrips: rdf_type=#{rdf_type}")
+            predicate = RDF::URI(rdf_type.to_s.sub(/(?<=[\/\#])[^\/\#]*$/, name))
           elsif !name.include?(':')
             s = type.to_s
             s += '%20' unless s[-1,1] == ':'
