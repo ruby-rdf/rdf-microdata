@@ -1,3 +1,6 @@
+### 0.1.3
+* Fixed ruby 1.8 regular expression bug.
+
 ### 0.1.2
 * Added :rdf\_terms option to Reader to generate more RDF-friendly URIs from terms.
 

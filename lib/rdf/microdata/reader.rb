@@ -152,6 +152,8 @@ module RDF::Microdata
       base_el = doc.at_css('html>head>base')
       base = base_el.attribute('href').to_s.split('#').first if base_el
       
+      add_debug(doc, "parse_whole_doc: options=#{@options.inspect}")
+
       if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
@@ -339,7 +341,7 @@ module RDF::Microdata
           elsif @options[:rdf_terms]
             # Use the URI of the type to create URIs for @itemprop terms
             add_debug(element, "gentrips: rdf_type=#{rdf_type}")
-            predicate = RDF::URI(rdf_type.to_s.sub(/(?<=[\/\#])[^\/\#]*$/, name))
+            predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name))
           elsif !name.include?(':')
             s = type.to_s
             s += '%20' unless s[-1,1] == ':'

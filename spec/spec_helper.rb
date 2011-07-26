@@ -6,7 +6,7 @@ require 'rspec'
 require 'rdf/isomorphic'
 require 'rdf/microdata'
 require 'rdf/n3'
-require 'rdf/spec'
+#require 'rdf/spec'
 require 'rdf/spec/matchers'
 require 'matchers'
 
