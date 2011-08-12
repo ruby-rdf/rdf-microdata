@@ -4,9 +4,10 @@ module RDF::Microdata
   ##
   # An Microdata parser in Ruby
   #
-  # Based on processing rules described here:
-  # @see http://dev.w3.org/html5/md/
+  # Based on processing rules, amended with the following:
+  # * property generation from tokens now uses the associated @itemtype as the basis for generation
   #
+  # @see http://dev.w3.org/html5/md/
   # @author [Gregg Kellogg](http://kellogg-assoc.com/)
   class Reader < RDF::Reader
     format Format
@@ -39,8 +40,6 @@ module RDF::Microdata
     #   whether to intern all parsed URIs
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
-    # @option options [Boolean]  :rdf_terms     (false)
-    #   Generate URIs for itemprop terms based on namespace of itemtype
     # @option options [Array] :debug
     #   Array to place debug messages
     # @return [reader]
@@ -338,15 +337,10 @@ module RDF::Microdata
 
           predicate = if name_uri.absolute?
             name_uri
-          elsif @options[:rdf_terms]
+          else
             # Use the URI of the type to create URIs for @itemprop terms
             add_debug(element, "gentrips: rdf_type=#{rdf_type}")
             predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name))
-          elsif !name.include?(':')
-            s = type.to_s
-            s += '%20' unless s[-1,1] == ':'
-            s += name
-            RDF::MD[s.gsub('#', '%23')]
           end
           add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
           

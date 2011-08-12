@@ -19,10 +19,13 @@ Install with 'gem install rdf-microdata'
 
     graph = RDF::Graph.load("etc/foaf.html", :format => :microdata)
 
+## Note
+The Microdata editor has recently [dropped support for RDF
+conversion](http://html5.org/tools/web-apps-tracker?from=6426&to=6427), as a result, this gem is being used to
+investigate ways in which Microdata might have more satisfactory RDF generation.
+
 ### Generating RDF friendly URIs from terms
-As defined, Microdata creates ugly (and even illegal) URIs for `@itemprop` entries that are a simple
-term, and not already a URI. {RDF::Microdata::Reader} implements a `:rdf\_terms` option which uses an alternative
-process for creating URIs from terms: If the `@itemprop` is included within an item having an `@itemtype`,
+If the `@itemprop` is included within an item having an `@itemtype`,
 the URI of the `@itemtype` will be used for generating a term URI. The type URI will be trimmed following
 the last '#' or '/' character, and the term will be appended to the resulting URI. This is in keeping
 with standard convention for defining properties and classes within an RDFS or OWL vocabulary.

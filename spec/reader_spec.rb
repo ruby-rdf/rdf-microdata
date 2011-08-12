@@ -86,7 +86,7 @@ describe "RDF::Microdata::Reader" do
 
     it "parses a simple graph" do
       md = %q(<p>My name is <span itemprop="name">Gregg Kellogg</span>.</p>)
-      nt = %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg Kellogg" .)
+      nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
       parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
     end
     
@@ -218,93 +218,6 @@ describe "RDF::Microdata::Reader" do
       [
         [
           %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg Kellogg" .)
-        ],
-        [
-          %q(
-          <p>My name is <span itemprop="name">Gregg</span></p>
-          <p>My name is <span itemprop="name">Kellogg</span></p>
-          ),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg", "Kellogg" .)
-        ],
-        [
-          %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
-          %q(
-            _:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg Kellogg" .
-            _:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:fullName> "Gregg Kellogg" .
-          )
-        ],
-        [
-          %q(<p>My name is <span itemprop="http://schema.org/name">Gregg Kellogg</span></p>),
-          %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-        ],
-        [
-          %q(<meta itemprop="meta" content="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:meta> "foo" .)
-        ],
-        [
-          %q(<audio itemprop="audio" src="foo"></audio>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:audio> <foo> .)
-        ],
-        [
-          %q(<embed itemprop="embed" src="foo"></embed>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:embed> <foo> .)
-        ],
-        [
-          %q(<iframe itemprop="iframe" src="foo"></iframe>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:iframe> <foo> .)
-        ],
-        [
-          %q(<img itemprop="img" src="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:img> <foo> .)
-        ],
-        [
-          %q(<source itemprop="source" src="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:source> <foo> .)
-        ],
-        [
-          %q(<track itemprop="track" src="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:track> <foo> .)
-        ],
-        [
-          %q(<video itemprop="video" src="foo"></video>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:video> <foo> .)
-        ],
-        [
-          %q(<a itemprop="a" href="foo"></a>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:a> <foo> .)
-        ],
-        [
-          %q(<area itemprop="area" href="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:area> <foo> .)
-        ],
-        [
-          %q(<link itemprop="link" href="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:link> <foo> .)
-        ],
-        [
-          %q(<object itemprop="object" data="foo"/>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:object> <foo> .)
-        ],
-        #[
-        #  %q(<time itemprop="time" datetime="2011-06-28">28 June 2011</time>),
-        #  %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
-        #],
-        [
-          %q(<div itemprop="knows" itemscope><a href="http://manu.sporny.org/">Manu</a></div>),
-          %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:knows> _:b .)
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md}" do
-          parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
-        end
-      end
-    end
-
-    context "rdf terms" do
-      [
-        [
-          %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
           %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
         ],
         [
@@ -324,6 +237,10 @@ describe "RDF::Microdata::Reader" do
         [
           %q(<p>My name is <span itemprop="http://schema.org/name">Gregg Kellogg</span></p>),
           %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
+        ],
+        [
+          %q(<meta itemprop="meta" content="foo"/>),
+          %q(_:a <http://schema.org/meta> "foo" .)
         ],
         [
           %q(<audio itemprop="audio" src="foo"></audio>),
@@ -379,7 +296,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          parse(@md_ctx % md, :rdf_terms => true).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+          parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
       end
     end
@@ -401,63 +318,63 @@ describe "RDF::Microdata::Reader" do
       [
         [
           %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg Kellogg" .)
+          %q(<subj> <http://schema.org/name> "Gregg Kellogg" .)
         ],
         [
           %q(<meta itemprop="meta" content="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:meta> "foo" .)
+          %q(<subj> <http://schema.org/meta> "foo" .)
         ],
         [
           %q(<audio itemprop="audio" src="foo"></audio>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:audio> <foo> .)
+          %q(<subj> <http://schema.org/audio> <foo> .)
         ],
         [
           %q(<embed itemprop="embed" src="foo"></embed>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:embed> <foo> .)
+          %q(<subj> <http://schema.org/embed> <foo> .)
         ],
         [
           %q(<iframe itemprop="iframe" src="foo"></iframe>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:iframe> <foo> .)
+          %q(<subj> <http://schema.org/iframe> <foo> .)
         ],
         [
           %q(<img itemprop="img" src="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:img> <foo> .)
+          %q(<subj> <http://schema.org/img> <foo> .)
         ],
         [
           %q(<source itemprop="source" src="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:source> <foo> .)
+          %q(<subj> <http://schema.org/source> <foo> .)
         ],
         [
           %q(<track itemprop="track" src="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:track> <foo> .)
+          %q(<subj> <http://schema.org/track> <foo> .)
         ],
         [
           %q(<video itemprop="video" src="foo"></video>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:video> <foo> .)
+          %q(<subj> <http://schema.org/video> <foo> .)
         ],
         [
           %q(<a itemprop="a" href="foo"></a>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:a> <foo> .)
+          %q(<subj> <http://schema.org/a> <foo> .)
         ],
         [
           %q(<area itemprop="area" href="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:area> <foo> .)
+          %q(<subj> <http://schema.org/area> <foo> .)
         ],
         [
           %q(<link itemprop="link" href="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:link> <foo> .)
+          %q(<subj> <http://schema.org/link> <foo> .)
         ],
         [
           %q(<object itemprop="object" data="foo"/>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:object> <foo> .)
+          %q(<subj> <http://schema.org/object> <foo> .)
         ],
         #[
         #  %q(<time itemprop="time" datetime="2011-06-28">28 June 2011</time>),
-        #  %q(_:a <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
+        #  %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
         #],
         [
           %q(<div itemprop="knows" itemscope itemid="obj"><a href="http://manu.sporny.org/">Manu</a></div>),
-          %q(<subj> <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:knows> <obj> .)
+          %q(<subj> <http://schema.org/knows> <obj> .)
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
@@ -467,7 +384,8 @@ describe "RDF::Microdata::Reader" do
     end
     
     context "itemref" do
-      [
+      {
+        "to single id" =>
         [
           %q(
             <div>
@@ -478,10 +396,11 @@ describe "RDF::Microdata::Reader" do
           %q(
             <> <http://www.w3.org/1999/xhtml/microdata#item>
               [ a <http://schema.org/Person> ;
-                <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Amanda" ;
+                <http://schema.org/name> "Amanda" ;
               ]
           )
         ],
+        "to multiple ids" =>
         [
           %q(
             <div>
@@ -493,11 +412,12 @@ describe "RDF::Microdata::Reader" do
           %q(
             <> <http://www.w3.org/1999/xhtml/microdata#item>
               [ a <http://schema.org/Person> ;
-                <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Amanda" ;
-                <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:band> "Jazz Band" ;
+                <http://schema.org/name> "Amanda" ;
+                <http://schema.org/band> "Jazz Band" ;
               ]
           )
         ],
+        "with chaining" =>
         [
           %q(
             <div>
@@ -513,17 +433,17 @@ describe "RDF::Microdata::Reader" do
           %q(
             <> <http://www.w3.org/1999/xhtml/microdata#item>
               [ a <http://schema.org/Person> ;
-                <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Amanda" ;
-                <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:band> [
+                <http://schema.org/name> "Amanda" ;
+                <http://schema.org/band> [
                   a <http://schema.org/MusicGroup> ;
-                  <http://www.w3.org/1999/xhtml/microdata#http://schema.org/MusicGroup%23:name> "Jazz Band";
-                  <http://www.w3.org/1999/xhtml/microdata#http://schema.org/MusicGroup%23:size> "12"
+                  <http://schema.org/name> "Jazz Band";
+                  <http://schema.org/size> "12"
                 ]
               ]
           )
         ],
-      ].each do |(md, nt)|
-        it "parses #{md}" do
+      }.each do |name, (md, nt)|
+        it "parses #{name}" do
           parse(md).should be_equivalent_graph(nt, :trace => @debug)
         end
       end
