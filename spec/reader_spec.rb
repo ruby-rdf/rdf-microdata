@@ -90,20 +90,6 @@ describe "RDF::Microdata::Reader" do
       parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
     end
     
-    context "title" do
-      it "generates dc:title for document title" do
-        md = %q(
-        <html>
-         <head>
-          <title>Photo gallery</title>
-         </head>
-        </html>
-        )
-        nt = %q(<> <http://purl.org/dc/terms/title> "Photo gallery" .)
-        parse(md).should be_equivalent_graph(nt, :trace => @debug)
-      end
-    end
-    
     context "a-rel" do
       [
         [

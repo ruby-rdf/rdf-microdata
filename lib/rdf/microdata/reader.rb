@@ -6,6 +6,7 @@ module RDF::Microdata
   #
   # Based on processing rules, amended with the following:
   # * property generation from tokens now uses the associated @itemtype as the basis for generation
+  # * implicit triples are not generated, only those with @item*
   #
   # @see http://dev.w3.org/html5/md/
   # @author [Gregg Kellogg](http://kellogg-assoc.com/)
@@ -160,19 +161,6 @@ module RDF::Microdata
         add_debug(base_el, "parse_whole_doc: base='#{base}'")
       else
         base = RDF::URI("")
-      end
-      
-      ##
-      # 1. If the title element is not null, then generate the following triple:
-      #
-      #   subject:  the document's current address
-      #   predicate:  http://purl.org/dc/terms/title
-      #   object:  the concatenation of the data of all the child text nodes of the title element,
-      #            in tree order, as a plain literal, with the language information set from
-      #            the language of the title element, if it is not unknown. 
-      doc.css('html>head>title').each do |title|
-        lang = title.attribute('language')
-        add_triple(title, base, RDF::DC.title, title.inner_text)
       end
       
       # 2. For each a, area, and link element in the Document, run these substeps:

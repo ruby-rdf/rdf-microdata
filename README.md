@@ -51,6 +51,10 @@ With the `:rdf\_terms` option, this becomes:
     @prefix schema: <http://schema.org/> .
     <> md:item [ a schema:Person; schema:name "Gregg" ] .
 
+### Remove implicit RDF triple generation
+
+html>head>title and anchor (_a_) elements no longer generate triples without @item* properties
+
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.3)
 * [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
