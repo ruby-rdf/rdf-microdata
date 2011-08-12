@@ -51,6 +51,11 @@ With the `:rdf\_terms` option, this becomes:
     @prefix schema: <http://schema.org/> .
     <> md:item [ a schema:Person; schema:name "Gregg" ] .
 
+### Improve xsd:date, xsd:time, xsd:dateTime and xsd:duration generation from _time_ element
+
+Use the lexical form of the @datetime attribute of the _time_ element to determine the specific type
+of the generated literal.
+
 ### Remove implicit RDF triple generation
 
 html>head>title and anchor (_a_) elements no longer generate triples without @item* properties

@@ -7,6 +7,7 @@ module RDF::Microdata
   # Based on processing rules, amended with the following:
   # * property generation from tokens now uses the associated @itemtype as the basis for generation
   # * implicit triples are not generated, only those with @item*
+  # * @datetime values are scanned lexically to find appropriate datatype
   #
   # @see http://dev.w3.org/html5/md/
   # @author [Gregg Kellogg](http://kellogg-assoc.com/)
@@ -460,7 +461,12 @@ module RDF::Microdata
       when %w(object).include?(element.name)
         uri(element.attribute('data'), element.base)
       when %w(time).include?(element.name) && element.has_attribute?('datetime')
-        RDF::Literal::DateTime.new(element.attribute('datetime'))
+        # Lexically scan value and assign appropriate type, otherwise, leave untyped
+        v = element.attribute('datetime').to_s
+        datatype = %w(Date Time DateTime).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
+          v.match(dt::GRAMMAR)
+        end || RDF::Literal
+        datatype.new(v)
       else
         RDF::Literal.new(element.text, :language => element.language)
       end

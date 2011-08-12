@@ -272,10 +272,26 @@ describe "RDF::Microdata::Reader" do
           %q(<object itemprop="object" data="foo"/>),
           %q(_:a <http://schema.org/object> <foo> .)
         ],
-        #[
-        #  %q(<time itemprop="time" datetime="2011-06-28">28 June 2011</time>),
-        #  %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
+        [
+          %q(<time itemprop="time" datetime="2011-06-28Z">28 June 2011</time>),
+          %q(_:a <http://schema.org/time> "2011-06-28Z"^^<http://www.w3.org/2001/XMLSchema#date> .)
+        ],
+        [
+          %q(<time itemprop="time" datetime="00:00:00Z">28 June 2011</time>),
+          %q(_:a <http://schema.org/time> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .)
+        ],
+        [
+          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
+          %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
+        ],
+        #[  # When RDF.rb support for xsd:duration is added
+        #  %q(<time itemprop="time" datetime="P2011-06-28T00:00:00">28 June 2011</time>),
+        #  %q(_:a <http://schema.org/time> "P2011-06-28T00:00:00"^^<http://www.w3.org/2001/XMLSchema#duration> .)
         #],
+        [
+          %q(<time itemprop="time" datetime="foo">28 June 2011</time>),
+          %q(_:a <http://schema.org/time> "foo" .)
+        ],
         [
           %q(<div itemprop="knows" itemscope><a href="http://manu.sporny.org/">Manu</a></div>),
           %q(_:a <http://schema.org/knows> _:b .)
@@ -354,10 +370,10 @@ describe "RDF::Microdata::Reader" do
           %q(<object itemprop="object" data="foo"/>),
           %q(<subj> <http://schema.org/object> <foo> .)
         ],
-        #[
-        #  %q(<time itemprop="time" datetime="2011-06-28">28 June 2011</time>),
-        #  %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<www.w3.org/2001/XMLSchema#dateTime> .)
-        #],
+        [
+          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
+          %q(<subj> <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
+        ],
         [
           %q(<div itemprop="knows" itemscope itemid="obj"><a href="http://manu.sporny.org/">Manu</a></div>),
           %q(<subj> <http://schema.org/knows> <obj> .)
