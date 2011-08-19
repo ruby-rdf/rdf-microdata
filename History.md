@@ -1,3 +1,6 @@
+### 0.2.1
+* Fixed support for using the document base-uri to resolve relative URIs.
+
 ### 0.2.0
 * There is no longer any official way to generate RDF and use gem as an experimentation platform.
 * Use rdf_term-type property generation and remove option to set it.

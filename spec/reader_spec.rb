@@ -1,3 +1,4 @@
+# coding: utf-8
 $:.unshift "."
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
@@ -299,6 +300,71 @@ describe "RDF::Microdata::Reader" do
       ].each do |(md, nt)|
         it "parses #{md}" do
           parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+        end
+      end
+    end
+
+    context "base_uri" do
+      before :each do 
+        @md_ctx = %q(
+          <div itemscope itemtype="http://schema.org/Person">
+           %s
+          </div>
+        )
+        @nt_ctx = %q(
+        <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
+        _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+        %s
+        )
+      end
+      [
+        [
+          %q(<audio itemprop="audio" src="foo"></audio>),
+          %q(_:a <http://schema.org/audio> <http://example.com/foo> .)
+        ],
+        [
+          %q(<embed itemprop="embed" src="foo"></embed>),
+          %q(_:a <http://schema.org/embed> <http://example.com/foo> .)
+        ],
+        [
+          %q(<iframe itemprop="iframe" src="foo"></iframe>),
+          %q(_:a <http://schema.org/iframe> <http://example.com/foo> .)
+        ],
+        [
+          %q(<img itemprop="img" src="foo"/>),
+          %q(_:a <http://schema.org/img> <http://example.com/foo> .)
+        ],
+        [
+          %q(<source itemprop="source" src="foo"/>),
+          %q(_:a <http://schema.org/source> <http://example.com/foo> .)
+        ],
+        [
+          %q(<track itemprop="track" src="foo"/>),
+          %q(_:a <http://schema.org/track> <http://example.com/foo> .)
+        ],
+        [
+          %q(<video itemprop="video" src="foo"></video>),
+          %q(_:a <http://schema.org/video> <http://example.com/foo> .)
+        ],
+        [
+          %q(<a itemprop="a" href="foo"></a>),
+          %q(_:a <http://schema.org/a> <http://example.com/foo> .)
+        ],
+        [
+          %q(<area itemprop="area" href="foo"/>),
+          %q(_:a <http://schema.org/area> <http://example.com/foo> .)
+        ],
+        [
+          %q(<link itemprop="link" href="foo"/>),
+          %q(_:a <http://schema.org/link> <http://example.com/foo> .)
+        ],
+        [
+          %q(<a itemprop="knows" href="scor">Stéphane Corlosquet</a>),
+          %q(_:a <http://schema.org/knows> <http://example.com/scor> .)
+        ],
+      ].each do |(md, nt)|
+        it "parses #{md}" do
+          parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
       end
     end

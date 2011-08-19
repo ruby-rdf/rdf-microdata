@@ -22,8 +22,14 @@ module RDF::Microdata
     ##
     # Returns the base URI determined by this reader.
     #
-    # @attr [RDF::URI]
-    attr_reader :base_uri
+    # @example
+    #   reader.prefixes[:dc]  #=> RDF::URI('http://purl.org/dc/terms/')
+    #
+    # @return [Hash{Symbol => RDF::URI}]
+    # @since  0.3.0
+    def base_uri
+      @options[:base_uri]
+    end
 
     ##
     # Initializes the Microdata reader instance.
@@ -63,7 +69,8 @@ module RDF::Microdata
           # Otherwise, default is utf-8
           options[:encoding] ||= 'utf-8'
 
-          Nokogiri::HTML.parse(input, @base_uri.to_s, options[:encoding])
+          add_debug(nil, "base_uri: #{base_uri}")
+          Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
         end
         
         if (@doc.nil? || @doc.root.nil?)
@@ -87,7 +94,7 @@ module RDF::Microdata
       @callback = block
 
       # parse
-      parse_whole_document(@doc, @base_uri)
+      parse_whole_document(@doc, base_uri)
     end
 
     ##
@@ -114,7 +121,7 @@ module RDF::Microdata
     
     # Figure out the document path, if it is a Nokogiri::XML::Element or Attribute
     def node_path(node)
-      "<#{@base_uri}>" + case node
+      "<#{base_uri}>" + case node
       when Nokogiri::XML::Node then node.display_path
       else node.to_s
       end
@@ -158,7 +165,7 @@ module RDF::Microdata
       if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
-        base = @base_uri = uri(base)
+        base = options[:base_uri] = uri(base)
         add_debug(base_el, "parse_whole_doc: base='#{base}'")
       else
         base = RDF::URI("")
@@ -267,7 +274,7 @@ module RDF::Microdata
       subject = if memory.include?(item)
         memory[item][:subject]
       elsif item.has_attribute?('itemid')
-        u = uri(item.attribute('itemid'))
+        u = uri(item.attribute('itemid'), item.base || base_uri)
       end || RDF::Node.new
       memory[item] ||= {}
 
@@ -448,18 +455,18 @@ module RDF::Microdata
     ##
     #
     def property_value(element)
-      add_debug(element, "property_value(#{element.inspect})")
+      add_debug(element, "property_value(#{element.inspect}): base #{element.base.inspect}, base_uri: #{base_uri.inspect}")
       case
       when element.has_attribute?('itemscope')
         {}
       when element.name == 'meta'
         element.attribute('content').to_s
       when %w(audio embed iframe img source track video).include?(element.name)
-        uri(element.attribute('src'), element.base)
+        uri(element.attribute('src'), element.base || base_uri)
       when %w(a area link).include?(element.name)
-        uri(element.attribute('href'), element.base)
+        uri(element.attribute('href'), element.base || base_uri)
       when %w(object).include?(element.name)
-        uri(element.attribute('data'), element.base)
+        uri(element.attribute('data'), element.base || base_uri)
       when %w(time).include?(element.name) && element.has_attribute?('datetime')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('datetime').to_s
