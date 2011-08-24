@@ -69,8 +69,7 @@ Full documentation available on [RubyForge](http://rdf.rubyforge.org/microdata)
 
 ### Principle Classes
 * {RDF::Microdata::Format}
-  * {RDF::Microdata::HTML}
-    Asserts :html format, text/html mime-type and .html file extension.
+  Asserts :html format, text/html mime-type and .html file extension.
 * {RDF::Microdata::Reader}
 
 ### Additional vocabularies

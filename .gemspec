@@ -12,14 +12,11 @@ Gem::Specification.new do |gem|
   gem.description           = gem.summary
   gem.rubyforge_project     = 'rdf-microdata'
 
-  gem.authors               = ['Gregg Kellogg']
+  gem.authors               = %w(Gregg Kellogg)
   gem.email                 = 'public-rdf-ruby@w3.org'
 
   gem.platform              = Gem::Platform::RUBY
   gem.files                 = %w(AUTHORS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
-  #gem.bindir               = %q(bin)
-  #gem.executables          = %w(json_ld)
-  #gem.default_executable   = gem.executables.first
   gem.require_paths         = %w(lib)
   gem.extensions            = %w()
   gem.test_files            = %w()
