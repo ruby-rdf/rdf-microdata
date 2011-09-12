@@ -17,5 +17,18 @@ module RDF::Microdata
     content_encoding 'utf-8'
     content_type     'text/html', :extension => :html
     reader { RDF::Microdata::Reader }
+  
+    ##
+    # Sample detection to see if it matches Microdata (not RDF/XML or RDFa)
+    #
+    # Use a text sample to detect the format of an input file. Sub-classes implement
+    # a matcher sufficient to detect probably format matches, including disambiguating
+    # between other similar formats.
+    #
+    # @param [String] sample Beginning several bytes (~ 1K) of input.
+    # @result [Boolean]
+    def self.detect(sample)
+      !!sample.match(/<[^>]*(itemprop|itemtype|itemref|itemscope|itemid)[^>]*>/m)
+    end
   end
 end

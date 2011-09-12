@@ -1,34 +1,25 @@
 # coding: utf-8
 $:.unshift "."
 require File.join(File.dirname(__FILE__), 'spec_helper')
-
-describe RDF::Microdata::Format do
-  context "should be discover 'microdata'" do
-    [
-      [:microdata,                                   RDF::Microdata::Format],
-      ["etc/foaf.html",                              RDF::Microdata::Format],
-      [{:file_name      => "etc/foaf.html"},         RDF::Microdata::Format],
-      [{:file_extension => "html"},                  RDF::Microdata::Format],
-      [{:content_type   => "text/html"},             RDF::Microdata::Format],
-    ].each do |(arg, format)|
-      it "returns #{format} for #{arg.inspect}" do
-        RDF::Format.for(arg).should == format
-      end
-    end
-  end
-end
+require 'rdf/spec/reader'
 
 describe "RDF::Microdata::Reader" do
-  describe "discovery" do
-    {
-      "html" => RDF::Reader.for(:microdata),
-      "etc/foaf.html" => RDF::Reader.for("etc/foaf.html"),
-      "foaf.html" => RDF::Reader.for(:file_name      => "foaf.html"),
-      ".html" => RDF::Reader.for(:file_extension => "html"),
-      "application/xhtml+xml" => RDF::Reader.for(:content_type   => "text/html"),
-    }.each_pair do |label, format|
-      it "should discover '#{label}'" do
-        format.should == RDF::Microdata::Reader
+  before :each do
+    @reader = RDF::Microdata::Reader.new(StringIO.new(""))
+  end
+
+  it_should_behave_like RDF_Reader
+
+  describe ".for" do
+    formats = [
+      :microdata,
+      'etc/doap.html',
+      {:file_name      => 'etc/doap.html'},
+      {:file_extension => 'html'},
+      {:content_type   => 'text/html'},
+    ].each do |arg|
+      it "discovers with #{arg.inspect}" do
+        RDF::Reader.for(arg).should == RDF::Microdata::Reader
       end
     end
   end
@@ -465,6 +456,25 @@ describe "RDF::Microdata::Reader" do
             <> <http://www.w3.org/1999/xhtml/microdata#item>
               [ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Amanda" ;
+              ]
+          )
+        ],
+        "to single id with different types" =>
+        [
+          %q(
+            <div>
+              <div itemscope itemtype="http://xmlns.com/foaf/0.1/Person" id="amanda" itemref="a"></div>
+              <div itemscope itemtype="http://schema.org/Person" id="amanda" itemref="a"></div>
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item>
+              [ a <http://schema.org/Person> ;
+                <http://schema.org/name> "Amanda" ;
+              ],
+              [ a <http://xmlns.com/foaf/0.1/Person> ;
+                <http://xmlns.com/foaf/0.1/name> "Amanda" ;
               ]
           )
         ],

@@ -61,11 +61,11 @@ of the generated literal.
 html>head>title and anchor (_a_) elements no longer generate triples without @item* properties
 
 ## Dependencies
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.3)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
 * [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
 
 ## Documentation
-Full documentation available on [RubyForge](http://rdf.rubyforge.org/microdata)
+Full documentation available on [Rubydoc.info][Microdata doc]
 
 ### Principle Classes
 * {RDF::Microdata::Format}
@@ -118,3 +118,4 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
 [Microdata]:        http://www.w3.org/TR/2011/WD-microdata-20110525/     "HTML Microdata"
+[Microdata doc]:    http://rubydoc.info/github/gkellogg/rdf-microdata/frames

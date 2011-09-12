@@ -73,14 +73,16 @@ module RDF::Microdata
           Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
         end
         
-        if (@doc.nil? || @doc.root.nil?)
-          add_error(nil, "Empty document")
-          raise RDF::ReaderError, "Empty Document"
-        end
         errors = @doc.errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
-        add_error(nil, "Synax errors:\n#{@doc.errors}") if !errors.empty? && validate?
+        raise RDF::ReaderError, "Synax errors:\n#{errors}" if !errors.empty? && validate?
+        raise RDF::ReaderError, "Empty document" if (@doc.nil? || @doc.root.nil?) && validate?
 
-        block.call(self) if block_given?
+        if block_given?
+          case block.arity
+            when 0 then instance_eval(&block)
+            else block.call(self)
+          end
+        end
       end
     end
 
