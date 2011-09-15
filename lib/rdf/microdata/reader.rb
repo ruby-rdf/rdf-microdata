@@ -74,7 +74,7 @@ module RDF::Microdata
         end
         
         errors = @doc.errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
-        raise RDF::ReaderError, "Synax errors:\n#{errors}" if !errors.empty? && validate?
+        raise RDF::ReaderError, "Syntax errors:\n#{errors}" if !errors.empty? && validate?
         raise RDF::ReaderError, "Empty document" if (@doc.nil? || @doc.root.nil?) && validate?
 
         if block_given?
