@@ -1,3 +1,7 @@
+### 0.2.2
+* RDF.rb 0.3.4 compatibility.
+* Added format detection.
+
 ### 0.2.1
 * Fixed support for using the document base-uri to resolve relative URIs.
 
