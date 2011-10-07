@@ -203,7 +203,7 @@ describe "RDF::Microdata::Reader" do
           <p>My name is <span itemprop="name">Gregg</span></p>
           <p>My name is <span itemprop="name">Kellogg</span></p>
           ),
-          %q(_:a <http://schema.org/name> "Gregg", "Kellogg" .)
+          %q(_:a <http://schema.org/name> ("Gregg" "Kellogg") .)
         ],
         [
           %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
@@ -456,6 +456,23 @@ describe "RDF::Microdata::Reader" do
             <> <http://www.w3.org/1999/xhtml/microdata#item>
               [ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Amanda" ;
+              ]
+          )
+        ],
+        "to generate listed property values" =>
+        [
+          %q(
+          <div>
+            <div itemscope itemtype="http://schema.org/Person" itemref="surname">
+              <p>My name is <span itemprop="name">Gregg</span></p>
+            </div>
+            <p id="surname">My name is <span itemprop="name">Kellogg</span></p>
+          </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item>
+              [ a <http://schema.org/Person> ;
+                <http://schema.org/name> ("Gregg" "Kellogg") ;
               ]
           )
         ],

@@ -5,13 +5,15 @@
 <> <http://www.w3.org/1999/xhtml/microdata#item> <http://books.example.com/works/45U8QJGZSQKDH8N> .
 
 <http://books.example.com/works/45U8QJGZSQKDH8N> a frbr:Work ;
-     dce:creator "Wil Wheaton" ;
-     dct:title "Just a Geek" ;
-     frbr:realization <http://books.example.com/products/9780596007683.BOOK>,
-         <http://books.example.com/products/9780596802189.EBOOK> .
+  dce:creator "Wil Wheaton" ;
+  dct:title "Just a Geek" ;
+  frbr:realization (
+    <http://books.example.com/products/9780596007683.BOOK>
+    <http://books.example.com/products/9780596802189.EBOOK>
+  ) .
 
 <http://books.example.com/products/9780596007683.BOOK> a frbr:Expression ;
-     dct:type <http://books.example.com/product-types/BOOK> .
+  dct:type <http://books.example.com/product-types/BOOK> .
 
 <http://books.example.com/products/9780596802189.EBOOK> a frbr:Expression ;
-     dct:type <http://books.example.com/product-types/EBOOK> .
+  dct:type <http://books.example.com/product-types/EBOOK> .

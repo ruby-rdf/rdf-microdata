@@ -299,6 +299,7 @@ module RDF::Microdata
       #    that returns the properties of an item, run the following substep:
       props = item_properties(item)
 
+      prop_values = {}
       # 6.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').each do |name|
@@ -325,7 +326,22 @@ module RDF::Microdata
           end
           add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
           
-          add_triple(element, subject, predicate, value) if predicate
+          prop_values[predicate] ||= []
+          prop_values[predicate] << value
+        end
+      end
+      
+      prop_values.each do |predicate, values|
+        if values.length == 1
+          add_triple(item, subject, predicate, values.first)
+        else
+          list = RDF::List.new(nil, nil, values)
+          list.each_statement do |st|
+            add_triple(item, st.subject, st.predicate, st.object) unless st.object == RDF.List
+          end
+
+          # Generate a triple relating subject, predicate and the list BNode
+          add_triple(item, subject, predicate, list.subject)
         end
       end
       
