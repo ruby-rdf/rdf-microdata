@@ -1,4 +1,5 @@
 require 'nokogiri'  # FIXME: Implement using different modules as in RDF::TriX
+require 'rdf/xsd'
 
 module RDF::Microdata
   ##
@@ -283,15 +284,13 @@ module RDF::Microdata
       
       # 3. If item has an item type and that item type is an absolute URL, let type be that item type.
       #    Otherwise, let type be the empty string.
-      rdf_type = type = uri(item.attribute('itemtype'))
-      
-      if rdf_type.absolute?
-        add_triple(item, subject, RDF.type, rdf_type)
-      elsif options[:current_type]
-        add_debug(item, "gentrips(5.2): current_type=#{options[:current_type]}")
-        rdf_type = options[:current_type]
+      rdf_type = nil
+      item.attribute('itemtype').to_s.split(' ').map{|n| uri(n)}.select(&:absolute?).each do |type|
+        rdf_type ||= type
+        add_triple(item, subject, RDF.type, type)
       end
-
+      
+      rdf_type ||= options[:current_type]
       add_debug(item, "gentrips(6): rdf_type=#{rdf_type.inspect}")
       
       # 6. For each element _element_ that has one or more property names and is one of the
@@ -302,12 +301,15 @@ module RDF::Microdata
       prop_values = {}
       # 6.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
-        element.attribute('itemprop').to_s.split(' ').each do |name|
+        element.attribute('itemprop').to_s.split(' ').compact.each do |name|
           add_debug(element, "gentrips(6.1): name=#{name.inspect}")
           # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
-          name_uri = RDF::URI(name)
-          next if !rdf_type.absolute? && !name_uri.absolute?
+          predicate = RDF::URI(name)
+          next if !rdf_type && !predicate.absolute?
 
+          predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name)) unless predicate.absolute?
+          add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
+          
           value = property_value(element)
           add_debug(element, "gentrips(6.1.2) value=#{value.inspect}")
           
@@ -317,15 +319,6 @@ module RDF::Microdata
           
           add_debug(element, "gentrips(6.1.3): value=#{value.inspect}")
 
-          predicate = if name_uri.absolute?
-            name_uri
-          else
-            # Use the URI of the type to create URIs for @itemprop terms
-            add_debug(element, "gentrips: rdf_type=#{rdf_type}")
-            predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name))
-          end
-          add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
-          
           prop_values[predicate] ||= []
           prop_values[predicate] << value
         end
@@ -471,7 +464,7 @@ module RDF::Microdata
       when %w(time).include?(element.name) && element.has_attribute?('datetime')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('datetime').to_s
-        datatype = %w(Date Time DateTime).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
+        datatype = %w(Date Time DateTime Duration).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
           v.match(dt::GRAMMAR)
         end || RDF::Literal
         datatype.new(v)

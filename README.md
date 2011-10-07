@@ -58,11 +58,12 @@ of the generated literal.
 
 ### Remove implicit RDF triple generation
 
-html>head>title and anchor (_a_) elements no longer generate triples without @item* properties
+html>head>title no longer generate triples without @item* properties
 
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
 * [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
+* [RDF::XSD](http://rubygems.org/gems/rdf-xsd) (>= 0.3.4)
 
 ## Documentation
 Full documentation available on [Rubydoc.info][Microdata doc]

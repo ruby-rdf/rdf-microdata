@@ -276,10 +276,10 @@ describe "RDF::Microdata::Reader" do
           %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
           %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
         ],
-        #[  # When RDF.rb support for xsd:duration is added
-        #  %q(<time itemprop="time" datetime="P2011-06-28T00:00:00">28 June 2011</time>),
-        #  %q(_:a <http://schema.org/time> "P2011-06-28T00:00:00"^^<http://www.w3.org/2001/XMLSchema#duration> .)
-        #],
+        [
+          %q(<time itemprop="time" datetime="P2011Y06M28DT00H00M00S">28 June 2011</time>),
+          %q(_:a <http://schema.org/time> "P2011Y06M28DT00H00M00S"^^<http://www.w3.org/2001/XMLSchema#duration> .)
+        ],
         [
           %q(<time itemprop="time" datetime="foo">28 June 2011</time>),
           %q(_:a <http://schema.org/time> "foo" .)
@@ -442,6 +442,150 @@ describe "RDF::Microdata::Reader" do
       end
     end
     
+    context "itemtype" do
+      {
+        "with no type and token property" => [
+          %q(
+            <div>
+              <div itemscope>
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+          )
+        ],
+        "with empty type and token property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="">
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+          )
+        ],
+        "with relative type and token property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="Person">
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+          )
+        ],
+        "with single type and token property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="http://schema.org/Person">
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ a <http://schema.org/Person> ;
+              <http://schema.org/name> "Amanda" ;
+            ]
+          )
+        ],
+        "with multipe types and token property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
+              <p id="a">Name: <span itemprop="name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+              <http://schema.org/name> "Amanda" ;
+            ]
+          )
+        ],
+        "with no type and URI property" => [
+          %q(
+            <div>
+              <div itemscope>
+              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item>
+              [ <http://schema.org/name> "Amanda" ] .
+          )
+        ],
+        "with empty type and URI property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="">
+              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ <http://schema.org/name> "Amanda" ] .
+          )
+        ],
+        "with relative type and URI property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="Person">
+              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ <http://schema.org/name> "Amanda" ] .
+          )
+        ],
+        "with single type and URI property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="http://schema.org/Person">
+              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ a <http://schema.org/Person> ;
+              <http://schema.org/name> "Amanda" ;
+            ]
+          )
+        ],
+        "with multipe types and URI property" => [
+          %q(
+            <div>
+              <div itemscope itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
+              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item>
+            [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+              <http://schema.org/name> "Amanda" ;
+            ]
+          )
+        ],
+      }.each do |name, (md, nt)|
+        it "#{name}" do
+          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+        end
+      end
+    end
+
     context "itemref" do
       {
         "to single id" =>
