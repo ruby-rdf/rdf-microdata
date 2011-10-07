@@ -263,13 +263,9 @@ module RDF::Microdata
     # @param [RDF::Resource] item
     # @param [Hash{Nokogiri::XML::Element} => RDF::Resource] memory
     # @param [Hash{Symbol => Object}] options
-    # @option options [RDF::Resource] :fallback_type
-    # @option options [RDF::Resource] :fallback_name
+    # @option options [RDF::Resource] :current_type
     # @return [RDF::Resource]
     def generate_triples(item, memory, options = {})
-      fallback_type = options[:fallback_type]
-      fallback_name = options[:fallback_name]
-
       # 1. If there is an entry for item in memory, then let subject be the subject of that entry.
       #    Otherwise, if item has a global identifier and that global identifier is an absolute URL,
       #    let subject be that global identifier. Otherwise, let subject be a new blank node.
@@ -291,9 +287,9 @@ module RDF::Microdata
       
       if rdf_type.absolute?
         add_triple(item, subject, RDF.type, rdf_type)
-      elsif fallback_type
-        add_debug(item, "gentrips(5.2): fallback_type=#{fallback_type}, fallback_name=#{fallback_name}")
-        rdf_type = fallback_type
+      elsif options[:current_type]
+        add_debug(item, "gentrips(5.2): current_type=#{options[:current_type]}")
+        rdf_type = options[:current_type]
       end
 
       add_debug(item, "gentrips(6): rdf_type=#{rdf_type.inspect}")
@@ -315,7 +311,7 @@ module RDF::Microdata
           add_debug(element, "gentrips(6.1.2) value=#{value.inspect}")
           
           if value.is_a?(Hash)
-            value = generate_triples(element, memory, :fallback_type => rdf_type, :fallback_name => name) 
+            value = generate_triples(element, memory, :current_type => rdf_type) 
           end
           
           add_debug(element, "gentrips(6.1.3): value=#{value.inspect}")
