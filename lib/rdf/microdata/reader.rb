@@ -288,28 +288,15 @@ module RDF::Microdata
       # 3. If item has an item type and that item type is an absolute URL, let type be that item type.
       #    Otherwise, let type be the empty string.
       rdf_type = type = uri(item.attribute('itemtype'))
-      type = '' unless type.absolute?
       
-      if type != ''
-        add_triple(item, subject, RDF.type, type)
-        # 4.2. If type does not contain a U+0023 NUMBER SIGN character (#), then append a # to type.
-        type += '#' unless type.to_s.include?('#')
-        # 4.3. If type does not have a : after its #, append a : to type.
-        type += ':' unless type.to_s.match(/\#:/)
+      if rdf_type.absolute?
+        add_triple(item, subject, RDF.type, rdf_type)
       elsif fallback_type
         add_debug(item, "gentrips(5.2): fallback_type=#{fallback_type}, fallback_name=#{fallback_name}")
-        rdf_type = type = fallback_type
-        # 5.2. If type does not contain a U+0023 NUMBER SIGN character (#), then append a # to type.
-        type += '#' unless type.to_s.include?('#')
-        # 5.3. If type does not have a : after its #, append a : to type.
-        type += ':' unless type.to_s.match(/\#:/)
-        # 5.4. If the last character of type is not a :, %20 to type.
-        type += '%20' unless type.to_s[-1,1] == ':'
-        # 5.5. Append the fragment-escaped value of fallback name to type.
-        type += fallback_name.to_s.gsub('#', '%23')
+        rdf_type = fallback_type
       end
 
-      add_debug(item, "gentrips(6): type=#{type.inspect}")
+      add_debug(item, "gentrips(6): rdf_type=#{rdf_type.inspect}")
       
       # 6. For each element _element_ that has one or more property names and is one of the
       #    properties of the item _item_, in the order those elements are given by the algorithm
@@ -320,15 +307,15 @@ module RDF::Microdata
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').each do |name|
           add_debug(element, "gentrips(6.1): name=#{name.inspect}")
-          # If type is the empty string and name is not an absolute URL, then abort these substeps.
+          # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
           name_uri = RDF::URI(name)
-          next if type == '' && !name_uri.absolute?
+          next if !rdf_type.absolute? && !name_uri.absolute?
 
           value = property_value(element)
           add_debug(element, "gentrips(6.1.2) value=#{value.inspect}")
           
           if value.is_a?(Hash)
-            value = generate_triples(element, memory, :fallback_type => type, :fallback_name => name) 
+            value = generate_triples(element, memory, :fallback_type => rdf_type, :fallback_name => name) 
           end
           
           add_debug(element, "gentrips(6.1.3): value=#{value.inspect}")
