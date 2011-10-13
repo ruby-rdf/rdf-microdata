@@ -1,17 +1,17 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix dct: <http://purl.org/dc/terms/> .
+@prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
 @prefix hcard: <http://microformats.org/profile/hcard#> .
 
-<> <http://www.w3.org/1999/xhtml/microdata#item> _:n0 ;
-   <http://www.w3.org/1999/xhtml/microdata#item> _:n1 .
-_:n0  rdf:type <http://microformats.org/profile/hcard#> ;
-      hcard:fn "Princeton" ;
-      hcard:n _:n0a ;
-      hcard:adr _:n2 .
-_:n0a hcard:given-name "Princeton" .
-_:n1  rdf:type <http://microformats.org/profile/hcard#> ;
-      hcard:fn "Trekkie" ;
-      hcard:n _:n1a ;
-      hcard:adr _:n2 .
-_:n1a hcard:given-name "Trekkie" .
-_:n2  hcard:street-address "Avenue Q" .
+<> md:item (
+  [ a hcard:;
+    hcard:fn "Princeton";
+    hcard:n [ hcard:given-name "Princeton" ];
+    hcard:adr _:a
+  ]
+  [ a hcard:;
+    hcard:fn "Trekkie";
+    hcard:n [ hcard:given-name "Trekkie" ];
+    hcard:adr _:a
+  ]
+) .
+
+_:a hcard:street-address "Avenue Q" .

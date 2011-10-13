@@ -47,7 +47,7 @@ describe "RDF::Microdata::Reader" do
 
     it "should yield statements" do
       inner = mock("inner")
-      inner.should_receive(:called).with(RDF::Statement)
+      inner.should_receive(:called).at_least(1).times.with(RDF::Statement)
       RDF::Microdata::Reader.new(@sampledoc).each_statement do |statement|
         inner.called(statement.class)
       end
@@ -55,7 +55,7 @@ describe "RDF::Microdata::Reader" do
 
     it "should yield triples" do
       inner = mock("inner")
-      inner.should_receive(:called).with(RDF::URI, RDF::URI, RDF::Node)
+      inner.should_receive(:called).at_least(1).times
       RDF::Microdata::Reader.new(@sampledoc).each_triple do |subject, predicate, object|
         inner.called(subject.class, predicate.class, object.class)
       end
@@ -82,115 +82,115 @@ describe "RDF::Microdata::Reader" do
       parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
     end
     
-    context "a-rel" do
-      [
-        [
-          %q(<a rel="rel" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-        ],
-        [
-          %q(<a rel="rel rel2" href="foo.html">Foo</a>),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .
-            <> <http://www.w3.org/1999/xhtml/vocab#rel2> <foo.html> .
-          ),
-        ],
-        [
-          %q(<a rel="REL" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-        ],
-        [
-          %q(<a rel="rel#ler" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel%23ler> <foo.html> .),
-        ],
-        [
-          %q(<a rel="alternate" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#alternate> <foo.html> .),
-        ],
-        [
-          %q(<a rel="stylesheet" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <foo.html> .),
-        ],
-        [
-          %q(<a rel="alternate stylesheet" href="foo.html">Foo</a>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#ALTERNATE-STYLESHEET> <foo.html> .),
-        ],
-        [
-          %q(<a rel="col:on" href="foo.html">Foo</a>),
-          %q(<> <col:on> <foo.html> .),
-        ],
-        [
-          %q(<a rel="http://MiXeDcAsE/" href="foo.html">Foo</a>),
-          %q(<> <http://MiXeDcAsE/> <foo.html> .),
-        ],
-        [
-          %q(<area rel="rel" href="foo.html"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-        ],
-        [
-          %q(<link rel="rel" href="foo.html"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md} to #{nt}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-        end
-      end
-    end
-    
-    context "meta" do
-      [
-        [
-          %q(<meta name="name" content="Foo"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-        ],
-        [
-          %q(<meta name="NAME" content="Foo"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-        ],
-        [
-          %q(<meta name="name#foo" content="Foo"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo" .),
-        ],
-        [
-          %q(<meta xml:lang="en" name="name#foo" content="Foo"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-        ],
-        [
-          %q(<meta lang="en" name="name#foo" content="Foo"/>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-        ],
-        [
-          %q(<div lang="en"><meta name="name#foo" content="Foo"/></div>),
-          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-        ],
-        [
-          %q(<meta name="col:on" content="Foo"/>),
-          %q(<> <col:on> "Foo" .),
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md} to #{nt}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-        end
-      end
-    end
-    
-    context "blockquote" do
-      [
-        [
-          %q(<blockquote cite="cite.html">Foo</blockquote>),
-          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-        ],
-        [
-          %q(<q cite="cite.html">Foo</q>),
-          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md} to #{nt}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-        end
-      end
-    end
+#    context "a-rel" do
+#      [
+#        [
+#          %q(<a rel="rel" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="rel rel2" href="foo.html">Foo</a>),
+#          %q(
+#            <> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .
+#            <> <http://www.w3.org/1999/xhtml/vocab#rel2> <foo.html> .
+#          ),
+#        ],
+#        [
+#          %q(<a rel="REL" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="rel#ler" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel%23ler> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="alternate" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#alternate> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="stylesheet" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="alternate stylesheet" href="foo.html">Foo</a>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#ALTERNATE-STYLESHEET> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="col:on" href="foo.html">Foo</a>),
+#          %q(<> <col:on> <foo.html> .),
+#        ],
+#        [
+#          %q(<a rel="http://MiXeDcAsE/" href="foo.html">Foo</a>),
+#          %q(<> <http://MiXeDcAsE/> <foo.html> .),
+#        ],
+#        [
+#          %q(<area rel="rel" href="foo.html"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+#        ],
+#        [
+#          %q(<link rel="rel" href="foo.html"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+#        ],
+#      ].each do |(md, nt)|
+#        it "parses #{md} to #{nt}" do
+#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+#        end
+#      end
+#    end
+#    
+#    context "meta" do
+#      [
+#        [
+#          %q(<meta name="name" content="Foo"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
+#        ],
+#        [
+#          %q(<meta name="NAME" content="Foo"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
+#        ],
+#        [
+#          %q(<meta name="name#foo" content="Foo"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo" .),
+#        ],
+#        [
+#          %q(<meta xml:lang="en" name="name#foo" content="Foo"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+#        ],
+#        [
+#          %q(<meta lang="en" name="name#foo" content="Foo"/>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+#        ],
+#        [
+#          %q(<div lang="en"><meta name="name#foo" content="Foo"/></div>),
+#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+#        ],
+#        [
+#          %q(<meta name="col:on" content="Foo"/>),
+#          %q(<> <col:on> "Foo" .),
+#        ],
+#      ].each do |(md, nt)|
+#        it "parses #{md} to #{nt}" do
+#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+#        end
+#      end
+#    end
+#    
+#    context "blockquote" do
+#      [
+#        [
+#          %q(<blockquote cite="cite.html">Foo</blockquote>),
+#          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
+#        ],
+#        [
+#          %q(<q cite="cite.html">Foo</q>),
+#          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
+#        ],
+#      ].each do |(md, nt)|
+#        it "parses #{md} to #{nt}" do
+#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+#        end
+#      end
+#    end
 
     context "values" do
       [
@@ -269,15 +269,15 @@ describe "RDF::Microdata::Reader" do
           %q(_:a <http://schema.org/time> "2011-06-28Z"^^<http://www.w3.org/2001/XMLSchema#date> .)
         ],
         [
-          %q(<time itemprop="time" datetime="00:00:00Z">28 June 2011</time>),
+          %q(<time itemprop="time" datetime="00:00:00Z">midnight</time>),
           %q(_:a <http://schema.org/time> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .)
         ],
         [
-          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
+          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011 at midnight</time>),
           %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
         ],
         [
-          %q(<time itemprop="time" datetime="P2011Y06M28DT00H00M00S">28 June 2011</time>),
+          %q(<time itemprop="time" datetime="P2011Y06M28DT00H00M00S">2011 years 6 months 28 days</time>),
           %q(_:a <http://schema.org/time> "P2011Y06M28DT00H00M00S"^^<http://www.w3.org/2001/XMLSchema#duration> .)
         ],
         [
@@ -355,7 +355,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+          parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug, :format => :ttl)
         end
       end
     end
@@ -453,7 +453,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           ),
           %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
           )
         ],
         "with empty type and token property" => [
@@ -465,7 +465,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           ),
           %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
           )
         ],
         "with relative type and token property" => [
@@ -477,7 +477,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           ),
           %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [] .
+            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
           )
         ],
         "with single type and token property" => [
@@ -579,9 +579,28 @@ describe "RDF::Microdata::Reader" do
             ]
           )
         ],
+        "with inherited type and token property" => [
+          %q(
+            <div itemscope  itemtype="http://schema.org/Person">
+              <p>Name: <span itemprop="name">Gregg</span></p>
+              <div itemprop="knows" itemscope >
+              <p id="a">Name: <span itemprop="name">Jeni</span></p>
+              </div>
+            </div>
+          ),
+          %q(
+          @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
+          @prefix schema: <http://schema.org/> .
+          <> md:item
+            [ a schema:Person ;
+              schema:name "Gregg" ;
+              schema:knows [ schema:name "Jeni" ]
+            ]
+          )
+        ]
       }.each do |name, (md, nt)|
         it "#{name}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+          parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
         end
       end
     end
@@ -630,13 +649,14 @@ describe "RDF::Microdata::Reader" do
             </div>
           ),
           %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
+            <> <http://www.w3.org/1999/xhtml/microdata#item> (
               [ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Amanda" ;
-              ],
+              ]
               [ a <http://xmlns.com/foaf/0.1/Person> ;
                 <http://xmlns.com/foaf/0.1/name> "Amanda" ;
               ]
+              )
           )
         ],
         "to multiple ids" =>
@@ -707,10 +727,9 @@ describe "RDF::Microdata::Reader" do
   end
 
   def test_file(filepath)
-    @graph = parse(File.open(filepath))
+    graph = parse(File.open(filepath))
 
     ttl_string = File.read(filepath.sub('.html', '.ttl'))
-    @graph.should be_equivalent_graph(ttl_string,
-      :trace => @debug)
+    graph.should be_equivalent_graph(ttl_string, :trace => @debug, :format => :ttl)
   end
 end

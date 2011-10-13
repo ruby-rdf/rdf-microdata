@@ -20,46 +20,9 @@ Install with 'gem install rdf-microdata'
     graph = RDF::Graph.load("etc/foaf.html", :format => :microdata)
 
 ## Note
-The Microdata editor has recently [dropped support for RDF
-conversion](http://html5.org/tools/web-apps-tracker?from=6426&to=6427), as a result, this gem is being used to
-investigate ways in which Microdata might have more satisfactory RDF generation.
-
-### Generating RDF friendly URIs from terms
-If the `@itemprop` is included within an item having an `@itemtype`,
-the URI of the `@itemtype` will be used for generating a term URI. The type URI will be trimmed following
-the last '#' or '/' character, and the term will be appended to the resulting URI. This is in keeping
-with standard convention for defining properties and classes within an RDFS or OWL vocabulary.
-
-For example:
-
-    <div itemscope itemtype="http://schema.org/Person">
-      My name is <span itemprop="name">Gregg</span>
-    </div>
-
-Without the `:rdf\_terms` option, this would create the following statements:
-
-    @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
-    @prefix schema: <http://schema.org/> .
-    <> md:item [
-      a schema:Person;
-      <http://www.w3.org/1999/xhtml/microdata#http://schema.org/Person%23:name> "Gregg"
-    ] .
-
-With the `:rdf\_terms` option, this becomes:
-
-    @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
-    @prefix schema: <http://schema.org/> .
-    <> md:item [ a schema:Person; schema:name "Gregg" ] .
-
-### Improve xsd:date, xsd:time, xsd:dateTime and xsd:duration generation from _time_ element
-
-Use the lexical form of the @datetime attribute of the _time_ element to determine the specific type
-of the generated literal.
-
-### Remove implicit RDF triple generation
-
-html>head>title no longer generate triples without @item* properties
-
+This spec is based on the W3C HTML Data Task Force specification and does not support
+GRDDL-type triple generation, such as for html>head>title and <a>
+  
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
 * [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
@@ -118,5 +81,5 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [YARD]:             http://yardoc.org/
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
-[Microdata]:        http://www.w3.org/TR/2011/WD-microdata-20110525/     "HTML Microdata"
+[Microdata]:        https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html     "Microdata to RDF"
 [Microdata doc]:    http://rubydoc.info/github/gkellogg/rdf-microdata/frames

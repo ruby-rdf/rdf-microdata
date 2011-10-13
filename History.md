@@ -1,4 +1,7 @@
 ### 0.2.2
+* Remove non @item* processing
+* Sync to HTML Data TF version of spec: https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html
+### 0.2.2
 * RDF.rb 0.3.4 compatibility.
 * Added format detection.
 

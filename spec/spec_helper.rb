@@ -5,7 +5,7 @@ require 'rubygems'
 require 'rspec'
 require 'rdf/isomorphic'
 require 'rdf/microdata'
-require 'rdf/n3'
+require 'rdf/turtle'
 #require 'rdf/spec'
 require 'rdf/spec/matchers'
 require 'matchers'
@@ -33,7 +33,7 @@ def detect_format(stream)
   end
   case string
   when /<html/i   then RDF::Microdatea::Reader
-  when /@prefix/i then RDF::N3::Reader
-  else                 RDF::N3::Reader
+  when /@prefix/i then RDF::Turtle::Reader
+  else                 RDF::Turtle::Reader
   end
 end

@@ -10,7 +10,7 @@ module RDF::Microdata
   # * implicit triples are not generated, only those with @item*
   # * @datetime values are scanned lexically to find appropriate datatype
   #
-  # @see http://dev.w3.org/html5/md/
+  # @see https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html
   # @author [Gregg Kellogg](http://kellogg-assoc.com/)
   class Reader < RDF::Reader
     format Format
@@ -70,7 +70,7 @@ module RDF::Microdata
           # Otherwise, default is utf-8
           options[:encoding] ||= 'utf-8'
 
-          add_debug(nil, "base_uri: #{base_uri}")
+          add_debug(nil) {"base_uri: #{base_uri}"}
           Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
         end
         
@@ -132,9 +132,12 @@ module RDF::Microdata
     
     # Add debug event to debug array, if specified
     #
-    # @param [XML Node, any] node:: XML Node or string for showing context
+    # @param [Nokogiri::XML::Node, #to_s] node:: XML Node or string for showing context
     # @param [String] message::
-    def add_debug(node, message)
+    # @yieldreturn [String] appended to message, to allow for lazy-evaulation of message
+    def add_debug(node, message = "")
+      return unless ::RDF::Microdata.debug? || @debug
+      message = message + yield if block_given?
       puts "#{node_path(node)}: #{message}" if ::RDF::Microdata::debug?
       @debug << "#{node_path(node)}: #{message}" if @debug.is_a?(Array)
     end
@@ -154,7 +157,7 @@ module RDF::Microdata
     # @raise [ReaderError]:: Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
-      add_debug(node, "statement: #{RDF::NTriples.serialize(statement)}")
+      add_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
       @callback.call(statement)
     end
 
@@ -163,182 +166,152 @@ module RDF::Microdata
       base_el = doc.at_css('html>head>base')
       base = base_el.attribute('href').to_s.split('#').first if base_el
       
-      add_debug(doc, "parse_whole_doc: options=#{@options.inspect}")
+      add_debug(doc) {"parse_whole_doc: options=#{@options.inspect}"}
 
-      if (base)
+      options[:base_uri] = if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
-        base = options[:base_uri] = uri(base)
-        add_debug(base_el, "parse_whole_doc: base='#{base}'")
+        base = uri(base)
       else
         base = RDF::URI("")
       end
       
-      # 2. For each a, area, and link element in the Document, run these substeps:
+      add_debug(base_el) {"parse_whole_doc: base='#{base_uri}'"}
+
+      ec = {
+        :memory       => {},
+        :current_type => nil,
+      }
+      items = []
+      # For each element that is also a top-level item run the following algorithm:
       #
-      # * If the element does not have a rel attribute, then skip this element.
-      # * If the element does not have an href attribute, then skip this element.
-      # * If resolving the element's href attribute relative to the element is not successful,
-      #   then skip this element.
-      doc.css('a, area, link').each do |el|
-        rel, href = el.attribute('rel'), el.attribute('href')
-        next unless rel && href
-        href = uri(href, el.base || base)
-        add_debug(el, "a: rel=#{rel.inspect}, href=#{href}")
-
-        # Otherwise, split the value of the element's rel attribute on spaces, obtaining list of tokens.
-        # Coalesce duplicate tokens in list of tokens.
-        tokens = rel.to_s.split(/\s+/).map do |tok|
-          # Convert each token in list of tokens that does not contain a U+003A COLON characters (:)
-          # to ASCII lowercase.
-          tok =~ /:/ ? tok : tok.downcase
-        end.uniq
-
-        # If list of tokens contains both the tokens alternate and stylesheet,
-        # then remove them both and replace them with the single (uppercase) token
-        # ALTERNATE-STYLESHEET.
-        if tokens.include?('alternate') && tokens.include?('stylesheet')
-          tokens = tokens - %w(alternate stylesheet)
-          tokens << 'ALTERNATE-STYLESHEET'
-        end
-        
-        tokens.each do |tok|
-          tok_uri = RDF::URI(tok)
-          if tok !~ /:/
-            # For each token token in list of tokens that contains no U+003A COLON characters (:),
-            # generate the following triple:
-            add_triple(el, base, RDF::XHV[tok.gsub('#', '%23')], href)
-          elsif tok_uri.absolute?
-            # For each token token in list of tokens that is an absolute URL, generate the following triple:
-            add_triple(el, base, tok_uri, href)
-          end
-        end
+      #   1) Generate the triples for an item item, using the evaluation context.
+      #      Let result be the (URI reference or blank node) subject returned.
+      #   2) Append result to item list.
+      getItems(doc).each do |el|
+        result = generate_triples(el, ec)
+        items << result
       end
+      
+      # 3) If item list contains multiple values, generate an RDF Collection list from
+      #    the ordered list of values. Set value to the value returned from generate an RDF Collection.
+      # 4) Otherwise, if item list contains a single value set value to that value.
+      value = items.length > 1 ? generateRDFCollection(doc, items) : items.first
 
-      # 3. For each meta element in the Document that has a name attribute and a content attribute,
-      doc.css('meta[name][content]').each do |el|
-        name, content = el.attribute('name'), el.attribute('content')
-        name = name.to_s
-        name_uri = uri(name, el.base || base)
-        add_debug(el, "meta: name=#{name.inspect}")
-        if name !~ /:/
-          # If the value of the name attribute contains no U+003A COLON characters (:),
-          # generate the following triple:
-          add_triple(el, base, RDF::XHV[name.downcase.gsub('#', '%23')], RDF::Literal(content, :language => el.language))
-        elsif name_uri.absolute?
-          # If the value of the name attribute contains no U+003A COLON characters (:),
-          # generate the following triple:
-          add_triple(el, base, name_uri, RDF::Literal(content, :language => el.language))
-        end
-      end
-
-      # 4. For each blockquote and q element in the Document that has a cite attribute that resolves
-      #    successfully relative to the element, generate the following triple:
-      doc.css('blockquote[cite], q[cite]').each do |el|
-        object = uri(el.attribute('cite'), el.base || base)
-        add_debug(el, "blockquote: cite=#{object}")
-        add_triple(el, base, RDF::DC.source, object)
-      end
-
-      # 5. Let memory be a mapping of items to subjects, initially empty.
-      # 6. For each element that is also a top-level microdata item, run the following steps:
-      #    * Generate the triples for the item. Pass a reference to memory as the item/subject list.
-      #      Let result be the subject returned.
-      #    * Generate the following triple:
-      #      subject    the document's current address
-      #      predicate  http://www.w3.org/1999/xhtml/microdata#item
-      #      object     result 
-      memory = {}
-      doc.css('[itemscope]').
-        select {|el| !el.has_attribute?('itemprop')}.
-        each do |el|
-          object = generate_triples(el, memory)
-          add_triple(el, base, RDF::MD.item, object)
-      end
+      # 5) Generate the following triple:
+      #     subject Document base
+      #     predicate http://www.w3.org/1999/xhtml/microdata#item
+      #     object value
+      add_triple(doc, base, RDF::MD.item, value) if value
 
       add_debug(doc, "parse_whole_doc: traversal complete")
     end
 
     ##
+    # Based on Microdata element.getItems
+    #
+    # @see http://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
+    def getItems(doc)
+      doc.css('[itemscope]').select {|el| !el.has_attribute?('itemprop')}
+    end
+
+    ##
     # Generate triples for an item
     # @param [RDF::Resource] item
-    # @param [Hash{Nokogiri::XML::Element} => RDF::Resource] memory
-    # @param [Hash{Symbol => Object}] options
-    # @option options [RDF::Resource] :current_type
+    # @param [Hash{Symbol => Object}] ec
+    # @option ec [Hash{Nokogiri::XML::Element} => RDF::Resource] memory
+    # @option ec [RDF::Resource] :current_type
     # @return [RDF::Resource]
-    def generate_triples(item, memory, options = {})
+    def generate_triples(item, ec = {})
+      memory = ec[:memory]
       # 1. If there is an entry for item in memory, then let subject be the subject of that entry.
       #    Otherwise, if item has a global identifier and that global identifier is an absolute URL,
       #    let subject be that global identifier. Otherwise, let subject be a new blank node.
       subject = if memory.include?(item)
         memory[item][:subject]
       elsif item.has_attribute?('itemid')
-        u = uri(item.attribute('itemid'), item.base || base_uri)
+        uri(item.attribute('itemid'), item.base || base_uri)
       end || RDF::Node.new
       memory[item] ||= {}
 
-      add_debug(item, "gentrips(2): subject=#{subject.inspect}")
+      add_debug(item) {"gentrips(2): subject=#{subject.inspect}"}
 
       # 2. Add a mapping from item to subject in memory, if there isn't one already.
       memory[item][:subject] ||= subject
       
-      # 3. If item has an item type and that item type is an absolute URL, let type be that item type.
-      #    Otherwise, let type be the empty string.
+      # 3. If the item has an @itemtype attribute, extract the value as type.
       rdf_type = nil
       item.attribute('itemtype').to_s.split(' ').map{|n| uri(n)}.select(&:absolute?).each do |type|
         rdf_type ||= type
         add_triple(item, subject, RDF.type, type)
       end
       
-      rdf_type ||= options[:current_type]
-      add_debug(item, "gentrips(6): rdf_type=#{rdf_type.inspect}")
+      rdf_type ||= ec[:current_type]
+      add_debug(item)  {"gentrips(6): rdf_type=#{rdf_type.inspect}"}
+
+      # 6) Set property list to an empty mapping between properties and one or more ordered values as established below.
+      property_list = {}
       
-      # 6. For each element _element_ that has one or more property names and is one of the
+      # 7. For each element _element_ that has one or more property names and is one of the
       #    properties of the item _item_, in the order those elements are given by the algorithm
       #    that returns the properties of an item, run the following substep:
       props = item_properties(item)
-
-      prop_values = {}
-      # 6.1. For each name name in element's property names, run the following substeps:
+      # 7.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          add_debug(element, "gentrips(6.1): name=#{name.inspect}")
+          add_debug(element) {"gentrips(6.1): name=#{name.inspect}"}
+          # If name is an absolute URI, set predicate to name as a URI reference
           # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
-          predicate = RDF::URI(name)
-          next if !rdf_type && !predicate.absolute?
+          predicate = uri(name)
+          if !rdf_type && !predicate.absolute?
+            predicate = uri(name, item.base || base_uri)
+            add_debug(element) {"gentrips(7.1.2): predicate=#{predicate}"}
+          else
+            predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name)) unless predicate.absolute?
+            add_debug(element) {"gentrips(7.1.3): predicate=#{predicate}"}
+          end
 
-          predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name)) unless predicate.absolute?
-          add_debug(element, "gentrips(6.1.5): predicate=#{predicate}")
-          
+          # 7.1.4) Let value be the property value of element.
           value = property_value(element)
-          add_debug(element, "gentrips(6.1.2) value=#{value.inspect}")
+          add_debug(element) {"gentrips(7.1.4) value=#{value.inspect}"}
           
+          # 7.1.5) If value is an item, then generate the triples for value using a copy of evaluation context with
+          #       current type set to type. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
-            value = generate_triples(element, memory, :current_type => rdf_type) 
+            value = generate_triples(element, ec.merge(:current_type => rdf_type)) 
           end
           
-          add_debug(element, "gentrips(6.1.3): value=#{value.inspect}")
+          add_debug(element) {"gentrips(6.1.3): value=#{value.inspect}"}
 
-          prop_values[predicate] ||= []
-          prop_values[predicate] << value
+          property_list[predicate] ||= []
+          property_list[predicate] << value
         end
       end
       
-      prop_values.each do |predicate, values|
-        if values.length == 1
-          add_triple(item, subject, predicate, values.first)
-        else
-          list = RDF::List.new(nil, nil, values)
-          list.each_statement do |st|
-            add_triple(item, st.subject, st.predicate, st.object) unless st.object == RDF.List
-          end
+      property_list.each do |predicate, values|
+        # 8.1) If entry for predicate in property list contains multiple values, generate an RDF Collection list from
+        #      the ordered list of values. Set value to the value returned from generate an RDF Collection.
+        # 8.1) Otherwise, if predicate in property list contains a single value set value to that value.
+        value = values.length > 1 ? generateRDFCollection(item, values) : values.first
 
-          # Generate a triple relating subject, predicate and the list BNode
-          add_triple(item, subject, predicate, list.subject)
-        end
+        # Generate a triple relating subject, predicate and value
+        add_triple(item, subject, predicate, value)
       end
       
       subject
+    end
+
+    ##
+    # Called when values has more than one entry
+    # @param [Nokogiri::HTML::Element] element
+    # @param [Array<RDF::Value>] values
+    # @return [RDF::Node]
+    def generateRDFCollection(element, values)
+      list = RDF::List.new(nil, nil, values)
+      list.each_statement do |st|
+        add_triple(element, st.subject, st.predicate, st.object) unless st.object == RDF.List
+      end
+      list.subject
     end
 
     ##
@@ -376,7 +349,7 @@ module RDF::Microdata
       # 2. Collect all the elements in the item root; let results be the resulting
       #    list of elements, and errors be the resulting count of errors.
       results, errors = elements_in_item(root)
-      add_debug(root, "crawl_properties results=#{results.inspect}, errors=#{errors}")
+      add_debug(root) {"crawl_properties results=#{results.inspect}, errors=#{errors}"}
 
       # 3. Remove any elements from results that do not have an itemprop attribute specified.
       results = results.select {|e| e.has_attribute?('itemprop')}
@@ -419,13 +392,13 @@ module RDF::Microdata
       # If root has an itemref attribute, split the value of that itemref attribute on spaces.
       # For each resulting token ID, 
       root.attribute('itemref').to_s.split(' ').each do |id|
-        add_debug(root, "elements_in_item itemref id #{id}")
+        add_debug(root) {"elements_in_item itemref id #{id}"}
         # if there is an element in the home subtree of root with the ID ID,
         # then add the first such element to pending.
         id_elem = @doc.at_css("##{id}")
         pending << id_elem if id_elem
       end
-      add_debug(root, "elements_in_item pending #{pending.inspect}")
+      add_debug(root) {"elements_in_item pending #{pending.inspect}"}
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
@@ -449,18 +422,19 @@ module RDF::Microdata
     ##
     #
     def property_value(element)
-      add_debug(element, "property_value(#{element.inspect}): base #{element.base.inspect}, base_uri: #{base_uri.inspect}")
+      base = element.base || base_uri
+      add_debug(element) {"property_value: base #{base.inspect}"}
       case
       when element.has_attribute?('itemscope')
         {}
       when element.name == 'meta'
         element.attribute('content').to_s
       when %w(audio embed iframe img source track video).include?(element.name)
-        uri(element.attribute('src'), element.base || base_uri)
+        uri(element.attribute('src'), base)
       when %w(a area link).include?(element.name)
-        uri(element.attribute('href'), element.base || base_uri)
+        uri(element.attribute('href'), base)
       when %w(object).include?(element.name)
-        uri(element.attribute('data'), element.base || base_uri)
+        uri(element.attribute('data'), base)
       when %w(time).include?(element.name) && element.has_attribute?('datetime')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('datetime').to_s
