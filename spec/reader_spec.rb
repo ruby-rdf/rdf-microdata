@@ -27,7 +27,7 @@ describe "RDF::Microdata::Reader" do
   describe :interface do
     before(:each) do
       @sampledoc = %(
-        <div itemscope>
+        <div itemscope=''>
          <p>My name is <span itemprop="name">Elizabeth</span>.</p>
         </div>
       )
@@ -62,665 +62,695 @@ describe "RDF::Microdata::Reader" do
     end
   end
 
-  context :parsing do
-    before :each do 
-      @md_ctx = %q(
-        <div itemscope itemtype="http://schema.org/Person">
-         %s
-        </div>
-      )
-      @nt_ctx = %q(
-      <> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
-      _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
-      %s
-      )
-    end
-
-    it "parses a simple graph" do
-      md = %q(<p>My name is <span itemprop="name">Gregg Kellogg</span>.</p>)
-      nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-      parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
-    end
-    
-#    context "a-rel" do
-#      [
-#        [
-#          %q(<a rel="rel" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="rel rel2" href="foo.html">Foo</a>),
-#          %q(
-#            <> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .
-#            <> <http://www.w3.org/1999/xhtml/vocab#rel2> <foo.html> .
-#          ),
-#        ],
-#        [
-#          %q(<a rel="REL" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="rel#ler" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel%23ler> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="alternate" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#alternate> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="stylesheet" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="alternate stylesheet" href="foo.html">Foo</a>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#ALTERNATE-STYLESHEET> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="col:on" href="foo.html">Foo</a>),
-#          %q(<> <col:on> <foo.html> .),
-#        ],
-#        [
-#          %q(<a rel="http://MiXeDcAsE/" href="foo.html">Foo</a>),
-#          %q(<> <http://MiXeDcAsE/> <foo.html> .),
-#        ],
-#        [
-#          %q(<area rel="rel" href="foo.html"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-#        ],
-#        [
-#          %q(<link rel="rel" href="foo.html"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-#        ],
-#      ].each do |(md, nt)|
-#        it "parses #{md} to #{nt}" do
-#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-#        end
-#      end
-#    end
-#    
-#    context "meta" do
-#      [
-#        [
-#          %q(<meta name="name" content="Foo"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-#        ],
-#        [
-#          %q(<meta name="NAME" content="Foo"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-#        ],
-#        [
-#          %q(<meta name="name#foo" content="Foo"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo" .),
-#        ],
-#        [
-#          %q(<meta xml:lang="en" name="name#foo" content="Foo"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-#        ],
-#        [
-#          %q(<meta lang="en" name="name#foo" content="Foo"/>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-#        ],
-#        [
-#          %q(<div lang="en"><meta name="name#foo" content="Foo"/></div>),
-#          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-#        ],
-#        [
-#          %q(<meta name="col:on" content="Foo"/>),
-#          %q(<> <col:on> "Foo" .),
-#        ],
-#      ].each do |(md, nt)|
-#        it "parses #{md} to #{nt}" do
-#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-#        end
-#      end
-#    end
-#    
-#    context "blockquote" do
-#      [
-#        [
-#          %q(<blockquote cite="cite.html">Foo</blockquote>),
-#          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-#        ],
-#        [
-#          %q(<q cite="cite.html">Foo</q>),
-#          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-#        ],
-#      ].each do |(md, nt)|
-#        it "parses #{md} to #{nt}" do
-#          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-#        end
-#      end
-#    end
-
-    context "values" do
-      [
-        [
-          %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
-          %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-        ],
-        [
-          %q(
-          <p>My name is <span itemprop="name">Gregg</span></p>
-          <p>My name is <span itemprop="name">Kellogg</span></p>
-          ),
-          %q(_:a <http://schema.org/name> ("Gregg" "Kellogg") .)
-        ],
-        [
-          %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
-          %q(
-            _:a <http://schema.org/name> "Gregg Kellogg" .
-            _:a <http://schema.org/fullName> "Gregg Kellogg" .
+  [:nokogiri, :rexml].each do |library|
+    context library.to_s, :library => library do
+      before(:all) {@library = library}
+      
+      context :parsing do
+        before :each do 
+          @md_ctx = %q(
+            <div itemscope='' itemtype="http://schema.org/Person">
+             %s
+            </div>
           )
-        ],
-        [
-          %q(<p>My name is <span itemprop="http://schema.org/name">Gregg Kellogg</span></p>),
-          %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-        ],
-        [
-          %q(<meta itemprop="meta" content="foo"/>),
-          %q(_:a <http://schema.org/meta> "foo" .)
-        ],
-        [
-          %q(<audio itemprop="audio" src="foo"></audio>),
-          %q(_:a <http://schema.org/audio> <foo> .)
-        ],
-        [
-          %q(<embed itemprop="embed" src="foo"></embed>),
-          %q(_:a <http://schema.org/embed> <foo> .)
-        ],
-        [
-          %q(<iframe itemprop="iframe" src="foo"></iframe>),
-          %q(_:a <http://schema.org/iframe> <foo> .)
-        ],
-        [
-          %q(<img itemprop="img" src="foo"/>),
-          %q(_:a <http://schema.org/img> <foo> .)
-        ],
-        [
-          %q(<source itemprop="source" src="foo"/>),
-          %q(_:a <http://schema.org/source> <foo> .)
-        ],
-        [
-          %q(<track itemprop="track" src="foo"/>),
-          %q(_:a <http://schema.org/track> <foo> .)
-        ],
-        [
-          %q(<video itemprop="video" src="foo"></video>),
-          %q(_:a <http://schema.org/video> <foo> .)
-        ],
-        [
-          %q(<a itemprop="a" href="foo"></a>),
-          %q(_:a <http://schema.org/a> <foo> .)
-        ],
-        [
-          %q(<area itemprop="area" href="foo"/>),
-          %q(_:a <http://schema.org/area> <foo> .)
-        ],
-        [
-          %q(<link itemprop="link" href="foo"/>),
-          %q(_:a <http://schema.org/link> <foo> .)
-        ],
-        [
-          %q(<object itemprop="object" data="foo"/>),
-          %q(_:a <http://schema.org/object> <foo> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="2011-06-28Z">28 June 2011</time>),
-          %q(_:a <http://schema.org/time> "2011-06-28Z"^^<http://www.w3.org/2001/XMLSchema#date> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="00:00:00Z">midnight</time>),
-          %q(_:a <http://schema.org/time> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011 at midnight</time>),
-          %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="P2011Y06M28DT00H00M00S">2011 years 6 months 28 days</time>),
-          %q(_:a <http://schema.org/time> "P2011Y06M28DT00H00M00S"^^<http://www.w3.org/2001/XMLSchema#duration> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="foo">28 June 2011</time>),
-          %q(_:a <http://schema.org/time> "foo" .)
-        ],
-        [
-          %q(<div itemprop="knows" itemscope><a href="http://manu.sporny.org/">Manu</a></div>),
-          %q(_:a <http://schema.org/knows> _:b .)
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md}" do
+          @nt_ctx = %q(
+          <> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
+          _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+          %s
+          )
+        end
+
+        it "parses a simple graph" do
+          md = %q(<p>My name is <span itemprop="name">Gregg Kellogg</span>.</p>)
+          nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
           parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
-      end
-    end
-
-    context "base_uri" do
-      before :each do 
-        @md_ctx = %q(
-          <div itemscope itemtype="http://schema.org/Person">
-           %s
-          </div>
-        )
-        @nt_ctx = %q(
-        <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
-        _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
-        %s
-        )
-      end
-      [
-        [
-          %q(<audio itemprop="audio" src="foo"></audio>),
-          %q(_:a <http://schema.org/audio> <http://example.com/foo> .)
-        ],
-        [
-          %q(<embed itemprop="embed" src="foo"></embed>),
-          %q(_:a <http://schema.org/embed> <http://example.com/foo> .)
-        ],
-        [
-          %q(<iframe itemprop="iframe" src="foo"></iframe>),
-          %q(_:a <http://schema.org/iframe> <http://example.com/foo> .)
-        ],
-        [
-          %q(<img itemprop="img" src="foo"/>),
-          %q(_:a <http://schema.org/img> <http://example.com/foo> .)
-        ],
-        [
-          %q(<source itemprop="source" src="foo"/>),
-          %q(_:a <http://schema.org/source> <http://example.com/foo> .)
-        ],
-        [
-          %q(<track itemprop="track" src="foo"/>),
-          %q(_:a <http://schema.org/track> <http://example.com/foo> .)
-        ],
-        [
-          %q(<video itemprop="video" src="foo"></video>),
-          %q(_:a <http://schema.org/video> <http://example.com/foo> .)
-        ],
-        [
-          %q(<a itemprop="a" href="foo"></a>),
-          %q(_:a <http://schema.org/a> <http://example.com/foo> .)
-        ],
-        [
-          %q(<area itemprop="area" href="foo"/>),
-          %q(_:a <http://schema.org/area> <http://example.com/foo> .)
-        ],
-        [
-          %q(<link itemprop="link" href="foo"/>),
-          %q(_:a <http://schema.org/link> <http://example.com/foo> .)
-        ],
-        [
-          %q(<a itemprop="knows" href="scor">Stéphane Corlosquet</a>),
-          %q(_:a <http://schema.org/knows> <http://example.com/scor> .)
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md}" do
-          parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug, :format => :ttl)
-        end
-      end
-    end
-
-    context "itemid" do
-      before :each do 
-        @md_ctx = %q(
-          <div itemid="subj" itemscope itemtype="http://schema.org/Person">
-           %s
-          </div>
-        )
-        @nt_ctx = %q(
-        <> <http://www.w3.org/1999/xhtml/microdata#item> <subj> .
-        <subj> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
-        %s
-        )
-      end
-
-      [
-        [
-          %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
-          %q(<subj> <http://schema.org/name> "Gregg Kellogg" .)
-        ],
-        [
-          %q(<meta itemprop="meta" content="foo"/>),
-          %q(<subj> <http://schema.org/meta> "foo" .)
-        ],
-        [
-          %q(<audio itemprop="audio" src="foo"></audio>),
-          %q(<subj> <http://schema.org/audio> <foo> .)
-        ],
-        [
-          %q(<embed itemprop="embed" src="foo"></embed>),
-          %q(<subj> <http://schema.org/embed> <foo> .)
-        ],
-        [
-          %q(<iframe itemprop="iframe" src="foo"></iframe>),
-          %q(<subj> <http://schema.org/iframe> <foo> .)
-        ],
-        [
-          %q(<img itemprop="img" src="foo"/>),
-          %q(<subj> <http://schema.org/img> <foo> .)
-        ],
-        [
-          %q(<source itemprop="source" src="foo"/>),
-          %q(<subj> <http://schema.org/source> <foo> .)
-        ],
-        [
-          %q(<track itemprop="track" src="foo"/>),
-          %q(<subj> <http://schema.org/track> <foo> .)
-        ],
-        [
-          %q(<video itemprop="video" src="foo"></video>),
-          %q(<subj> <http://schema.org/video> <foo> .)
-        ],
-        [
-          %q(<a itemprop="a" href="foo"></a>),
-          %q(<subj> <http://schema.org/a> <foo> .)
-        ],
-        [
-          %q(<area itemprop="area" href="foo"/>),
-          %q(<subj> <http://schema.org/area> <foo> .)
-        ],
-        [
-          %q(<link itemprop="link" href="foo"/>),
-          %q(<subj> <http://schema.org/link> <foo> .)
-        ],
-        [
-          %q(<object itemprop="object" data="foo"/>),
-          %q(<subj> <http://schema.org/object> <foo> .)
-        ],
-        [
-          %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
-          %q(<subj> <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
-        ],
-        [
-          %q(<div itemprop="knows" itemscope itemid="obj"><a href="http://manu.sporny.org/">Manu</a></div>),
-          %q(<subj> <http://schema.org/knows> <obj> .)
-        ],
-      ].each do |(md, nt)|
-        it "parses #{md}" do
-          parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
-        end
-      end
-    end
     
-    context "itemtype" do
-      {
-        "with no type and token property" => [
-          %q(
-            <div>
-              <div itemscope>
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
-          )
-        ],
-        "with empty type and token property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="">
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
-          )
-        ],
-        "with relative type and token property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="Person">
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
-          )
-        ],
-        "with single type and token property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person">
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ a <http://schema.org/Person> ;
-              <http://schema.org/name> "Amanda" ;
-            ]
-          )
-        ],
-        "with multipe types and token property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
-              <http://schema.org/name> "Amanda" ;
-            ]
-          )
-        ],
-        "with no type and URI property" => [
-          %q(
-            <div>
-              <div itemscope>
-              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
-              [ <http://schema.org/name> "Amanda" ] .
-          )
-        ],
-        "with empty type and URI property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="">
-              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ <http://schema.org/name> "Amanda" ] .
-          )
-        ],
-        "with relative type and URI property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="Person">
-              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ <http://schema.org/name> "Amanda" ] .
-          )
-        ],
-        "with single type and URI property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person">
-              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ a <http://schema.org/Person> ;
-              <http://schema.org/name> "Amanda" ;
-            ]
-          )
-        ],
-        "with multipe types and URI property" => [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
-              <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item>
-            [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
-              <http://schema.org/name> "Amanda" ;
-            ]
-          )
-        ],
-        "with inherited type and token property" => [
-          %q(
-            <div itemscope  itemtype="http://schema.org/Person">
-              <p>Name: <span itemprop="name">Gregg</span></p>
-              <div itemprop="knows" itemscope >
-              <p id="a">Name: <span itemprop="name">Jeni</span></p>
-              </div>
-            </div>
-          ),
-          %q(
-          @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
-          @prefix schema: <http://schema.org/> .
-          <> md:item
-            [ a schema:Person ;
-              schema:name "Gregg" ;
-              schema:knows [ schema:name "Jeni" ]
-            ]
-          )
-        ]
-      }.each do |name, (md, nt)|
-        it "#{name}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
-        end
-      end
-    end
+    #    context "a-rel" do
+    #      [
+    #        [
+    #          %q(<a rel="rel" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="rel rel2" href="foo.html">Foo</a>),
+    #          %q(
+    #            <> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .
+    #            <> <http://www.w3.org/1999/xhtml/vocab#rel2> <foo.html> .
+    #          ),
+    #        ],
+    #        [
+    #          %q(<a rel="REL" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="rel#ler" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel%23ler> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="alternate" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#alternate> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="stylesheet" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="alternate stylesheet" href="foo.html">Foo</a>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#ALTERNATE-STYLESHEET> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="col:on" href="foo.html">Foo</a>),
+    #          %q(<> <col:on> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<a rel="http://MiXeDcAsE/" href="foo.html">Foo</a>),
+    #          %q(<> <http://MiXeDcAsE/> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<area rel="rel" href="foo.html"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+    #        ],
+    #        [
+    #          %q(<link rel="rel" href="foo.html"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
+    #        ],
+    #      ].each do |(md, nt)|
+    #        it "parses #{md} to #{nt}" do
+    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+    #        end
+    #      end
+    #    end
+    #    
+    #    context "meta" do
+    #      [
+    #        [
+    #          %q(<meta name="name" content="Foo"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
+    #        ],
+    #        [
+    #          %q(<meta name="NAME" content="Foo"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
+    #        ],
+    #        [
+    #          %q(<meta name="name#foo" content="Foo"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo" .),
+    #        ],
+    #        [
+    #          %q(<meta xml:lang="en" name="name#foo" content="Foo"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+    #        ],
+    #        [
+    #          %q(<meta lang="en" name="name#foo" content="Foo"/>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+    #        ],
+    #        [
+    #          %q(<div lang="en"><meta name="name#foo" content="Foo"/></div>),
+    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
+    #        ],
+    #        [
+    #          %q(<meta name="col:on" content="Foo"/>),
+    #          %q(<> <col:on> "Foo" .),
+    #        ],
+    #      ].each do |(md, nt)|
+    #        it "parses #{md} to #{nt}" do
+    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+    #        end
+    #      end
+    #    end
+    #    
+    #    context "blockquote" do
+    #      [
+    #        [
+    #          %q(<blockquote cite="cite.html">Foo</blockquote>),
+    #          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
+    #        ],
+    #        [
+    #          %q(<q cite="cite.html">Foo</q>),
+    #          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
+    #        ],
+    #      ].each do |(md, nt)|
+    #        it "parses #{md} to #{nt}" do
+    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+    #        end
+    #      end
+    #    end
 
-    context "itemref" do
-      {
-        "to single id" =>
-        [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person" id="amanda" itemref="a"></div>
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
-              [ a <http://schema.org/Person> ;
-                <http://schema.org/name> "Amanda" ;
-              ]
-          )
-        ],
-        "to generate listed property values" =>
-        [
-          %q(
-          <div>
-            <div itemscope itemtype="http://schema.org/Person" itemref="surname">
+        context "values" do
+          [
+            [
+              %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
+              %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
+            ],
+            [
+              %q(
               <p>My name is <span itemprop="name">Gregg</span></p>
-            </div>
-            <p id="surname">My name is <span itemprop="name">Kellogg</span></p>
-          </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
-              [ a <http://schema.org/Person> ;
-                <http://schema.org/name> ("Gregg" "Kellogg") ;
-              ]
-          )
-        ],
-        "to single id with different types" =>
-        [
-          %q(
-            <div>
-              <div itemscope itemtype="http://xmlns.com/foaf/0.1/Person" id="amanda" itemref="a"></div>
-              <div itemscope itemtype="http://schema.org/Person" id="amanda" itemref="a"></div>
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> (
-              [ a <http://schema.org/Person> ;
-                <http://schema.org/name> "Amanda" ;
-              ]
-              [ a <http://xmlns.com/foaf/0.1/Person> ;
-                <http://xmlns.com/foaf/0.1/name> "Amanda" ;
-              ]
+              <p>My name is <span itemprop="name">Kellogg</span></p>
+              ),
+              %q(_:a <http://schema.org/name> ("Gregg" "Kellogg") .)
+            ],
+            [
+              %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
+              %q(
+                _:a <http://schema.org/name> "Gregg Kellogg" .
+                _:a <http://schema.org/fullName> "Gregg Kellogg" .
               )
-          )
-        ],
-        "to multiple ids" =>
-        [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person" id="amanda" itemref="a b"></div>
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              <p id="b" itemprop="band">Jazz Band</p>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
-              [ a <http://schema.org/Person> ;
-                <http://schema.org/name> "Amanda" ;
-                <http://schema.org/band> "Jazz Band" ;
-              ]
-          )
-        ],
-        "with chaining" =>
-        [
-          %q(
-            <div>
-              <div itemscope itemtype="http://schema.org/Person" id="amanda" itemref="a b"></div>
-              <p id="a">Name: <span itemprop="name">Amanda</span></p>
-              <div id="b" itemprop="band" itemscope itemtype="http://schema.org/MusicGroup" itemref="c"></div>
-              <div id="c">
-               <p>Band: <span itemprop="name">Jazz Band</span></p>
-               <p>Size: <span itemprop="size">12</span> players</p>
-              </div>
-            </div>
-          ),
-          %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item>
-              [ a <http://schema.org/Person> ;
-                <http://schema.org/name> "Amanda" ;
-                <http://schema.org/band> [
-                  a <http://schema.org/MusicGroup> ;
-                  <http://schema.org/name> "Jazz Band";
-                  <http://schema.org/size> "12"
-                ]
-              ]
-          )
-        ],
-      }.each do |name, (md, nt)|
-        it "parses #{name}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug)
+            ],
+            [
+              %q(<p>My name is <span itemprop="http://schema.org/name">Gregg Kellogg</span></p>),
+              %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
+            ],
+            [
+              %q(<meta itemprop="meta" content="foo"/>),
+              %q(_:a <http://schema.org/meta> "foo" .)
+            ],
+            [
+              %q(<audio itemprop="audio" src="foo"></audio>),
+              %q(_:a <http://schema.org/audio> <foo> .)
+            ],
+            [
+              %q(<embed itemprop="embed" src="foo"></embed>),
+              %q(_:a <http://schema.org/embed> <foo> .)
+            ],
+            [
+              %q(<iframe itemprop="iframe" src="foo"></iframe>),
+              %q(_:a <http://schema.org/iframe> <foo> .)
+            ],
+            [
+              %q(<img itemprop="img" src="foo"/>),
+              %q(_:a <http://schema.org/img> <foo> .)
+            ],
+            [
+              %q(<source itemprop="source" src="foo"/>),
+              %q(_:a <http://schema.org/source> <foo> .)
+            ],
+            [
+              %q(<track itemprop="track" src="foo"/>),
+              %q(_:a <http://schema.org/track> <foo> .)
+            ],
+            [
+              %q(<video itemprop="video" src="foo"></video>),
+              %q(_:a <http://schema.org/video> <foo> .)
+            ],
+            [
+              %q(<a itemprop="a" href="foo"></a>),
+              %q(_:a <http://schema.org/a> <foo> .)
+            ],
+            [
+              %q(<area itemprop="area" href="foo"/>),
+              %q(_:a <http://schema.org/area> <foo> .)
+            ],
+            [
+              %q(<link itemprop="link" href="foo"/>),
+              %q(_:a <http://schema.org/link> <foo> .)
+            ],
+            [
+              %q(<object itemprop="object" data="foo"/>),
+              %q(_:a <http://schema.org/object> <foo> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="2011-06-28Z">28 June 2011</time>),
+              %q(_:a <http://schema.org/time> "2011-06-28Z"^^<http://www.w3.org/2001/XMLSchema#date> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="00:00:00Z">midnight</time>),
+              %q(_:a <http://schema.org/time> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011 at midnight</time>),
+              %q(_:a <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="P2011Y06M28DT00H00M00S">2011 years 6 months 28 days</time>),
+              %q(_:a <http://schema.org/time> "P2011Y06M28DT00H00M00S"^^<http://www.w3.org/2001/XMLSchema#duration> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="foo">28 June 2011</time>),
+              %q(_:a <http://schema.org/time> "foo" .)
+            ],
+            [
+              %q(<div itemprop="knows" itemscope=''><a href="http://manu.sporny.org/">Manu</a></div>),
+              %q(_:a <http://schema.org/knows> _:b .)
+            ],
+          ].each do |(md, nt)|
+            it "parses #{md}" do
+              parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+            end
+          end
         end
-      end
-    end
+
+        context "base_uri" do
+          before :each do 
+            @md_ctx = %q(
+              <div itemscope='' itemtype="http://schema.org/Person">
+               %s
+              </div>
+            )
+            @nt_ctx = %q(
+            <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
+            _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+            %s
+            )
+          end
+          [
+            [
+              %q(<audio itemprop="audio" src="foo"></audio>),
+              %q(_:a <http://schema.org/audio> <http://example.com/foo> .)
+            ],
+            [
+              %q(<embed itemprop="embed" src="foo"></embed>),
+              %q(_:a <http://schema.org/embed> <http://example.com/foo> .)
+            ],
+            [
+              %q(<iframe itemprop="iframe" src="foo"></iframe>),
+              %q(_:a <http://schema.org/iframe> <http://example.com/foo> .)
+            ],
+            [
+              %q(<img itemprop="img" src="foo"/>),
+              %q(_:a <http://schema.org/img> <http://example.com/foo> .)
+            ],
+            [
+              %q(<source itemprop="source" src="foo"/>),
+              %q(_:a <http://schema.org/source> <http://example.com/foo> .)
+            ],
+            [
+              %q(<track itemprop="track" src="foo"/>),
+              %q(_:a <http://schema.org/track> <http://example.com/foo> .)
+            ],
+            [
+              %q(<video itemprop="video" src="foo"></video>),
+              %q(_:a <http://schema.org/video> <http://example.com/foo> .)
+            ],
+            [
+              %q(<a itemprop="a" href="foo"></a>),
+              %q(_:a <http://schema.org/a> <http://example.com/foo> .)
+            ],
+            [
+              %q(<area itemprop="area" href="foo"/>),
+              %q(_:a <http://schema.org/area> <http://example.com/foo> .)
+            ],
+            [
+              %q(<link itemprop="link" href="foo"/>),
+              %q(_:a <http://schema.org/link> <http://example.com/foo> .)
+            ],
+            [
+              %q(<a itemprop="knows" href="scor">Stéphane Corlosquet</a>),
+              %q(_:a <http://schema.org/knows> <http://example.com/scor> .)
+            ],
+          ].each do |(md, nt)|
+            it "parses #{md}" do
+              parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug, :format => :ttl)
+            end
+          end
+        end
+
+        context "itemid" do
+          before :each do 
+            @md_ctx = %q(
+              <div itemid="subj" itemscope='' itemtype="http://schema.org/Person">
+               %s
+              </div>
+            )
+            @nt_ctx = %q(
+            <> <http://www.w3.org/1999/xhtml/microdata#item> <subj> .
+            <subj> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
+            %s
+            )
+          end
+
+          [
+            [
+              %q(<p>My name is <span itemprop="name">Gregg Kellogg</span></p>),
+              %q(<subj> <http://schema.org/name> "Gregg Kellogg" .)
+            ],
+            [
+              %q(<meta itemprop="meta" content="foo"/>),
+              %q(<subj> <http://schema.org/meta> "foo" .)
+            ],
+            [
+              %q(<audio itemprop="audio" src="foo"></audio>),
+              %q(<subj> <http://schema.org/audio> <foo> .)
+            ],
+            [
+              %q(<embed itemprop="embed" src="foo"></embed>),
+              %q(<subj> <http://schema.org/embed> <foo> .)
+            ],
+            [
+              %q(<iframe itemprop="iframe" src="foo"></iframe>),
+              %q(<subj> <http://schema.org/iframe> <foo> .)
+            ],
+            [
+              %q(<img itemprop="img" src="foo"/>),
+              %q(<subj> <http://schema.org/img> <foo> .)
+            ],
+            [
+              %q(<source itemprop="source" src="foo"/>),
+              %q(<subj> <http://schema.org/source> <foo> .)
+            ],
+            [
+              %q(<track itemprop="track" src="foo"/>),
+              %q(<subj> <http://schema.org/track> <foo> .)
+            ],
+            [
+              %q(<video itemprop="video" src="foo"></video>),
+              %q(<subj> <http://schema.org/video> <foo> .)
+            ],
+            [
+              %q(<a itemprop="a" href="foo"></a>),
+              %q(<subj> <http://schema.org/a> <foo> .)
+            ],
+            [
+              %q(<area itemprop="area" href="foo"/>),
+              %q(<subj> <http://schema.org/area> <foo> .)
+            ],
+            [
+              %q(<link itemprop="link" href="foo"/>),
+              %q(<subj> <http://schema.org/link> <foo> .)
+            ],
+            [
+              %q(<object itemprop="object" data="foo"/>),
+              %q(<subj> <http://schema.org/object> <foo> .)
+            ],
+            [
+              %q(<time itemprop="time" datetime="2011-06-28T00:00:00Z">28 June 2011</time>),
+              %q(<subj> <http://schema.org/time> "2011-06-28T00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .)
+            ],
+            [
+              %q(<div itemprop="knows" itemscope='' itemid="obj"><a href="http://manu.sporny.org/">Manu</a></div>),
+              %q(<subj> <http://schema.org/knows> <obj> .)
+            ],
+          ].each do |(md, nt)|
+            it "parses #{md}" do
+              parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+            end
+          end
+        end
     
-    context "test-files" do
-      Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), "test-files", "*.html")).each do |md|
-        it "parses #{md}" do
-          test_file(md)
+        context "itemtype" do
+          {
+            "with no type and token property" => [
+              %q(
+                <div>
+                  <div itemscope=''>
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+              )
+            ],
+            "with empty type and token property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="">
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+              )
+            ],
+            "with relative type and token property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="Person">
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+              )
+            ],
+            "with single type and token property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person">
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ a <http://schema.org/Person> ;
+                  <http://schema.org/name> "Amanda" ;
+                ]
+              )
+            ],
+            "with multipe types and token property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+                  <http://schema.org/name> "Amanda" ;
+                ]
+              )
+            ],
+            "with no type and URI property" => [
+              %q(
+                <div>
+                  <div itemscope=''>
+                  <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                  [ <http://schema.org/name> "Amanda" ] .
+              )
+            ],
+            "with empty type and URI property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="">
+                  <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ <http://schema.org/name> "Amanda" ] .
+              )
+            ],
+            "with relative type and URI property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="Person">
+                  <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ <http://schema.org/name> "Amanda" ] .
+              )
+            ],
+            "with single type and URI property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person">
+                  <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ a <http://schema.org/Person> ;
+                  <http://schema.org/name> "Amanda" ;
+                ]
+              )
+            ],
+            "with multipe types and URI property" => [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person http://xmlns.com/foaf/0.1/Person">
+                  <p id="a">Name: <span itemprop="http://schema.org/name">Amanda</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              <> <http://www.w3.org/1999/xhtml/microdata#item>
+                [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+                  <http://schema.org/name> "Amanda" ;
+                ]
+              )
+            ],
+            "with inherited type and token property" => [
+              %q(
+                <div itemscope=''  itemtype="http://schema.org/Person">
+                  <p>Name: <span itemprop="name">Gregg</span></p>
+                  <div itemprop="knows" itemscope='' >
+                  <p id="a">Name: <span itemprop="name">Jeni</span></p>
+                  </div>
+                </div>
+              ),
+              %q(
+              @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
+              @prefix schema: <http://schema.org/> .
+              <> md:item
+                [ a schema:Person ;
+                  schema:name "Gregg" ;
+                  schema:knows [ schema:name "Jeni" ]
+                ]
+              )
+            ]
+          }.each do |name, (md, nt)|
+            it "#{name}" do
+              parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+            end
+          end
+        end
+
+        context "itemref" do
+          {
+            "to single id" =>
+            [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person" id="amanda" itemref="a"></div>
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                  [ a <http://schema.org/Person> ;
+                    <http://schema.org/name> "Amanda" ;
+                  ]
+              )
+            ],
+            "to generate listed property values" =>
+            [
+              %q(
+              <div>
+                <div itemscope='' itemtype="http://schema.org/Person" itemref="surname">
+                  <p>My name is <span itemprop="name">Gregg</span></p>
+                </div>
+                <p id="surname">My name is <span itemprop="name">Kellogg</span></p>
+              </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                  [ a <http://schema.org/Person> ;
+                    <http://schema.org/name> ("Gregg" "Kellogg") ;
+                  ]
+              )
+            ],
+            "to single id with different types" =>
+            [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://xmlns.com/foaf/0.1/Person" id="amanda" itemref="a"></div>
+                  <div itemscope='' itemtype="http://schema.org/Person" id="amanda" itemref="a"></div>
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                  [ a <http://schema.org/Person> ;
+                    <http://schema.org/name> "Amanda" ;
+                  ]
+                  [ a <http://xmlns.com/foaf/0.1/Person> ;
+                    <http://xmlns.com/foaf/0.1/name> "Amanda" ;
+                  ]
+                  )
+              )
+            ],
+            "to multiple ids" =>
+            [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person" id="amanda" itemref="a b"></div>
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  <p id="b" itemprop="band">Jazz Band</p>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                  [ a <http://schema.org/Person> ;
+                    <http://schema.org/name> "Amanda" ;
+                    <http://schema.org/band> "Jazz Band" ;
+                  ]
+              )
+            ],
+            "with chaining" =>
+            [
+              %q(
+                <div>
+                  <div itemscope='' itemtype="http://schema.org/Person" id="amanda" itemref="a b"></div>
+                  <p id="a">Name: <span itemprop="name">Amanda</span></p>
+                  <div id="b" itemprop="band" itemscope='' itemtype="http://schema.org/MusicGroup" itemref="c"></div>
+                  <div id="c">
+                   <p>Band: <span itemprop="name">Jazz Band</span></p>
+                   <p>Size: <span itemprop="size">12</span> players</p>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                  [ a <http://schema.org/Person> ;
+                    <http://schema.org/name> "Amanda" ;
+                    <http://schema.org/band> [
+                      a <http://schema.org/MusicGroup> ;
+                      <http://schema.org/name> "Jazz Band";
+                      <http://schema.org/size> "12"
+                    ]
+                  ]
+              )
+            ],
+            "shared" =>
+            [
+              %q(
+                <div>
+                  <div itemscope='' itemref="a"></div>
+                  <div itemscope='' itemref="a"></div>
+                  <div id="a" itemprop="refers-to" itemscope=''>
+                    <span itemprop="name">Amanda</span>
+                  </div>
+                </div>
+              ),
+              %q(
+                <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                  [ <refers-to> _:a ]
+                  [ <refers-to> _:a ]
+                ) .
+                _:a <name> "Amanda"
+              )
+          
+            ],
+          }.each do |name, (md, nt)|
+            it "parses #{name}" do
+              parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+            end
+          end
+        end
+    
+        context "test-files" do
+          Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), "test-files", "*.html")).each do |md|
+            it "parses #{md}" do
+              test_file(md)
+            end
+          end
         end
       end
     end
   end
-
+  
   def parse(input, options = {})
     @debug = options[:debug] || []
     graph = options[:graph] || RDF::Graph.new
-    RDF::Microdata::Reader.new(input, {:debug => @debug, :validate => true, :canonicalize => false}.merge(options)).each do |statement|
+    RDF::Microdata::Reader.new(input, {
+        :debug => @debug,
+        :validate => true,
+        :library => @library,
+        :canonicalize => false}.merge(options)).each do |statement|
       graph << statement
     end
     graph

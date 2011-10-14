@@ -25,8 +25,9 @@ GRDDL-type triple generation, such as for html>head>title and <a>
   
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
-* [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
 * [RDF::XSD](http://rubygems.org/gems/rdf-xsd) (>= 0.3.4)
+* [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
+* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
 
 ## Documentation
 Full documentation available on [Rubydoc.info][Microdata doc]
@@ -35,6 +36,8 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 * {RDF::Microdata::Format}
   Asserts :html format, text/html mime-type and .html file extension.
 * {RDF::Microdata::Reader}
+  * {RDF::RDFa::Reader::Nokogiri}
+  * {RDF::RDFa::Reader::REXML}
 
 ### Additional vocabularies
 

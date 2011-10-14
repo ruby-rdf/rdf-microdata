@@ -30,5 +30,3 @@ module RDF
     def self.debug=(value); @debug = value; end
   end
 end
-
-require 'rdf/microdata/extensions'

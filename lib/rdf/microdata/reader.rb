@@ -1,4 +1,4 @@
-require 'nokogiri'  # FIXME: Implement using different modules as in RDF::TriX
+require 'nokogiri' rescue :rexml
 require 'rdf/xsd'
 
 module RDF::Microdata
@@ -20,6 +20,11 @@ module RDF::Microdata
     class CrawlFailure < StandardError  #:nodoc:
     end
 
+    # Returns the HTML implementation module for this reader instance.
+    #
+    # @attr_reader [Module]
+    attr_reader :implementation
+
     ##
     # Returns the base URI determined by this reader.
     #
@@ -39,6 +44,8 @@ module RDF::Microdata
     #   the input stream to read
     # @param  [Hash{Symbol => Object}] options
     #   any additional options
+    # @option options [Symbol] :library (:nokogiri)
+    #   One of :nokogiri or :rexml. If nil/unspecified uses :nokogiri if available, :rexml otherwise.
     # @option options [Encoding] :encoding     (Encoding::UTF_8)
     #   the encoding of the input stream (Ruby 1.9+)
     # @option options [Boolean]  :validate     (false)
@@ -60,23 +67,31 @@ module RDF::Microdata
       super do
         @debug = options[:debug]
 
-        @doc = case input
-        when Nokogiri::HTML::Document, Nokogiri::XML::Document
-          input
-        else
-          # Try to detect charset from input
-          options[:encoding] ||= input.charset if input.respond_to?(:charset)
-          
-          # Otherwise, default is utf-8
-          options[:encoding] ||= 'utf-8'
-
-          add_debug(nil) {"base_uri: #{base_uri}"}
-          Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
+        @library = case options[:library]
+          when nil
+            (defined?(::Nokogiri)) ? :nokogiri : :rexml
+          when :nokogiri, :rexml
+            options[:library]
+          else
+            raise ArgumentError.new("expected :rexml or :nokogiri, but got #{options[:library].inspect}")
         end
-        
-        errors = @doc.errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
+
+        require "rdf/microdata/reader/#{@library}"
+        @implementation = case @library
+          when :nokogiri then Nokogiri
+          when :rexml    then REXML
+        end
+        self.extend(@implementation)
+
+        initialize_html(input, options) rescue raise RDF::ReaderError.new($!.message)
+
+        if (root.nil? && validate?)
+          raise RDF::ReaderError, "Empty Document"
+        end
+        errors = doc_errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
         raise RDF::ReaderError, "Syntax errors:\n#{errors}" if !errors.empty? && validate?
-        raise RDF::ReaderError, "Empty document" if (@doc.nil? || @doc.root.nil?) && validate?
+
+        add_debug(@doc, "library = #{@library}")
 
         if block_given?
           case block.arity
@@ -122,12 +137,9 @@ module RDF::Microdata
       @bnode_cache[value.to_s] ||= RDF::Node.new(value)
     end
     
-    # Figure out the document path, if it is a Nokogiri::XML::Element or Attribute
+    # Figure out the document path, if it is an Element or Attribute
     def node_path(node)
-      "<#{base_uri}>" + case node
-      when Nokogiri::XML::Node then node.display_path
-      else node.to_s
-      end
+      "<#{base_uri}>#{node.respond_to?(:display_path) ? node.display_path : node}"
     end
     
     # Add debug event to debug array, if specified
@@ -163,11 +175,7 @@ module RDF::Microdata
 
     # Parsing a Microdata document (this is *not* the recursive method)
     def parse_whole_document(doc, base)
-      base_el = doc.at_css('html>head>base')
-      base = base_el.attribute('href').to_s.split('#').first if base_el
-      
-      add_debug(doc) {"parse_whole_doc: options=#{@options.inspect}"}
-
+      base = doc_base(base)
       options[:base_uri] = if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
@@ -176,7 +184,7 @@ module RDF::Microdata
         base = RDF::URI("")
       end
       
-      add_debug(base_el) {"parse_whole_doc: base='#{base_uri}'"}
+      add_debug(nil) {"parse_whole_doc: base='#{base}'"}
 
       ec = {
         :memory       => {},
@@ -188,7 +196,7 @@ module RDF::Microdata
       #   1) Generate the triples for an item item, using the evaluation context.
       #      Let result be the (URI reference or blank node) subject returned.
       #   2) Append result to item list.
-      getItems(doc).each do |el|
+      getItems.each do |el|
         result = generate_triples(el, ec)
         items << result
       end
@@ -196,7 +204,7 @@ module RDF::Microdata
       # 3) If item list contains multiple values, generate an RDF Collection list from
       #    the ordered list of values. Set value to the value returned from generate an RDF Collection.
       # 4) Otherwise, if item list contains a single value set value to that value.
-      value = items.length > 1 ? generateRDFCollection(doc, items) : items.first
+      value = items.length > 1 ? generateRDFCollection(root, items) : items.first
 
       # 5) Generate the following triple:
       #     subject Document base
@@ -205,14 +213,6 @@ module RDF::Microdata
       add_triple(doc, base, RDF::MD.item, value) if value
 
       add_debug(doc, "parse_whole_doc: traversal complete")
-    end
-
-    ##
-    # Based on Microdata element.getItems
-    #
-    # @see http://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
-    def getItems(doc)
-      doc.css('[itemscope]').select {|el| !el.has_attribute?('itemprop')}
     end
 
     ##
@@ -227,17 +227,17 @@ module RDF::Microdata
       # 1. If there is an entry for item in memory, then let subject be the subject of that entry.
       #    Otherwise, if item has a global identifier and that global identifier is an absolute URL,
       #    let subject be that global identifier. Otherwise, let subject be a new blank node.
-      subject = if memory.include?(item)
-        memory[item][:subject]
+      subject = if memory.include?(item.node)
+        memory[item.node][:subject]
       elsif item.has_attribute?('itemid')
         uri(item.attribute('itemid'), item.base || base_uri)
       end || RDF::Node.new
-      memory[item] ||= {}
+      memory[item.node] ||= {}
 
-      add_debug(item) {"gentrips(2): subject=#{subject.inspect}"}
+      add_debug(item) {"gentrips(2): subject=#{subject.inspect}, current_type: #{ec[:current_type]}"}
 
       # 2. Add a mapping from item to subject in memory, if there isn't one already.
-      memory[item][:subject] ||= subject
+      memory[item.node][:subject] ||= subject
       
       # 3. If the item has an @itemtype attribute, extract the value as type.
       rdf_type = nil
@@ -247,7 +247,7 @@ module RDF::Microdata
       end
       
       rdf_type ||= ec[:current_type]
-      add_debug(item)  {"gentrips(6): rdf_type=#{rdf_type.inspect}"}
+      add_debug(item)  {"gentrips(5): rdf_type=#{rdf_type.inspect}"}
 
       # 6) Set property list to an empty mapping between properties and one or more ordered values as established below.
       property_list = {}
@@ -259,7 +259,7 @@ module RDF::Microdata
       # 7.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          add_debug(element) {"gentrips(6.1): name=#{name.inspect}"}
+          add_debug(element) {"gentrips(7.1): name=#{name.inspect}"}
           # If name is an absolute URI, set predicate to name as a URI reference
           # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
           predicate = uri(name)
@@ -279,9 +279,8 @@ module RDF::Microdata
           #       current type set to type. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec.merge(:current_type => rdf_type)) 
+            add_debug(element) {"gentrips(7.1.5): value=#{value.inspect}"}
           end
-          
-          add_debug(element) {"gentrips(6.1.3): value=#{value.inspect}"}
 
           property_list[predicate] ||= []
           property_list[predicate] << value
@@ -343,13 +342,14 @@ module RDF::Microdata
     # @return [Array<Array<Nokogiri::XML::Element>, Integer>]
     #   Resultant elements and error count
     def crawl_properties(root, memory)
+      
       # 1. If root is in memory, then the algorithm fails; abort these steps.
       raise CrawlFailure, "crawl_props mem already has #{root.inspect}" if memory.include?(root)
       
       # 2. Collect all the elements in the item root; let results be the resulting
       #    list of elements, and errors be the resulting count of errors.
       results, errors = elements_in_item(root)
-      add_debug(root) {"crawl_properties results=#{results.inspect}, errors=#{errors}"}
+      add_debug(root) {"crawl_properties results=#{results.map {|e| node_path(e)}.inspect}, errors=#{errors}"}
 
       # 3. Remove any elements from results that do not have an itemprop attribute specified.
       results = results.select {|e| e.has_attribute?('itemprop')}
@@ -395,10 +395,10 @@ module RDF::Microdata
         add_debug(root) {"elements_in_item itemref id #{id}"}
         # if there is an element in the home subtree of root with the ID ID,
         # then add the first such element to pending.
-        id_elem = @doc.at_css("##{id}")
+        id_elem = find_element_by_id(id)
         pending << id_elem if id_elem
       end
-      add_debug(root) {"elements_in_item pending #{pending.inspect}"}
+      add_debug(root) {"elements_in_item pending #{pending.map {|e| node_path(e)}.inspect}"}
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
@@ -451,9 +451,9 @@ module RDF::Microdata
     def uri(value, base = nil)
       value = if base
         base = uri(base) unless base.is_a?(RDF::URI)
-        base.join(value)
+        base.join(value.to_s)
       else
-        RDF::URI(value)
+        RDF::URI(value.to_s)
       end
       value.validate! if validate?
       value.canonicalize! if canonicalize?
