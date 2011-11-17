@@ -1,4 +1,9 @@
-require 'nokogiri' rescue :rexml
+begin
+  raise LoadError, "not with java" if RUBY_PLATFORM == "java"
+  require 'nokogiri'
+rescue LoadError => e
+  :rexml
+end
 require 'rdf/xsd'
 
 module RDF::Microdata
@@ -69,7 +74,7 @@ module RDF::Microdata
 
         @library = case options[:library]
           when nil
-            (defined?(::Nokogiri)) ? :nokogiri : :rexml
+            (defined?(::Nokogiri) && RUBY_PLATFORM != 'java') ? :nokogiri : :rexml
           when :nokogiri, :rexml
             options[:library]
           else
@@ -262,6 +267,7 @@ module RDF::Microdata
           add_debug(element) {"gentrips(7.1): name=#{name.inspect}"}
           # If name is an absolute URI, set predicate to name as a URI reference
           # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
+          # FIXME: need to fragment-escape name
           predicate = uri(name)
           if !rdf_type && !predicate.absolute?
             predicate = uri(name, item.base || base_uri)
@@ -423,8 +429,8 @@ module RDF::Microdata
     #
     def property_value(element)
       base = element.base || base_uri
-      add_debug(element) {"property_value: base #{base.inspect}"}
-      case
+      add_debug(element) {"property_value(#{element.name}): base #{base.inspect}"}
+      value = case
       when element.has_attribute?('itemscope')
         {}
       when element.name == 'meta'
@@ -445,6 +451,8 @@ module RDF::Microdata
       else
         RDF::Literal.new(element.text, :language => element.language)
       end
+      add_debug(element) {"  #{value.inspect}"}
+      value
     end
 
     # Fixme, what about xml:base relative to element?
