@@ -27,7 +27,7 @@ GRDDL-type triple generation, such as for html>head>title and <a>
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
 * [RDF::XSD](http://rubygems.org/gems/rdf-xsd) (>= 0.3.4)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
-* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.3.3)
+* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.5.0)
 
 ## Documentation
 Full documentation available on [Rubydoc.info][Microdata doc]

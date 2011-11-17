@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby -rubygems
 # -*- encoding: utf-8 -*-
 
+begin
+  RUBY_ENGINE
+rescue NameError
+  RUBY_ENGINE = "ruby"  # Not defined in Ruby 1.8.7
+end
+
 Gem::Specification.new do |gem|
   gem.version               = File.read('VERSION').chomp
   gem.date                  = File.mtime('VERSION').strftime('%Y-%m-%d')
@@ -16,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.email                 = 'public-rdf-ruby@w3.org'
 
   gem.platform              = Gem::Platform::RUBY
-  gem.files                 = %w(AUTHORS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
+  gem.files                 = %w(AUTHORS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb') + Dir.glob('etc/*')
   gem.require_paths         = %w(lib)
   gem.extensions            = %w()
   gem.test_files            = %w()
@@ -28,6 +34,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf-xsd',         '>= 0.3.4'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
 
+  gem.add_development_dependency 'nokogiri' ,       '>= 1.5.0'  if  RUBY_ENGINE == "ruby"
+  gem.add_development_dependency 'equivalent-xml' , '>= 0.2.8'  if  RUBY_ENGINE == "ruby"
   gem.add_development_dependency 'yard' ,           '>= 0.6.0'
   gem.add_development_dependency 'rspec',           '>= 2.5.0'
   gem.add_development_dependency 'rdf-spec',        '>= 0.3.4'
