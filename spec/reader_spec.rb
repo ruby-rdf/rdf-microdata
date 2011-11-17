@@ -64,6 +64,7 @@ describe "RDF::Microdata::Reader" do
 
   [:nokogiri, :rexml].each do |library|
     context library.to_s, :library => library do
+      next if library == :nokogiri && RUBY_PLATFORM == 'java'
       before(:all) {@library = library}
       
       context :parsing do
@@ -74,7 +75,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           )
           @nt_ctx = %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
+          <> <http://www.w3.org/1999/xhtml/microdata#item> (_:a) .
           _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
           %s
           )
@@ -85,116 +86,6 @@ describe "RDF::Microdata::Reader" do
           nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
           parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
-    
-    #    context "a-rel" do
-    #      [
-    #        [
-    #          %q(<a rel="rel" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="rel rel2" href="foo.html">Foo</a>),
-    #          %q(
-    #            <> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .
-    #            <> <http://www.w3.org/1999/xhtml/vocab#rel2> <foo.html> .
-    #          ),
-    #        ],
-    #        [
-    #          %q(<a rel="REL" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="rel#ler" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel%23ler> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="alternate" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#alternate> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="stylesheet" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="alternate stylesheet" href="foo.html">Foo</a>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#ALTERNATE-STYLESHEET> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="col:on" href="foo.html">Foo</a>),
-    #          %q(<> <col:on> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<a rel="http://MiXeDcAsE/" href="foo.html">Foo</a>),
-    #          %q(<> <http://MiXeDcAsE/> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<area rel="rel" href="foo.html"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-    #        ],
-    #        [
-    #          %q(<link rel="rel" href="foo.html"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#rel> <foo.html> .),
-    #        ],
-    #      ].each do |(md, nt)|
-    #        it "parses #{md} to #{nt}" do
-    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-    #        end
-    #      end
-    #    end
-    #    
-    #    context "meta" do
-    #      [
-    #        [
-    #          %q(<meta name="name" content="Foo"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-    #        ],
-    #        [
-    #          %q(<meta name="NAME" content="Foo"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name> "Foo" .),
-    #        ],
-    #        [
-    #          %q(<meta name="name#foo" content="Foo"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo" .),
-    #        ],
-    #        [
-    #          %q(<meta xml:lang="en" name="name#foo" content="Foo"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-    #        ],
-    #        [
-    #          %q(<meta lang="en" name="name#foo" content="Foo"/>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-    #        ],
-    #        [
-    #          %q(<div lang="en"><meta name="name#foo" content="Foo"/></div>),
-    #          %q(<> <http://www.w3.org/1999/xhtml/vocab#name%23foo> "Foo"@en .),
-    #        ],
-    #        [
-    #          %q(<meta name="col:on" content="Foo"/>),
-    #          %q(<> <col:on> "Foo" .),
-    #        ],
-    #      ].each do |(md, nt)|
-    #        it "parses #{md} to #{nt}" do
-    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-    #        end
-    #      end
-    #    end
-    #    
-    #    context "blockquote" do
-    #      [
-    #        [
-    #          %q(<blockquote cite="cite.html">Foo</blockquote>),
-    #          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-    #        ],
-    #        [
-    #          %q(<q cite="cite.html">Foo</q>),
-    #          %q(<> <http://purl.org/dc/terms/source> <cite.html> .),
-    #        ],
-    #      ].each do |(md, nt)|
-    #        it "parses #{md} to #{nt}" do
-    #          parse(md).should be_equivalent_graph(nt, :trace => @debug)
-    #        end
-    #      end
-    #    end
 
         context "values" do
           [
@@ -307,7 +198,7 @@ describe "RDF::Microdata::Reader" do
               </div>
             )
             @nt_ctx = %q(
-            <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> _:a .
+            <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> (_:a) .
             _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
             %s
             )
@@ -372,7 +263,7 @@ describe "RDF::Microdata::Reader" do
               </div>
             )
             @nt_ctx = %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> <subj> .
+            <> <http://www.w3.org/1999/xhtml/microdata#item> (<subj>) .
             <subj> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
             %s
             )
@@ -445,7 +336,7 @@ describe "RDF::Microdata::Reader" do
             end
           end
         end
-    
+
         context "itemtype" do
           {
             "with no type and token property" => [
@@ -457,7 +348,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
               )
             ],
             "with empty type and token property" => [
@@ -469,7 +360,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
               )
             ],
             "with relative type and token property" => [
@@ -481,7 +372,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> [ <name> "Amanda" ] .
+                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
               )
             ],
             "with single type and token property" => [
@@ -494,9 +385,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ a <http://schema.org/Person> ;
+                ([ a <http://schema.org/Person> ;
                   <http://schema.org/name> "Amanda" ;
-                ]
+                ])
               )
             ],
             "with multipe types and token property" => [
@@ -509,9 +400,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+                ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
                   <http://schema.org/name> "Amanda" ;
-                ]
+                ])
               )
             ],
             "with no type and URI property" => [
@@ -524,7 +415,7 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
                 <> <http://www.w3.org/1999/xhtml/microdata#item>
-                  [ <http://schema.org/name> "Amanda" ] .
+                  ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
             "with empty type and URI property" => [
@@ -537,7 +428,7 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ <http://schema.org/name> "Amanda" ] .
+                ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
             "with relative type and URI property" => [
@@ -550,7 +441,7 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ <http://schema.org/name> "Amanda" ] .
+                ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
             "with single type and URI property" => [
@@ -563,9 +454,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ a <http://schema.org/Person> ;
+                ([ a <http://schema.org/Person> ;
                   <http://schema.org/name> "Amanda" ;
-                ]
+                ])
               )
             ],
             "with multipe types and URI property" => [
@@ -578,9 +469,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
               <> <http://www.w3.org/1999/xhtml/microdata#item>
-                [ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
+                ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
                   <http://schema.org/name> "Amanda" ;
-                ]
+                ])
               )
             ],
             "with inherited type and token property" => [
@@ -596,10 +487,10 @@ describe "RDF::Microdata::Reader" do
               @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
               @prefix schema: <http://schema.org/> .
               <> md:item
-                [ a schema:Person ;
+                ([ a schema:Person ;
                   schema:name "Gregg" ;
                   schema:knows [ schema:name "Jeni" ]
-                ]
+                ])
               )
             ]
           }.each do |name, (md, nt)|
@@ -621,9 +512,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
                 <> <http://www.w3.org/1999/xhtml/microdata#item>
-                  [ a <http://schema.org/Person> ;
+                  ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
-                  ]
+                  ])
               )
             ],
             "to generate listed property values" =>
@@ -638,9 +529,9 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
                 <> <http://www.w3.org/1999/xhtml/microdata#item>
-                  [ a <http://schema.org/Person> ;
+                  ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> ("Gregg" "Kellogg") ;
-                  ]
+                  ])
               )
             ],
             "to single id with different types" =>
@@ -674,10 +565,10 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
                 <> <http://www.w3.org/1999/xhtml/microdata#item>
-                  [ a <http://schema.org/Person> ;
+                  ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                     <http://schema.org/band> "Jazz Band" ;
-                  ]
+                  ])
               )
             ],
             "with chaining" =>
@@ -695,14 +586,14 @@ describe "RDF::Microdata::Reader" do
               ),
               %q(
                 <> <http://www.w3.org/1999/xhtml/microdata#item>
-                  [ a <http://schema.org/Person> ;
+                  ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                     <http://schema.org/band> [
                       a <http://schema.org/MusicGroup> ;
                       <http://schema.org/name> "Jazz Band";
                       <http://schema.org/size> "12"
                     ]
-                  ]
+                  ])
               )
             ],
             "shared" =>
@@ -731,7 +622,56 @@ describe "RDF::Microdata::Reader" do
             end
           end
         end
-    
+
+        context "propertyURI" do
+          context "default expansion" do
+            {
+              "http://foo/bar + baz => http://foo/baz" =>
+              [
+                %q(
+                  <div itemscope='' itemtype='http://foo/bar'>
+                    <p itemprop='baz'>FooBar</p>
+                  </div>
+                ),
+                %q(
+                  <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                    [ a <http://foo/bar>; <http://foo/baz> "FooBar" ]
+                  ) .
+                )
+              ],
+              "http://foo#bar + baz => http://foo#baz" =>
+              [
+                %q(
+                  <div itemscope='' itemtype='http://foo#bar'>
+                    <p itemprop='baz'>FooBar</p>
+                  </div>
+                ),
+                %q(
+                  <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                    [ a <http://foo#bar>; <http://foo#baz> "FooBar" ]
+                  ) .
+                )
+              ],
+            }.each do |name, (md, nt)|
+              it "expands #{name}" do
+                parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+              end
+            end
+          end
+
+          context "with vocabulary http://schema.org/" do
+          end
+
+          context "with vocabulary http://purl.org/vocab/frbr/core#" do
+          end
+
+          context "with vocabulary http://microformats.org/profile/hcard" do
+          end
+
+          context "with contextual http://n.whatwg.org/work" do
+          end
+        end
+
         context "test-files" do
           Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), "test-files", "*.html")).each do |md|
             it "parses #{md}" do

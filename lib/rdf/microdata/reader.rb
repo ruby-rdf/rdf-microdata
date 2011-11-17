@@ -206,12 +206,11 @@ module RDF::Microdata
         items << result
       end
       
-      # 3) If item list contains multiple values, generate an RDF Collection list from
+      # 3) IGenerate an RDF Collection list from
       #    the ordered list of values. Set value to the value returned from generate an RDF Collection.
-      # 4) Otherwise, if item list contains a single value set value to that value.
-      value = items.length > 1 ? generateRDFCollection(root, items) : items.first
+      value = generateRDFCollection(root, items)
 
-      # 5) Generate the following triple:
+      # 4) Generate the following triple:
       #     subject Document base
       #     predicate http://www.w3.org/1999/xhtml/microdata#item
       #     object value
