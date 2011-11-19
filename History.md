@@ -1,3 +1,23 @@
+### 0.2.3
+* Update to latest processing rules, including the use of a registry.
+* Updated microdata namespace.
+* Matcher output in TTL.
+* Complete REXML and Nokogori proxies.
+* Added etc/registry.json as a copy of the registry used internally.
+* Update examples.
+* Parse with linkeddata options.
+* Use bundler for specs, if installed.
+* Always place md:item in a list.
+* Don't use nokogiri with jruby.
+* Depend on Nokogiri only for development.
+* Some examples.
+* Progress on separating HTML parsing to Nokogiri and REXML.
+* Sync with first HTML Data TF version of spec.
+* Recognize @datetime values with lexical form of xsd:duration and generate appropriately typed lite...
+* Generate lists for multi-valued properties.
+* Remove fallback_name and change fallback_type to current_type
+* Simplify generate_triples logic by removing old type and URI munging.
+
 ### 0.2.2
 * Remove non @item* processing
 * Sync to HTML Data TF version of spec: https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html
