@@ -436,15 +436,17 @@ module RDF::Microdata
       
       # 11) For each predicate in property list
       property_list.each do |predicate, values|
-        generatePropertyValues(item, subject, predicate, values, ec)
+        generatePropertyValues(item, subject, predicate, values)
       end
       
       subject
     end
 
-    def generatePropertyValues(element, subject, predicate, values, ec)
-      registry = ec[:current_vocabulary]
-      if registry.as_list(predicate)
+    def generatePropertyValues(element, subject, predicate, values)
+      # If the registry contains a URI prefix that is a character for character match of predicate up to the length
+      # of the URI prefix, set vocab as that URI prefix. Otherwise set vocab to null
+      registry = Registry.find(predicate)
+      if registry && registry.as_list(predicate)
         value = generateRDFCollection(element, values)
         add_triple(element, subject, predicate, value)
       else
