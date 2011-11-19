@@ -156,6 +156,10 @@ module RDF::Microdata
           self
         end
 
+        def inspect
+          @node_set.map {|c| NodeProxy.new(c, parent).display_path}.inspect
+        end
+
         ##
         # Proxy for everything else to @node_set
         def method_missing(method, *args)

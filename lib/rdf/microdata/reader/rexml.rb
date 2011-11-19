@@ -105,7 +105,7 @@ module RDF::Microdata
         #
         # @return [NodeSetProxy]
         def elements
-          NodeSetProxy.new(@node.elements, self)
+          NodeSetProxy.new(@node.children.select {|c| c.is_a?(::REXML::Element)}, self)
         end
 
         ##
@@ -174,7 +174,7 @@ module RDF::Microdata
         # Return proxy for first element and remove it
         # @return [NodeProxy]
         def shift
-          (e = node_set.delete(1)) && NodeProxy.new(e, parent)
+          (e = node_set.shift) && NodeProxy.new(e, parent)
         end
 
         ##
@@ -194,6 +194,10 @@ module RDF::Microdata
         def <<(elem)
           node_set << (elem.is_a?(NodeProxy) ? elem.node : elem)
           self
+        end
+
+        def inspect
+          @node_set.map {|c| NodeProxy.new(c, parent).display_path}.inspect
         end
 
         ##
