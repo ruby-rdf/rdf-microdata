@@ -1,19 +1,17 @@
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix dce: <http://purl.org/dc/elements/1.1/> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix md: <http://www.w3.org/ns/md#> .
 @prefix frbr: <http://purl.org/vocab/frbr/core#> .
 
-<> <http://www.w3.org/1999/xhtml/microdata#item> <http://books.example.com/works/45U8QJGZSQKDH8N> .
+<> md:item (<http://books.example.com/works/45U8QJGZSQKDH8N>) .
 
 <http://books.example.com/works/45U8QJGZSQKDH8N> a frbr:Work ;
-  dce:creator "Wil Wheaton" ;
-  dct:title "Just a Geek" ;
-  frbr:realization (
-    <http://books.example.com/products/9780596007683.BOOK>
-    <http://books.example.com/products/9780596802189.EBOOK>
-  ) .
+  dc:creator "Wil Wheaton"@en ;
+  dc:title "Just a Geek"@en ;
+  frbr:realization <http://books.example.com/products/9780596007683.BOOK>,
+    <http://books.example.com/products/9780596802189.EBOOK> .
 
 <http://books.example.com/products/9780596007683.BOOK> a frbr:Expression ;
-  dct:type <http://books.example.com/product-types/BOOK> .
+  dc:type <http://books.example.com/product-types/BOOK> .
 
 <http://books.example.com/products/9780596802189.EBOOK> a frbr:Expression ;
-  dct:type <http://books.example.com/product-types/EBOOK> .
+  dc:type <http://books.example.com/product-types/EBOOK> .

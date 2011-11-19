@@ -1,0 +1,18 @@
+@prefix md: <http://www.w3.org/ns/md#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <http://schema.org/> .
+
+<> md:item ([ a schema:MusicPlaylist;
+  schema:name "Classic Rock Playlist";
+  schema:byArtist ("Lynard Skynard" "AC/DC");
+  schema:numTracks "2";
+  schema:tracks (
+    [ a schema:MusicRecording;
+      schema:byArtist ("Lynard Skynard");;
+      schema:name "Sweet Home Alabama";
+      schema:url <sweet-home-alabama>]
+    [ a schema:MusicRecording;
+      schema:byArtist ("AC/DC");;
+      schema:name "Shook you all Night Long";
+      schema:url <shook-you-all-night-long>]
+  )]); .
