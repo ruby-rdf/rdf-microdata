@@ -31,6 +31,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 1.8.1'
   gem.requirements          = []
   gem.add_runtime_dependency     'rdf',             '>= 0.3.4'
+  gem.add_runtime_dependency     'json',            '>= 1.6.1'
   gem.add_runtime_dependency     'rdf-xsd',         '>= 0.3.4'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
 
