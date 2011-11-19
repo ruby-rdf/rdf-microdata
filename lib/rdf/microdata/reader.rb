@@ -75,7 +75,7 @@ module RDF::Microdata
         @properties = properties
         if @scheme == :vocabulary
           @property_base = prefixURI.to_s
-          @property_base += '#' unless %w(/ #).include?(@property_base[-1]) # Append a '#' for fragment if necessary
+          @property_base += '#' unless %w(/ #).include?(@property_base[-1,1]) # Append a '#' for fragment if necessary
         else
           @property_base = 'http://www.w3.org/ns/md?type='
         end
@@ -86,10 +86,9 @@ module RDF::Microdata
       #
       # @param [RDF::URI] type
       # @return [Registry]
-      def self.find(type)
-        @prefixes.select do |key, value|
-          type.to_s.index(key) == 0
-        end.values.first
+      def self.find(type) 
+        k = @prefixes.keys.detect {|key| type.to_s.index(key) == 0 }
+        @prefixes[k] if k
       end
       
       ##
