@@ -57,7 +57,7 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
     else
       Info.new(expected.is_a?(RDF::Graph) ? expected.context : info, info.to_s)
     end
-    @info.format ||= :ntriples
+    @info.format ||= :ttl
     @expected = normalize(expected)
     @actual = normalize(actual)
     @actual.isomorphic_with?(@expected)
