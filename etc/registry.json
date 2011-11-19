@@ -1,0 +1,39 @@
+{
+  "http://schema.org/": {
+    "propertyURI":    "vocabulary",
+    "multipleValues": "unordered",
+    "properties": {
+      "blogPosts": {"multipleValues": "list"},
+      "breadcrumb": {"multipleValues": "list"},
+      "byArtist": {"multipleValues": "list"},
+      "creator": {"multipleValues": "list"},
+      "episodes": {"multipleValues": "list"},
+      "events": {"multipleValues": "list"},
+      "founders": {"multipleValues": "list"},
+      "itemListElement": {"multipleValues": "list"},
+      "musicGroupMember": {"multipleValues": "list"},
+      "performerIn": {"multipleValues": "list"},
+      "performers": {"multipleValues": "list"},
+      "producer": {"multipleValues": "list"},
+      "recipeInstructions": {"multipleValues": "list"},
+      "seasons": {"multipleValues": "list"},
+      "subEvents": {"multipleValues": "list"},
+      "tracks": {"multipleValues": "list"}
+    }
+  },
+  "http://microformats.org/profile/hcard": {
+    "propertyURI":    "vocabulary",
+    "multipleValues": "unordered"
+  },
+  "http://microformats.org/profile/hcalendar#": {
+    "propertyURI":    "vocabulary",
+    "multipleValues": "unordered",
+    "properties": {
+      "categories": {"multipleValues": "list"}
+    }
+  },
+  "http://n.whatwg.org/work": {
+    "propertyURI":    "contextual",
+    "multipleValues": "list"
+  }
+}
