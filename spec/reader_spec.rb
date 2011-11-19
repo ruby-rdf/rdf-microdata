@@ -75,7 +75,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           )
           @nt_ctx = %q(
-          <> <http://www.w3.org/1999/xhtml/microdata#item> (_:a) .
+          <> <http://www.w3.org/ns/md#item> (_:a) .
           _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
           %s
           )
@@ -98,7 +98,7 @@ describe "RDF::Microdata::Reader" do
               <p>My name is <span itemprop="name">Gregg</span></p>
               <p>My name is <span itemprop="name">Kellogg</span></p>
               ),
-              %q(_:a <http://schema.org/name> ("Gregg" "Kellogg") .)
+              %q(_:a <http://schema.org/name> "Gregg", "Kellogg" .)
             ],
             [
               %q(<p>My name is <span itemprop="name fullName">Gregg Kellogg</span></p>),
@@ -198,7 +198,7 @@ describe "RDF::Microdata::Reader" do
               </div>
             )
             @nt_ctx = %q(
-            <http://example.com/> <http://www.w3.org/1999/xhtml/microdata#item> (_:a) .
+            <http://example.com/> <http://www.w3.org/ns/md#item> (_:a) .
             _:a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
             %s
             )
@@ -263,7 +263,7 @@ describe "RDF::Microdata::Reader" do
               </div>
             )
             @nt_ctx = %q(
-            <> <http://www.w3.org/1999/xhtml/microdata#item> (<subj>) .
+            <> <http://www.w3.org/ns/md#item> (<subj>) .
             <subj> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
             %s
             )
@@ -348,7 +348,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
+                <> <http://www.w3.org/ns/md#item> ([ <#name> "Amanda" ]) .
               )
             ],
             "with empty type and token property" => [
@@ -360,7 +360,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
+                <> <http://www.w3.org/ns/md#item> ([ <#name> "Amanda" ]) .
               )
             ],
             "with relative type and token property" => [
@@ -372,7 +372,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> ([ <name> "Amanda" ]) .
+                <> <http://www.w3.org/ns/md#item> ([ <#name> "Amanda" ]) .
               )
             ],
             "with single type and token property" => [
@@ -384,7 +384,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ a <http://schema.org/Person> ;
                   <http://schema.org/name> "Amanda" ;
                 ])
@@ -399,7 +399,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
                   <http://schema.org/name> "Amanda" ;
                 ])
@@ -414,7 +414,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                <> <http://www.w3.org/ns/md#item>
                   ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
@@ -427,7 +427,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
@@ -440,7 +440,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ <http://schema.org/name> "Amanda" ]) .
               )
             ],
@@ -453,7 +453,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ a <http://schema.org/Person> ;
                   <http://schema.org/name> "Amanda" ;
                 ])
@@ -468,7 +468,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-              <> <http://www.w3.org/1999/xhtml/microdata#item>
+              <> <http://www.w3.org/ns/md#item>
                 ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
                   <http://schema.org/name> "Amanda" ;
                 ])
@@ -478,13 +478,13 @@ describe "RDF::Microdata::Reader" do
               %q(
                 <div itemscope=''  itemtype="http://schema.org/Person">
                   <p>Name: <span itemprop="name">Gregg</span></p>
-                  <div itemprop="knows" itemscope='' >
-                  <p id="a">Name: <span itemprop="name">Jeni</span></p>
+                  <div itemprop="knows" itemscope="">
+                    <p id="a">Name: <span itemprop="name">Jeni</span></p>
                   </div>
                 </div>
               ),
               %q(
-              @prefix md: <http://www.w3.org/1999/xhtml/microdata#> .
+              @prefix md: <http://www.w3.org/ns/md#> .
               @prefix schema: <http://schema.org/> .
               <> md:item
                 ([ a schema:Person ;
@@ -511,7 +511,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                <> <http://www.w3.org/ns/md#item>
                   ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                   ])
@@ -528,9 +528,9 @@ describe "RDF::Microdata::Reader" do
               </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                <> <http://www.w3.org/ns/md#item>
                   ([ a <http://schema.org/Person> ;
-                    <http://schema.org/name> ("Gregg" "Kellogg") ;
+                    <http://schema.org/name> "Gregg", "Kellogg" ;
                   ])
               )
             ],
@@ -544,7 +544,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                <> <http://www.w3.org/ns/md#item> (
                   [ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                   ]
@@ -564,7 +564,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                <> <http://www.w3.org/ns/md#item>
                   ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                     <http://schema.org/band> "Jazz Band" ;
@@ -585,7 +585,7 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item>
+                <> <http://www.w3.org/ns/md#item>
                   ([ a <http://schema.org/Person> ;
                     <http://schema.org/name> "Amanda" ;
                     <http://schema.org/band> [
@@ -608,11 +608,11 @@ describe "RDF::Microdata::Reader" do
                 </div>
               ),
               %q(
-                <> <http://www.w3.org/1999/xhtml/microdata#item> (
-                  [ <refers-to> _:a ]
-                  [ <refers-to> _:a ]
+                <> <http://www.w3.org/ns/md#item> (
+                  [ <#refers-to> _:a ]
+                  [ <#refers-to> _:a ]
                 ) .
-                _:a <name> "Amanda"
+                _:a <#name> "Amanda"
               )
           
             ],
@@ -634,7 +634,7 @@ describe "RDF::Microdata::Reader" do
                   </div>
                 ),
                 %q(
-                  <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                  <> <http://www.w3.org/ns/md#item> (
                     [ a <http://foo/bar>; <http://foo/baz> "FooBar" ]
                   ) .
                 )
@@ -647,7 +647,7 @@ describe "RDF::Microdata::Reader" do
                   </div>
                 ),
                 %q(
-                  <> <http://www.w3.org/1999/xhtml/microdata#item> (
+                  <> <http://www.w3.org/ns/md#item> (
                     [ a <http://foo#bar>; <http://foo#baz> "FooBar" ]
                   ) .
                 )
@@ -660,15 +660,19 @@ describe "RDF::Microdata::Reader" do
           end
 
           context "with vocabulary http://schema.org/" do
+            it "should be tested"
           end
 
           context "with vocabulary http://purl.org/vocab/frbr/core#" do
+            it "should be tested"
           end
 
           context "with vocabulary http://microformats.org/profile/hcard" do
+            it "should be tested"
           end
 
           context "with contextual http://n.whatwg.org/work" do
+            it "should be tested"
           end
         end
 

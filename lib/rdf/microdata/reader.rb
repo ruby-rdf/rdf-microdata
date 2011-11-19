@@ -5,22 +5,20 @@ rescue LoadError => e
   :rexml
 end
 require 'rdf/xsd'
+require 'json'
 
 module RDF::Microdata
   ##
   # An Microdata parser in Ruby
   #
   # Based on processing rules, amended with the following:
-  # * property generation from tokens now uses the associated @itemtype as the basis for generation
-  # * implicit triples are not generated, only those with @item*
-  # * @datetime values are scanned lexically to find appropriate datatype
   #
-  # @see https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html
+  # @see https://dvcs.w3.org/hg/htmldata/raw-file/0d6b89f5befb/microdata-rdf/index.html
   # @author [Gregg Kellogg](http://kellogg-assoc.com/)
   class Reader < RDF::Reader
     format Format
-    XHTML = "http://www.w3.org/1999/xhtml"
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)
+    DEFAULT_REGISTRY = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "etc", "registry.json"))
     
     class CrawlFailure < StandardError  #:nodoc:
     end
@@ -42,6 +40,124 @@ module RDF::Microdata
       @options[:base_uri]
     end
 
+    # Interface to registry
+    class Registry
+      ##
+      # Initialize the registry from a URI or file path
+      #
+      # @param [Hash] json
+      def self.load_registry(json)
+        @prefixes = {}
+        json.each do |prefix, elements|
+          propertyURI = elements.fetch("propertyURI", "vocabulary").to_sym
+          multipleValues = elements.fetch("multipleValues", "unordered").to_sym
+          properties = elements.fetch("properties", {})
+          @prefixes[prefix] = Registry.new(prefix, propertyURI, multipleValues, properties)
+        end
+      end
+      
+      ##
+      # True if registry has already been loaded
+      def self.loaded?
+        @prefixes.is_a?(Hash)
+      end
+
+      ##
+      # Initialize registry for a particular prefix URI
+      #
+      # @param [RDF::URI] prefixURI
+      # @param [#to_sym] propertyURI (:vocabulary)
+      # @param [#to_sym] multipleValues (:unordered)
+      # @param [Hash] properties ({})
+      def initialize(prefixURI, propertyURI = :vocabulary, multipleValues = :unordered, properties = {})
+        @scheme = propertyURI.to_sym
+        @multipleValues = multipleValues.to_sym
+        @properties = properties
+        if @scheme == :vocabulary
+          @property_base = prefixURI.to_s
+          @property_base += '#' unless %w(/ #).include?(@property_base[-1]) # Append a '#' for fragment if necessary
+        else
+          @property_base = 'http://www.w3.org/ns/md?type='
+        end
+      end
+
+      ##
+      # Find a registry entry given a type URI
+      #
+      # @param [RDF::URI] type
+      # @return [Registry]
+      def self.find(type)
+        @prefixes.select do |key, value|
+          type.to_s.index(key) == 0
+        end.values.first
+      end
+      
+      ##
+      # Generate a predicateURI given a `name`
+      #
+      # @param [#to_s] name
+      # @param [Hash{}] ec Evaluation Context
+      # @return [RDF::URI]
+      def predicateURI(name, ec)
+        u = RDF::URI(name)
+        return u if u.absolute?
+        
+        n = frag_escape(name)
+        if ec[:current_type].nil?
+          u = RDF::URI(ec[:document_base].to_s)
+          u.fragment = frag_escape(name)
+          u
+        elsif @scheme == :vocabulary
+          # If scheme is vocabulary return the URI reference constructed by appending the fragment escaped value of name
+          # to current vocabulary, separated by a U+0023 NUMBER SIGN character (#) unless the current vocabulary ends
+          # with either a U+0023 NUMBER SIGN character (#) or SOLIDUS U+002F (/).
+          RDF::URI(@property_base + n)
+        else  # @scheme == :contextual
+          if ec[:current_type].to_s.index(@property_base) == 0
+            # return the concatenation of s, a U+002E FULL STOP character (.) and the fragment-escaped value of name.
+            RDF::URI(@property_base + '.' + n)
+          else
+            # return the concatenation of http://www.w3.org/ns/md?type=, the fragment-escaped value of s,
+            # the string &prop=, and the fragment-escaped value of name
+            RDF::URI(@property_base + frag_escape(ec[:current_type]) + '?prop=' + n)
+          end
+        end
+      end
+      
+      
+      ##
+      # Turn a predicateURI into a simple token
+      # @param [RDF::URI] predicateURI
+      # @return [String]
+      def tokenize(predicateURI)
+        case @scheme
+        when :vocabulary
+          predicateURI.to_s.sub(@property_base, '')
+        when :contextual
+          predicateURI.to_s.split('?prop=').last.split('.').last
+        end
+      end
+
+      ##
+      # Determine if property should be serialized as a list or not
+      # @param [RDF::URI] predicateURI
+      # @return [Boolean]
+      def as_list(predicateURI)
+        tok = tokenize(predicateURI)
+        if @properties[tok].is_a?(Hash)
+          @properties[tok]["multipleValues"].to_sym == :list
+        else
+          @multipleValues == :list
+        end
+      end
+
+      ##
+      # Fragment escape a name
+      def frag_escape(name)
+        name.to_s.gsub(/["#%<>\[\\\]^{|}]/) {|c| '%' + c.unpack('H2' * c.bytesize).join('%').upcase}
+      end
+    end
+
     ##
     # Initializes the Microdata reader instance.
     #
@@ -61,6 +177,7 @@ module RDF::Microdata
     #   whether to intern all parsed URIs
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
+    # @option options [#to_s]    :registry_uri (DEFAULT_REGISTRY)
     # @option options [Array] :debug
     #   Array to place debug messages
     # @return [reader]
@@ -98,6 +215,17 @@ module RDF::Microdata
 
         add_debug(@doc, "library = #{@library}")
 
+        # Load registry
+        unless Registry.loaded?
+          registry = options[:registry_uri] || DEFAULT_REGISTRY
+          begin
+            json = RDF::Util::File.open_file(registry) { |f| JSON.load(f) }
+          rescue JSON::ParserError => e
+            raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
+          end
+          Registry.load_registry(json)
+        end
+        
         if block_given?
           case block.arity
             when 0 then instance_eval(&block)
@@ -192,11 +320,14 @@ module RDF::Microdata
       add_debug(nil) {"parse_whole_doc: base='#{base}'"}
 
       ec = {
-        :memory       => {},
-        :current_type => nil,
+        :memory             => {},
+        :current_name       => nil,
+        :current_type       => nil,
+        :current_vocabulary => nil,
+        :document_base      => base,
       }
       items = []
-      # For each element that is also a top-level item run the following algorithm:
+      # 1) For each element that is also a top-level item run the following algorithm:
       #
       #   1) Generate the triples for an item item, using the evaluation context.
       #      Let result be the (URI reference or blank node) subject returned.
@@ -206,11 +337,11 @@ module RDF::Microdata
         items << result
       end
       
-      # 3) IGenerate an RDF Collection list from
+      # 2) Generate an RDF Collection list from
       #    the ordered list of values. Set value to the value returned from generate an RDF Collection.
       value = generateRDFCollection(root, items)
 
-      # 4) Generate the following triple:
+      # 3) Generate the following triple:
       #     subject Document base
       #     predicate http://www.w3.org/1999/xhtml/microdata#item
       #     object value
@@ -228,7 +359,7 @@ module RDF::Microdata
     # @return [RDF::Resource]
     def generate_triples(item, ec = {})
       memory = ec[:memory]
-      # 1. If there is an entry for item in memory, then let subject be the subject of that entry.
+      # 1) If there is an entry for item in memory, then let subject be the subject of that entry.
       #    Otherwise, if item has a global identifier and that global identifier is an absolute URL,
       #    let subject be that global identifier. Otherwise, let subject be a new blank node.
       subject = if memory.include?(item.node)
@@ -240,51 +371,63 @@ module RDF::Microdata
 
       add_debug(item) {"gentrips(2): subject=#{subject.inspect}, current_type: #{ec[:current_type]}"}
 
-      # 2. Add a mapping from item to subject in memory, if there isn't one already.
+      # 2) Add a mapping from item to subject in memory, if there isn't one already.
       memory[item.node][:subject] ||= subject
       
-      # 3. If the item has an @itemtype attribute, extract the value as type.
-      rdf_type = nil
-      item.attribute('itemtype').to_s.split(' ').map{|n| uri(n)}.select(&:absolute?).each do |type|
-        rdf_type ||= type
-        add_triple(item, subject, RDF.type, type)
+      # 3) For each type returned from element.itemType of the element defining the item.
+      type = nil
+      item.attribute('itemtype').to_s.split(' ').map{|n| uri(n)}.select(&:absolute?).each do |t|
+        #   3.1. If type is an absolute URL, generate the following triple:
+        type ||= t
+        add_triple(item, subject, RDF.type, t)
       end
       
-      rdf_type ||= ec[:current_type]
-      add_debug(item)  {"gentrips(5): rdf_type=#{rdf_type.inspect}"}
+      # 5) If type is not an absolute URL, set it to current type from the Evaluation Context if not empty.
+      type ||= ec[:current_type]
+      add_debug(item)  {"gentrips(5): type=#{type.inspect}"}
 
-      # 6) Set property list to an empty mapping between properties and one or more ordered values as established below.
+      # 6) If the registry contains a URI prefix that is a character for character match of type up to the length of the
+      #    URI prefix, set vocab as that URI prefix
+      vocab = Registry.find(type)
+
+      # 7) Otherwise, if type is not empty, construct vocab by removing everything following the last
+      #    SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from type.
+      vocab ||= begin
+        type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
+        add_debug(item)  {"gentrips(7): typtype_vocab=#{type_vocab.inspect}"}
+        Registry.new(type_vocab) # if type
+      end
+
+      # 8) Update evaluation context setting current vocabulary to vocab.
+      ec[:current_vocabulary] = vocab
+
+      # 9) Set property list to an empty mapping between properties and one or more ordered values as established below.
       property_list = {}
-      
-      # 7. For each element _element_ that has one or more property names and is one of the
+
+      # 10. For each element _element_ that has one or more property names and is one of the
       #    properties of the item _item_, in the order those elements are given by the algorithm
       #    that returns the properties of an item, run the following substep:
       props = item_properties(item)
-      # 7.1. For each name name in element's property names, run the following substeps:
+      # 10.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          add_debug(element) {"gentrips(7.1): name=#{name.inspect}"}
-          # If name is an absolute URI, set predicate to name as a URI reference
-          # If type is not an absolute URL and name is not an absolute URL, then abort these substeps.
-          # FIXME: need to fragment-escape name
-          predicate = uri(name)
-          if !rdf_type && !predicate.absolute?
-            predicate = uri(name, item.base || base_uri)
-            add_debug(element) {"gentrips(7.1.2): predicate=#{predicate}"}
-          else
-            predicate = RDF::URI(rdf_type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1' + name)) unless predicate.absolute?
-            add_debug(element) {"gentrips(7.1.3): predicate=#{predicate}"}
-          end
-
-          # 7.1.4) Let value be the property value of element.
-          value = property_value(element)
-          add_debug(element) {"gentrips(7.1.4) value=#{value.inspect}"}
+          add_debug(element) {"gentrips(10.1): name=#{name.inspect}, type=#{type}"}
+          # Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
+          ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
           
-          # 7.1.5) If value is an item, then generate the triples for value using a copy of evaluation context with
+          predicate = vocab.predicateURI(name, ec_new)
+          ec_new[:current_name] = predicate
+          add_debug(element) {"gentrips(10.1.2): predicate=#{predicate}"}
+          
+          # 10.1.3) Let value be the property value of element.
+          value = property_value(element)
+          add_debug(element) {"gentrips(10.1.3) value=#{value.inspect}"}
+          
+          # 10.1.4) If value is an item, then generate the triples for value using a copy of evaluation context with
           #       current type set to type. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
-            value = generate_triples(element, ec.merge(:current_type => rdf_type)) 
-            add_debug(element) {"gentrips(7.1.5): value=#{value.inspect}"}
+            value = generate_triples(element, ec_new) 
+            add_debug(element) {"gentrips(10.1.4): value=#{value.inspect}"}
           end
 
           property_list[predicate] ||= []
@@ -292,17 +435,22 @@ module RDF::Microdata
         end
       end
       
+      # 11) For each predicate in property list
       property_list.each do |predicate, values|
-        # 8.1) If entry for predicate in property list contains multiple values, generate an RDF Collection list from
-        #      the ordered list of values. Set value to the value returned from generate an RDF Collection.
-        # 8.1) Otherwise, if predicate in property list contains a single value set value to that value.
-        value = values.length > 1 ? generateRDFCollection(item, values) : values.first
-
-        # Generate a triple relating subject, predicate and value
-        add_triple(item, subject, predicate, value)
+        generatePropertyValues(item, subject, predicate, values, ec)
       end
       
       subject
+    end
+
+    def generatePropertyValues(element, subject, predicate, values, ec)
+      registry = ec[:current_vocabulary]
+      if registry.as_list(predicate)
+        value = generateRDFCollection(element, values)
+        add_triple(element, subject, predicate, value)
+      else
+        values.each {|v| add_triple(element, subject, predicate, v)}
+      end
     end
 
     ##
@@ -403,7 +551,7 @@ module RDF::Microdata
         id_elem = find_element_by_id(id)
         pending << id_elem if id_elem
       end
-      add_debug(root) {"elements_in_item pending #{pending.map {|e| node_path(e)}.inspect}"}
+      add_debug(root) {"elements_in_item pending #{pending.inspect}"}
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
@@ -433,22 +581,24 @@ module RDF::Microdata
       when element.has_attribute?('itemscope')
         {}
       when element.name == 'meta'
-        element.attribute('content').to_s
+        RDF::Literal.new(element.attribute('content').to_s, :language => element.language)
+      when element.name == 'data'
+        RDF::Literal.new(element.attribute('value').to_s, :language => element.language)
       when %w(audio embed iframe img source track video).include?(element.name)
         uri(element.attribute('src'), base)
       when %w(a area link).include?(element.name)
         uri(element.attribute('href'), base)
       when %w(object).include?(element.name)
         uri(element.attribute('data'), base)
-      when %w(time).include?(element.name) && element.has_attribute?('datetime')
+      when %w(time).include?(element.name)
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
-        v = element.attribute('datetime').to_s
+        v = (element.attribute('datetime') || element.text).to_s
         datatype = %w(Date Time DateTime Duration).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
           v.match(dt::GRAMMAR)
         end || RDF::Literal
-        datatype.new(v)
+        datatype.new(v, :language => element.language)
       else
-        RDF::Literal.new(element.text, :language => element.language)
+        RDF::Literal.new(element.inner_text, :language => element.language)
       end
       add_debug(element) {"  #{value.inspect}"}
       value

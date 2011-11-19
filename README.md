@@ -6,12 +6,19 @@
 RDF::Microdata is a Microdata reader for Ruby using the [RDF.rb][RDF.rb] library suite.
 
 ## FEATURES
-RDF::Microdata parses [Microdata][] into statements or triples.
+RDF::Microdata parses [Microdata][] into statements or triples using the rules defined in [Microdata RDF][].
 
 * Microdata parser.
-* Uses Nokogiri for parsing HTML
+* If available, Uses Nokogiri for parsing HTML/SVG, falls back to REXML otherwise (and for JRuby)
 
 Install with 'gem install rdf-microdata'
+
+### Living implementation
+Microdata to RDF transformation is undergoing active development. This implementation attempts to be up-to-date
+as of the time of release, and is being used in developing the [Microdata RDF][] specification
+
+### Microdata Registry
+The parser uses a build-in version of the [Microdata RDF][] registry.
 
 ## Usage
 
@@ -36,8 +43,8 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 * {RDF::Microdata::Format}
   Asserts :html format, text/html mime-type and .html file extension.
 * {RDF::Microdata::Reader}
-  * {RDF::RDFa::Reader::Nokogiri}
-  * {RDF::RDFa::Reader::REXML}
+  * {RDF::Microdata::Reader::Nokogiri}
+  * {RDF::Microdata::Reader::REXML}
 
 ### Additional vocabularies
 
@@ -48,8 +55,9 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 ## Resources
 * [RDF.rb][RDF.rb]
 * [Documentation](http://rdf.rubyforge.org/microdata)
-* [History](file:file.History.html)
+* [History](file:History.md)
 * [Microdata][]
+* [Microdata RDF][]
 
 ## Author
 * [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
@@ -84,5 +92,6 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [YARD]:             http://yardoc.org/
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
-[Microdata]:        https://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html     "Microdata to RDF"
+[Microdata]:        http://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
+[Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
 [Microdata doc]:    http://rubydoc.info/github/gkellogg/rdf-microdata/frames
