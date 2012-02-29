@@ -99,26 +99,30 @@ module RDF::Microdata
       # @return [RDF::URI]
       def predicateURI(name, ec)
         u = RDF::URI(name)
+        # 1) If _name_ is an _absolute URL_, return _name_ as a _URI reference_
         return u if u.absolute?
         
         n = frag_escape(name)
         if ec[:current_type].nil?
+          # 2) If current type from context is null, there can be no current vocabulary.
+          #    Return the URI reference that is the document base with its fragment set to
+          #    the fragment-escaped value of name
           u = RDF::URI(ec[:document_base].to_s)
           u.fragment = frag_escape(name)
           u
         elsif @scheme == :vocabulary
-          # If scheme is vocabulary return the URI reference constructed by appending the fragment escaped value of name
-          # to current vocabulary, separated by a U+0023 NUMBER SIGN character (#) unless the current vocabulary ends
-          # with either a U+0023 NUMBER SIGN character (#) or SOLIDUS U+002F (/).
+          # 4) If scheme is vocabulary return the URI reference constructed by appending the fragment escaped value of name
+          #    to current vocabulary, separated by a U+0023 NUMBER SIGN character (#) unless the current vocabulary ends
+          #    with either a U+0023 NUMBER SIGN character (#) or SOLIDUS U+002F (/).
           RDF::URI(@property_base + n)
         else  # @scheme == :contextual
-          if ec[:current_type].to_s.index(@property_base) == 0
-            # return the concatenation of s, a U+002E FULL STOP character (.) and the fragment-escaped value of name.
-            RDF::URI(@property_base + '.' + n)
+          if ec[:current_name].to_s.index(@property_base) == 0
+            # 5.2) return the concatenation of s, a U+002E FULL STOP character (.) and the fragment-escaped value of name.
+            RDF::URI(ec[:current_name] + '.' + n)
           else
-            # return the concatenation of http://www.w3.org/ns/md?type=, the fragment-escaped value of s,
+            # 5.3) return the concatenation of http://www.w3.org/ns/md?type=, the fragment-escaped value of current type,
             # the string &prop=, and the fragment-escaped value of name
-            RDF::URI(@property_base + frag_escape(ec[:current_type]) + '?prop=' + n)
+            RDF::URI(@property_base + frag_escape(ec[:current_type]) + '&prop=' + n)
           end
         end
       end
@@ -381,52 +385,55 @@ module RDF::Microdata
         add_triple(item, subject, RDF.type, t)
       end
       
-      # 5) If type is not an absolute URL, set it to current type from the Evaluation Context if not empty.
-      type ||= ec[:current_type]
-      add_debug(item)  {"gentrips(5): type=#{type.inspect}"}
+      # 5) If type is an absolute URL, set current name in evaluation context to null.
+      ec[:current_name] = nil if type
 
-      # 6) If the registry contains a URI prefix that is a character for character match of type up to the length of the
+      # 6) Otherwise, set type to current type from the Evaluation Context if not empty.
+      type ||= ec[:current_type]
+      add_debug(item)  {"gentrips(6): type=#{type.inspect}"}
+
+      # 7) If the registry contains a URI prefix that is a character for character match of type up to the length of the
       #    URI prefix, set vocab as that URI prefix
       vocab = Registry.find(type)
 
-      # 7) Otherwise, if type is not empty, construct vocab by removing everything following the last
-      #    SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from type.
+      # 8) Otherwise, if type is not empty, construct vocab by removing everything following the last
+      #    SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.
       vocab ||= begin
         type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
-        add_debug(item)  {"gentrips(7): typtype_vocab=#{type_vocab.inspect}"}
+        add_debug(item)  {"gentrips(8): type_vocab=#{type_vocab.inspect}"}
         Registry.new(type_vocab) # if type
       end
 
-      # 8) Update evaluation context setting current vocabulary to vocab.
+      # 9) Update evaluation context setting current vocabulary to vocab.
       ec[:current_vocabulary] = vocab
 
-      # 9) Set property list to an empty mapping between properties and one or more ordered values as established below.
+      # 10) Set property list to an empty mapping between properties and one or more ordered values as established below.
       property_list = {}
 
-      # 10. For each element _element_ that has one or more property names and is one of the
+      # 11. For each element _element_ that has one or more property names and is one of the
       #    properties of the item _item_, in the order those elements are given by the algorithm
       #    that returns the properties of an item, run the following substep:
       props = item_properties(item)
-      # 10.1. For each name name in element's property names, run the following substeps:
+      # 11.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          add_debug(element) {"gentrips(10.1): name=#{name.inspect}, type=#{type}"}
+          add_debug(item) {"gentrips(11.1): name=#{name.inspect}, type=#{type}"}
           # Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
           ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
           
           predicate = vocab.predicateURI(name, ec_new)
           ec_new[:current_name] = predicate
-          add_debug(element) {"gentrips(10.1.2): predicate=#{predicate}"}
+          add_debug(item) {"gentrips(11.1.2): predicate=#{predicate}"}
           
-          # 10.1.3) Let value be the property value of element.
+          # 11.1.3) Let value be the property value of element.
           value = property_value(element)
-          add_debug(element) {"gentrips(10.1.3) value=#{value.inspect}"}
+          add_debug(item) {"gentrips(11.1.3) value=#{value.inspect}"}
           
-          # 10.1.4) If value is an item, then generate the triples for value using a copy of evaluation context with
+          # 11.1.4) If value is an item, then generate the triples for value using a copy of evaluation context with
           #       current type set to type. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec_new) 
-            add_debug(element) {"gentrips(10.1.4): value=#{value.inspect}"}
+            add_debug(item) {"gentrips(11.1.4): value=#{value.inspect}"}
           end
 
           property_list[predicate] ||= []
@@ -434,7 +441,7 @@ module RDF::Microdata
         end
       end
       
-      # 11) For each predicate in property list
+      # 12) For each predicate in property list
       property_list.each do |predicate, values|
         generatePropertyValues(item, subject, predicate, values)
       end

@@ -652,6 +652,20 @@ describe "RDF::Microdata::Reader" do
                   ) .
                 )
               ],
+              "http://foo#Type + bar + baz => http://foo#baz" =>
+              [
+                %q(
+                  <div itemscope='' itemtype='http://foo#Type'>
+                    <p itemscope='' itemprop='bar'><span itemprop='baz'>Baz</span></p>
+                  </div>
+                ),
+                %q(
+                  <> <http://www.w3.org/ns/md#item> (
+                    [ a <http://foo#Type>;
+                      <http://foo#bar> [ <http://foo#baz> "Baz"]]
+                  )
+                )
+              ],
             }.each do |name, (md, nt)|
               it "expands #{name}" do
                 parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
@@ -659,20 +673,42 @@ describe "RDF::Microdata::Reader" do
             end
           end
 
-          context "with vocabulary http://schema.org/" do
-            it "should be tested"
-          end
-
-          context "with vocabulary http://purl.org/vocab/frbr/core#" do
-            it "should be tested"
-          end
-
-          context "with vocabulary http://microformats.org/profile/hcard" do
-            it "should be tested"
-          end
-
-          context "with contextual http://n.whatwg.org/work" do
-            it "should be tested"
+          context "with contextual expansion" do
+            {
+              "http://n.whatwg.org/work + baz => http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=baz" =>
+              [
+                %q(
+                  <div itemscope='' itemtype='http://n.whatwg.org/work'>
+                    <p itemprop='baz'>FooBar</p>
+                  </div>
+                ),
+                %q(
+                  <> <http://www.w3.org/ns/md#item> (
+                    [ a <http://n.whatwg.org/work>;
+                      <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=baz> "FooBar" ]
+                  ) .
+                )
+              ],
+              "http://n.whatwg.org/work + bar + baz => http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar.baz" =>
+              [
+                %q(
+                  <div itemscope='' itemtype='http://n.whatwg.org/work'>
+                    <p itemscope='' itemprop='bar'><span itemprop='baz'>Baz</span></p>
+                  </div>
+                ),
+                %q(
+                  <> <http://www.w3.org/ns/md#item> (
+                    [ a <http://n.whatwg.org/work>;
+                      <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar> [
+                        <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar.baz> "Baz"]]
+                  )
+                )
+              ],
+            }.each do |name, (md, nt)|
+              it "expands #{name}" do
+                parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+              end
+            end
           end
         end
 
