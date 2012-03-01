@@ -418,9 +418,10 @@ module RDF::Microdata
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
           add_debug(item) {"gentrips(11.1): name=#{name.inspect}, type=#{type}"}
-          # Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
+          # 11.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
           ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
           
+          # 11.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
           predicate = vocab.predicateURI(name, ec_new)
           ec_new[:current_name] = predicate
           add_debug(item) {"gentrips(11.1.2): predicate=#{predicate}"}
@@ -429,13 +430,14 @@ module RDF::Microdata
           value = property_value(element)
           add_debug(item) {"gentrips(11.1.3) value=#{value.inspect}"}
           
-          # 11.1.4) If value is an item, then generate the triples for value using a copy of evaluation context with
-          #       current type set to type. Replace value by the subject returned from those steps.
+          # 11.1.4) If value is an item, then generate the triples for value context.
+          #         Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec_new) 
             add_debug(item) {"gentrips(11.1.4): value=#{value.inspect}"}
           end
 
+          # 11.1.5) Add value to property list for predicate
           property_list[predicate] ||= []
           property_list[predicate] << value
         end
