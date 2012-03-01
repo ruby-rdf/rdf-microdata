@@ -47,8 +47,9 @@ options = {
   :validate => false,
   :strict => true,
   :output => STDOUT,
-  :output_format => :ntriples,
+  :output_format => :turtle,
   :input_format => :microdata,
+  :standard_prefixes => true,
   :rdf_terms => true,
   :base_uri => "http://example.com",
 }
