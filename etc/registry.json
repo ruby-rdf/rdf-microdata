@@ -31,9 +31,5 @@
     "properties": {
       "categories": {"multipleValues": "list"}
     }
-  },
-  "http://n.whatwg.org/work": {
-    "propertyURI":    "contextual",
-    "multipleValues": "list"
   }
 }
