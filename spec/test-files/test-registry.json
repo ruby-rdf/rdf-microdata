@@ -1,0 +1,39 @@
+{
+  "@comment": "This registry defines several artificial vocabularies used when running tests in the microdata to RDF test suite",
+  "http://vocabulary.unordered/": {
+    "propertyURI":    "vocabulary",
+    "multipleValues": "unordered",
+    "properties": {
+      "list": {"multipleValues": "list"},
+      "ordered": {"multipleValues": "ordered"},
+      "typed": {"daetatype": "http://typed"}
+    }
+  },
+  "http://vocabulary.list/": {
+    "propertyURI":    "vocabulary",
+    "multipleValues": "list",
+    "properties": {
+      "list": {"multipleValues": "list"},
+      "ordered": {"multipleValues": "ordered"},
+      "typed": {"daetatype": "http://typed"}
+    }
+  },
+  "http://contextual.unordered/": {
+    "propertyURI":    "contextual",
+    "multipleValues": "unordered",
+    "properties": {
+      "list": {"multipleValues": "list"},
+      "ordered": {"multipleValues": "ordered"},
+      "typed": {"daetatype": "http://typed"}
+    }
+  },
+  "http://contextual.list/": {
+    "propertyURI":    "contextual",
+    "multipleValues": "list",
+    "properties": {
+      "list": {"multipleValues": "list"},
+      "ordered": {"multipleValues": "ordered"},
+      "typed": {"daetatype": "http://typed"}
+    }
+  }
+}

@@ -675,32 +675,32 @@ describe "RDF::Microdata::Reader" do
 
           context "with contextual expansion" do
             {
-              "http://n.whatwg.org/work + baz => http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=baz" =>
+              "http://contextual.unordered/ + baz => http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=baz" =>
               [
                 %q(
-                  <div itemscope='' itemtype='http://n.whatwg.org/work'>
+                  <div itemscope='' itemtype='http://contextual.unordered/'>
                     <p itemprop='baz'>FooBar</p>
                   </div>
                 ),
                 %q(
                   <> <http://www.w3.org/ns/md#item> (
-                    [ a <http://n.whatwg.org/work>;
-                      <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=baz> "FooBar" ]
+                    [ a <http://contextual.unordered/>;
+                      <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=baz> "FooBar" ]
                   ) .
                 )
               ],
-              "http://n.whatwg.org/work + bar + baz => http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar.baz" =>
+              "http://contextual.unordered/ + bar + baz => http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar.baz" =>
               [
                 %q(
-                  <div itemscope='' itemtype='http://n.whatwg.org/work'>
+                  <div itemscope='' itemtype='http://contextual.unordered/'>
                     <p itemscope='' itemprop='bar'><span itemprop='baz'>Baz</span></p>
                   </div>
                 ),
                 %q(
                   <> <http://www.w3.org/ns/md#item> (
-                    [ a <http://n.whatwg.org/work>;
-                      <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar> [
-                        <http://www.w3.org/ns/md?type=http://n.whatwg.org/work&prop=bar.baz> "Baz"]]
+                    [ a <http://contextual.unordered/>;
+                      <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar> [
+                        <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar.baz> "Baz"]]
                   )
                 )
               ],
@@ -730,6 +730,7 @@ describe "RDF::Microdata::Reader" do
         :debug => @debug,
         :validate => true,
         :library => @library,
+        :registry_uri => File.expand_path("../test-files/test-registry.json", __FILE__),
         :canonicalize => false}.merge(options)).each do |statement|
       graph << statement
     end
@@ -737,7 +738,7 @@ describe "RDF::Microdata::Reader" do
   end
 
   def test_file(filepath)
-    graph = parse(File.open(filepath))
+    graph = parse(File.open(filepath), :registry_uri => nil)
 
     ttl_string = File.read(filepath.sub('.html', '.ttl'))
     graph.should be_equivalent_graph(ttl_string, :trace => @debug, :format => :ttl)
