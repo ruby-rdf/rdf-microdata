@@ -45,15 +45,21 @@ module RDF::Microdata
       ##
       # Initialize the registry from a URI or file path
       #
-      # @param [Hash] json
-      def self.load_registry(json)
+      # @param [String] registry_uri
+      def self.load_registry(registry_uri)
+        return if @registry_uri == registry_uri
+        
+        json = RDF::Util::File.open_file(registry_uri) { |f| JSON.load(f) }
+        
         @prefixes = {}
         json.each do |prefix, elements|
+          next unless elements.is_a?(Hash)
           propertyURI = elements.fetch("propertyURI", "vocabulary").to_sym
           multipleValues = elements.fetch("multipleValues", "unordered").to_sym
           properties = elements.fetch("properties", {})
           @prefixes[prefix] = Registry.new(prefix, propertyURI, multipleValues, properties)
         end
+        @registry_uri = registry_uri
       end
       
       ##
@@ -219,14 +225,11 @@ module RDF::Microdata
         add_debug(@doc, "library = #{@library}")
 
         # Load registry
-        unless Registry.loaded?
-          registry = options[:registry_uri] || DEFAULT_REGISTRY
-          begin
-            json = RDF::Util::File.open_file(registry) { |f| JSON.load(f) }
-          rescue JSON::ParserError => e
-            raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
-          end
-          Registry.load_registry(json)
+        begin
+          registry_uri = options[:registry_uri] || DEFAULT_REGISTRY
+          Registry.load_registry(registry_uri)
+        rescue JSON::ParserError => e
+          raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
         end
         
         if block_given?
