@@ -38,7 +38,11 @@ describe RDF::Microdata::Format do
 
   describe ".detect" do
     {
-      :microdata => '<div itemref="bar"></div>',
+      :itemprop =>  '<div itemprop="bar"></div>',
+      :itemtype =>  '<div itemtype="bar"></div>',
+      :itemref =>   '<div itemref="bar"></div>',
+      :itemscope => '<div itemscope=""></div>',
+      :itemid =>    '<div itemid="bar"></div>',
     }.each do |sym, str|
       it "detects #{sym}" do
         @format_class.detect(str).should be_true
@@ -50,7 +54,12 @@ describe RDF::Microdata::Format do
       :nquads => "<a> <b> <c> <d> . ",
       :rdfxml => '<rdf:RDF about="foo"></rdf:RDF>',
       :jsonld => '{"@context" => "foo"}',
-      :rdfa   => '<div about="foo"></div>',
+      :about    => '<div about="foo"></div>',
+      :typeof   => '<div typeof="foo"></div>',
+      :resource => '<div resource="foo"></div>',
+      :vocab    => '<div vocab="foo"></div>',
+      :prefix   => '<div prefix="foo"></div>',
+      :property => '<div property="foo"></div>',
       :ntriples         => "<a> <b> <c> .",
       :multi_line       => '<a>\n  <b>\n  "literal"\n .',
       :turtle           => "@prefix foo: <bar> .\n foo:a foo:b <c> .",
