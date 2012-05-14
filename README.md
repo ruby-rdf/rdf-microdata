@@ -85,7 +85,7 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 
 * gregg@kellogg-assoc.com
 * <http://rubygems.org/rdf-microdata>
-* <http://github.com/gkellogg/rdf-microdata>
+* <http://github.com/ruby-rdf/rdf-microdata>
 * <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
 [RDF.rb]:           http://rdf.rubyforge.org/
@@ -94,4 +94,4 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
 [Microdata]:        http://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
 [Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
-[Microdata doc]:    http://rubydoc.info/github/gkellogg/rdf-microdata/frames
+[Microdata doc]:    http://rubydoc.info/github/ruby-rdf/rdf-microdata/frames

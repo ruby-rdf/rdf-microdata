@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.date                  = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name                  = "rdf-microdata"
-  gem.homepage              = "http://github.com/gkellogg/rdf-microdata"
+  gem.homepage              = "http://github.com/ruby-rdf/rdf-microdata"
   gem.license               = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary               = "Microdata reader for Ruby."
   gem.description           = gem.summary
