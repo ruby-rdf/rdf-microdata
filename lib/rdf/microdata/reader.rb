@@ -14,7 +14,7 @@ module RDF::Microdata
   # Based on processing rules, amended with the following:
   #
   # @see https://dvcs.w3.org/hg/htmldata/raw-file/0d6b89f5befb/microdata-rdf/index.html
-  # @author [Gregg Kellogg](http://kellogg-assoc.com/)
+  # @author [Gregg Kellogg](http://greggkellogg.net/)
   class Reader < RDF::Reader
     format Format
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)

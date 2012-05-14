@@ -18,7 +18,7 @@ module RDF
   # @see http://rdf.rubyforge.org/
   # @see http://www.w3.org/TR/2011/WD-microdata-20110525/
   #
-  # @author [Gregg Kellogg](http://kellogg-assoc.com/)
+  # @author [Gregg Kellogg](http://greggkellogg.net/)
   module Microdata
     require 'rdf/microdata/format'
     require 'rdf/microdata/vocab'

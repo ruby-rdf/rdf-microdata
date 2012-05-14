@@ -60,7 +60,7 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 * [Microdata RDF][]
 
 ## Author
-* [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
+* [Gregg Kellogg](http://github.com/gkellogg) - <http://greggkellogg.net/>
 
 ## Contributing
 
@@ -83,7 +83,7 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 
 ## FEEDBACK
 
-* gregg@kellogg-assoc.com
+* gregg@greggkellogg.net
 * <http://rubygems.org/rdf-microdata>
 * <http://github.com/ruby-rdf/rdf-microdata>
 * <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
