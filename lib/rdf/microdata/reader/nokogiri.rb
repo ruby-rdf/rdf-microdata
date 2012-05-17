@@ -141,7 +141,7 @@ module RDF::Microdata
 
         ##
         # Add NodeSetProxys
-        # @param [NodeSetProxy, Nokogiri::XML::Node]
+        # @param [NodeSetProxy, Nokogiri::XML::Node] other
         # @return [NodeSetProxy]
         def +(other)
           NodeSetProxy.new(self.node_set + other.node_set, parent)
@@ -149,7 +149,7 @@ module RDF::Microdata
 
         ##
         # Add a NodeProxy
-        # @param [NodeProxy, Nokogiri::XML::Node]
+        # @param [NodeProxy, Nokogiri::XML::Node] elem
         # @return [NodeSetProxy]
         def <<(elem)
           node_set << (elem.is_a?(NodeProxy) ? elem.node : elem)
