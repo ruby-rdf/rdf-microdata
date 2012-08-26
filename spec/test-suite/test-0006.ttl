@@ -1,4 +1,0 @@
-@prefix md: <http://www.w3.org/ns/md#> .
-@prefix schema: <http://schema.org/> .
-
-<> md:item ([ a schema:Thing; schema:embed <foo>]) .

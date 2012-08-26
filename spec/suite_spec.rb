@@ -30,28 +30,28 @@ describe RDF::Microdata::Reader do
       end
     end
 
-    describe "negative parser tests" do
-      Fixtures::SuiteTest::Bad.each do |m|
-        m.entries.each do |t|
-          specify "#{t.name}: #{t.comment}" do
-            begin
-              t.run_test do
-                lambda do
-                  #t.debug = []
-                   g = RDF::Graph.new
-                   RDF::Microdata::Reader.new(t.input,
-                       :base_uri => t.base_uri,
-                       :validate => true,
-                       :debug => t.debug).each do |statement|
-                     g << statement
-                   end
-                end.should raise_error(RDF::ReaderError)
-              end
-            end
-          end
-        end
-      end
-    end
+    #describe "negative parser tests" do
+    #  Fixtures::SuiteTest::Bad.each do |m|
+    #    m.entries.each do |t|
+    #      specify "#{t.name}: #{t.comment}" do
+    #        begin
+    #          t.run_test do
+    #            lambda do
+    #              #t.debug = []
+    #               g = RDF::Graph.new
+    #               RDF::Microdata::Reader.new(t.input,
+    #                   :base_uri => t.base_uri,
+    #                   :validate => true,
+    #                   :debug => t.debug).each do |statement|
+    #                 g << statement
+    #               end
+    #            end.should raise_error(RDF::ReaderError)
+    #          end
+    #        end
+    #      end
+    #    end
+    #  end
+    #end
   end
 
 end

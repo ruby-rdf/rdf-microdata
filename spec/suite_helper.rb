@@ -17,14 +17,14 @@ module Fixtures
 
     class Entry
       attr_accessor :debug
-      attr_accessor :compare
       include Spira::Resource
-      type MF["Entry"]
+      type MF["ManifestEntry"]
 
       property :name,     :predicate => MF["name"],         :type => XSD.string
       property :comment,  :predicate => RDF::RDFS.comment,  :type => XSD.string
-      property :result,   :predicate => MF.result
       has_many :action,   :predicate => MF["action"]
+      property :result,   :predicate => MF.result
+      property :registry, :predicate => MF.registry
 
       def input
         Kernel.open(self.inputDocument.to_s)
@@ -62,27 +62,13 @@ module Fixtures
       end
     end
     
-    class Bad < Manifest
-      default_source :turtle_bad
-
-      def entries
-        RDF::List.new(entry_list, self.class.repository).map { |entry| entry.as(BadEntry) }
-      end
-    end
-
     class GoodEntry < Entry
       default_source :turtle
     end
 
-    class BadEntry < Entry
-      default_source :turtle_bad
-    end
-
     # Note that the texts README says to use a different base URI
-    tests = RDF::Repository.load(SUITE_BASE + "manifest.ttl")
+    tests = RDF::Repository.load(SUITE_BASE + "index.html")
     Spira.add_repository! :turtle, tests
-    
-    tests_bad = RDF::Repository.load(SUITE_BASE + "manifest-bad.ttl")
-    Spira.add_repository! :turtle_bad, tests_bad
+    STDERR.puts "Loaded #{tests.count} triples: #{tests.dump(:ttl)}"
   end
 end
