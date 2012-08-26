@@ -1,7 +1,7 @@
 $:.unshift "."
 require 'spec_helper'
 
-unless env['CI']  # Skip for continuous integration
+unless ENV['CI']  # Skip for continuous integration
   describe RDF::Microdata::Reader do
     # W3C Microdata Test suite from FIXME
     describe "w3c microdata tests" do
