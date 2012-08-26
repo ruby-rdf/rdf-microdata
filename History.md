@@ -1,3 +1,12 @@
+### 0.2.5
+* If RDFa is loaded, don't assert text/html and :html content-type/extension, as RDFa will call out based on presence of @itemscope
+
+### 0.2.4
+* Update contextual case based on LC spec change to use current_name instead of current_type when creating a predicate URI in contextual.
+* Add hCard and hCalendar vocabulary definitions.
+* Make sure registry_uri is processed for each invocation, allowing it to be passed as a parameter.
+* Add --registry argument to script/parse to allow it to be specified.
+
 ### 0.2.3
 * Update to latest processing rules, including the use of a registry.
 * Updated microdata namespace.
