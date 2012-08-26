@@ -28,7 +28,9 @@ The parser uses a build-in version of the [Microdata RDF][] registry.
 
 ## Note
 This spec is based on the W3C HTML Data Task Force specification and does not support
-GRDDL-type triple generation, such as for html>head>title and <a>
+GRDDL-type triple generation, such as for html>head>title anchor tags.
+
+If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert content type `text/html` or file extension `.html`, as this is also asserted by RDFa. Instead, the RDFa reader will invoke the microdata reader if an `@itemscope` attribute is detected.
   
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.4)
