@@ -15,7 +15,11 @@ module RDF::Microdata
   # @see http://www.w3.org/TR/rdf-testcases/#ntriples
   class Format < RDF::Format
     content_encoding 'utf-8'
-    content_type     'text/html', :extension => :html
+
+    # Only define content type if RDFa is not available.
+    # The Microdata processor will be launched from there
+    # otherwise.
+    content_type     'text/html', :extension => :html unless RDF::Format.for(:rdfa)
     reader { RDF::Microdata::Reader }
   
     ##

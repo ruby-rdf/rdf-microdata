@@ -81,7 +81,8 @@ module RDF::Microdata
         @properties = properties
         if @scheme == :vocabulary
           @property_base = prefixURI.to_s
-          @property_base += '#' unless %w(/ #).include?(@property_base[-1,1]) # Append a '#' for fragment if necessary
+          # Append a '#' for fragment if necessary
+          @property_base += '#' unless %w(/ #).include?(@property_base[-1,1])
         else
           @property_base = 'http://www.w3.org/ns/md?type='
         end
@@ -283,8 +284,8 @@ module RDF::Microdata
     
     # Add debug event to debug array, if specified
     #
-    # @param [Nokogiri::XML::Node, #to_s] node:: XML Node or string for showing context
-    # @param [String] message::
+    # @param [Nokogiri::XML::Node, #to_s] node XML Node or string for showing context
+    # @param [String] message
     # @yieldreturn [String] appended to message, to allow for lazy-evaulation of message
     def add_debug(node, message = "")
       return unless ::RDF::Microdata.debug? || @debug
@@ -300,12 +301,12 @@ module RDF::Microdata
     
     # add a statement, object can be literal or URI or bnode
     #
-    # @param [Nokogiri::XML::Node, any] node:: XML Node or string for showing context
-    # @param [URI, BNode] subject:: the subject of the statement
-    # @param [URI] predicate:: the predicate of the statement
-    # @param [URI, BNode, Literal] object:: the object of the statement
-    # @return [Statement]:: Added statement
-    # @raise [ReaderError]:: Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
+    # @param [Nokogiri::XML::Node, any] node XML Node or string for showing context
+    # @param [URI, BNode] subject the subject of the statement
+    # @param [URI] predicate the predicate of the statement
+    # @param [URI, BNode, Literal] object the object of the statement
+    # @return [Statement] Added statement
+    # @raise [ReaderError] Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
       add_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}

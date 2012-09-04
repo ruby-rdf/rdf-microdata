@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rdf-microdata (0.2.4)
+    rdf-microdata (0.2.5)
       htmlentities (>= 4.3.0)
       json (>= 1.6.1)
       rdf (>= 0.3.4)
