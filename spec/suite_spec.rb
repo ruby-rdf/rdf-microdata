@@ -12,7 +12,6 @@ describe RDF::Microdata::Reader do
         m.entries.each do |t|
           specify "#{t.name}: #{t.comment}" do
             t.debug = []
-            t.debug << "base: #{t.data}"
             reader = RDF::Microdata::Reader.open(t.data,
               :base_uri => t.data,
               :strict => true,
