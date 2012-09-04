@@ -8,7 +8,7 @@ require 'open-uri'
 module RDF::Util
   module File
     TEST_PATH = "http://www.w3.org/TR/microdata-rdf/tests/"
-    REMOTE_PATH = "https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/"
+    REMOTE_PATH = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/"
     LOCAL_PATH = ::File.expand_path("../htmldata/microdata-rdf/tests/", __FILE__) + '/'
 
     ##

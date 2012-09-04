@@ -95,5 +95,5 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
 [Microdata]:        http://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
-[Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
+[Microdata RDF]:    http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
 [Microdata doc]:    http://rubydoc.info/github/ruby-rdf/rdf-microdata/frames

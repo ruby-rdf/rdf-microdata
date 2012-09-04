@@ -179,7 +179,7 @@ module RDF::Microdata
 
         ##
         # Add NodeSetProxys
-        # @param [NodeSetProxy, Nokogiri::XML::Node] other
+        # @param [NodeSetProxy, REXML::Element] other
         # @return [NodeSetProxy]
         def +(other)
           new_ns = node_set.clone
@@ -189,7 +189,7 @@ module RDF::Microdata
 
         ##
         # Add a NodeProxy
-        # @param [NodeProxy, Nokogiri::XML::Node] elem
+        # @param [NodeProxy, REXML::Element] elem
         # @return [NodeSetProxy]
         def <<(elem)
           node_set << (elem.is_a?(NodeProxy) ? elem.node : elem)
