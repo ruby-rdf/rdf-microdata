@@ -1,4 +1,5 @@
 # RDF::Microdata reader/writer
+[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](http://travis-ci.org/ruby-rdf/rdf-microdata)
 
 [Microdata][] parser for RDF.rb.
 
