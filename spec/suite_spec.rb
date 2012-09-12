@@ -24,9 +24,9 @@ describe RDF::Microdata::Reader do
             graph = RDF::Graph.new << reader
 
             #puts "parse #{t.query} as #{RDF::Reader.for(t.query)}"
-            output_graph = RDF::Graph.load(t.query, :base_uri => t.data)
+            output_graph = RDF::Graph.load(t.result, :base_uri => t.data)
             puts "result: #{CGI.escapeHTML(graph.dump(:ttl))}" if ::RDF::Microdata::debug?
-            if t.result
+            if t.positiveTest
               graph.should be_equivalent_graph(output_graph, t)
             else
               graph.should_not be_equivalent_graph(output_graph, t)

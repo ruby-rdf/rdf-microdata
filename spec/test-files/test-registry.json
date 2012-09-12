@@ -36,28 +36,5 @@
       "list": {"multipleValues": "list"},
       "typed": {"datatype": "http://typed"}
     }
-  },
-  "http://schema.org/": {
-    "propertyURI":    "vocabulary",
-    "multipleValues": "unordered",
-    "properties": {
-      "additionalType": {"subPropertyOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-      "blogPosts": {"multipleValues": "list"},
-      "breadcrumb": {"multipleValues": "list"},
-      "byArtist": {"multipleValues": "list"},
-      "creator": {"multipleValues": "list"},
-      "episodes": {"multipleValues": "list"},
-      "events": {"multipleValues": "list"},
-      "founders": {"multipleValues": "list"},
-      "itemListElement": {"multipleValues": "list"},
-      "musicGroupMember": {"multipleValues": "list"},
-      "performerIn": {"multipleValues": "list"},
-      "performers": {"multipleValues": "list"},
-      "producer": {"multipleValues": "list"},
-      "recipeInstructions": {"multipleValues": "list"},
-      "seasons": {"multipleValues": "list"},
-      "subEvents": {"multipleValues": "list"},
-      "tracks": {"multipleValues": "list"}
-    }
   }
 }

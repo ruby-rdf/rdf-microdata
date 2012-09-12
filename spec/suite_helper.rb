@@ -21,10 +21,12 @@ module RDF::Util
     # @yield [IO] File stream
     def self.open_file(filename_or_url, options = {}, &block)
       #puts "open #{filename_or_url}"
-      case filename_or_url.to_s
+      f = case filename_or_url.to_s
       when /^file:/
         path = filename_or_url[5..-1]
         Kernel.open(path.to_s, &block)
+      when 'http://www.w3.org/ns/md'
+        Kernel.open(RDF::Microdata::Reader::DEFAULT_REGISTRY)
       when /^#{REMOTE_PATH}/
         begin
           #puts "attempt to open #{filename_or_url} locally"
@@ -44,20 +46,22 @@ module RDF::Util
           end
           #puts "use #{filename_or_url} locally as #{response.content_type}"
 
-          if block_given?
-            begin
-              yield response
-            ensure
-              response.close
-            end
-          else
-            response
-          end
+          response
         rescue Errno::ENOENT
           # Not there, don't run tests
           Kernel.open(path.to_s, &block)
         end
       else
+      end
+
+      if block_given?
+        begin
+          yield f
+        ensure
+          f.close
+        end
+      else
+        f
       end
     end
   end
@@ -99,7 +103,7 @@ module JSON::LD
 
     def inspect
       "<Resource" +
-      attributes.dup.keep_if {|k, v| %(@id @type comment).include?(k)}.map do |k, v|
+      attributes.map do |k, v|
         "\n  #{k}: #{v.inspect}"
       end.join(" ") +
       ">"
@@ -137,18 +141,14 @@ module Fixtures
       def data
         self.action['data']
       end
-      
-      def query
-        self.action['query']
-      end
-      
+
       def registry
-        self.action.fetch('registry',
-          "http://www.w3.org/TR/microdata-rdf/tests/test-registry.json")
+        property('registry') ||
+          "http://www.w3.org/TR/microdata-rdf/tests/test-registry.json"
       end
 
-      def result
-        property('result') == 'true'
+      def positiveTest
+        property('positiveTest') == 'true'
       end
       
       def trace; @debug.join("\n"); end
