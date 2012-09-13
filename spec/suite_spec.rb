@@ -5,7 +5,7 @@ describe RDF::Microdata::Reader do
   # W3C Microdata Test suite from FIXME
   describe "w3c microdata tests", :ci => ENV['CI'] do
     require 'suite_helper'
-    MANIFEST = "http://www.w3.org/TR/microdata-rdf/tests/manifest.jsonld"
+    MANIFEST = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/manifest.jsonld"
 
     Fixtures::SuiteTest::Manifest.open(MANIFEST).each do |m|
       describe m.comment do

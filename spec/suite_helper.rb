@@ -7,7 +7,7 @@ require 'open-uri'
 # For now, override RDF::Utils::File.open_file to look for the file locally before attempting to retrieve it
 module RDF::Util
   module File
-    REMOTE_PATH = "http://www.w3.org/TR/microdata-rdf/tests/"
+    REMOTE_PATH = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/"
     LOCAL_PATH = ::File.expand_path("../htmldata/microdata-rdf/tests", __FILE__) + '/'
 
     ##
@@ -144,7 +144,7 @@ module Fixtures
 
       def registry
         property('registry') ||
-          "http://www.w3.org/TR/microdata-rdf/tests/test-registry.json"
+          "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/test-registry.json"
       end
 
       def positiveTest
