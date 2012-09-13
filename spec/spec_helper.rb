@@ -15,6 +15,7 @@ require 'matchers'
   c.run_all_when_everything_filtered = true
   c.exclusion_filter = {
     :ruby => lambda { |version| !(RUBY_VERSION.to_s =~ /^#{version.to_s}/) },
+    :ci => lambda {|ci| !ci.nil? }
   }
   c.include(RDF::Spec::Matchers)
 end

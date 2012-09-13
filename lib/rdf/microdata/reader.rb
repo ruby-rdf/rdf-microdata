@@ -50,7 +50,7 @@ module RDF::Microdata
         return if @registry_uri == registry_uri
         
         json = RDF::Util::File.open_file(registry_uri) { |f| JSON.load(f) }
-        
+
         @prefixes = {}
         json.each do |prefix, elements|
           next unless elements.is_a?(Hash)
@@ -228,6 +228,7 @@ module RDF::Microdata
         # Load registry
         begin
           registry_uri = options[:registry_uri] || DEFAULT_REGISTRY
+          add_debug(@doc, "registry = #{registry_uri}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
           raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
@@ -459,6 +460,7 @@ module RDF::Microdata
       # If the registry contains a URI prefix that is a character for character match of predicate up to the length
       # of the URI prefix, set vocab as that URI prefix. Otherwise set vocab to null
       registry = Registry.find(predicate)
+      add_debug("generatePropertyValues") { "list(#{predicate})? #{registry.as_list(predicate).inspect}"} if registry
       if registry && registry.as_list(predicate)
         value = generateRDFCollection(element, values)
         add_triple(element, subject, predicate, value)

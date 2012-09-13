@@ -1,12 +1,16 @@
 {
   "@comment": "This registry defines several artificial vocabularies used when running tests in the microdata to RDF test suite",
+  "http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#": {
+    "properties": {
+      "entries": {"multipleValues": "list"}
+    }
+  },
   "http://vocabulary.unordered/": {
     "propertyURI":    "vocabulary",
     "multipleValues": "unordered",
     "properties": {
       "list": {"multipleValues": "list"},
-      "ordered": {"multipleValues": "ordered"},
-      "typed": {"daetatype": "http://typed"}
+      "typed": {"datatype": "http://typed"}
     }
   },
   "http://vocabulary.list/": {
@@ -14,8 +18,7 @@
     "multipleValues": "list",
     "properties": {
       "list": {"multipleValues": "list"},
-      "ordered": {"multipleValues": "ordered"},
-      "typed": {"daetatype": "http://typed"}
+      "typed": {"datatype": "http://typed"}
     }
   },
   "http://contextual.unordered/": {
@@ -23,8 +26,7 @@
     "multipleValues": "unordered",
     "properties": {
       "list": {"multipleValues": "list"},
-      "ordered": {"multipleValues": "ordered"},
-      "typed": {"daetatype": "http://typed"}
+      "typed": {"datatype": "http://typed"}
     }
   },
   "http://contextual.list/": {
@@ -32,8 +34,7 @@
     "multipleValues": "list",
     "properties": {
       "list": {"multipleValues": "list"},
-      "ordered": {"multipleValues": "ordered"},
-      "typed": {"daetatype": "http://typed"}
+      "typed": {"datatype": "http://typed"}
     }
   }
 }
