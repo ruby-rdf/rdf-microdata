@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe RDF::Microdata::Reader do
   # W3C Microdata Test suite from FIXME
-  describe "w3c microdata tests", :no_ci => ENV['CI'], :no_jruby => true do
+  describe "w3c microdata tests", :no_jruby => true do
     require 'suite_helper'
     MANIFEST = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/manifest.jsonld"
 
@@ -35,4 +35,4 @@ describe RDF::Microdata::Reader do
       end
     end
   end
-end
+end unless ENV['CI']  # Skip for continuous integration
