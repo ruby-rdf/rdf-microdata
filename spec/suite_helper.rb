@@ -7,8 +7,9 @@ require 'open-uri'
 # For now, override RDF::Utils::File.open_file to look for the file locally before attempting to retrieve it
 module RDF::Util
   module File
+    TEST_PATH = "http://www.w3.org/TR/microdata-rdf/tests/"
     REMOTE_PATH = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/"
-    LOCAL_PATH = ::File.expand_path("../htmldata/microdata-rdf/tests", __FILE__) + '/'
+    LOCAL_PATH = ::File.expand_path("../htmldata/microdata-rdf/tests/", __FILE__) + '/'
 
     ##
     # Override to use Patron for http and https, Kernel.open otherwise.
@@ -21,47 +22,44 @@ module RDF::Util
     # @yield [IO] File stream
     def self.open_file(filename_or_url, options = {}, &block)
       #puts "open #{filename_or_url}"
-      f = case filename_or_url.to_s
-      when /^file:/
-        path = filename_or_url[5..-1]
-        Kernel.open(path.to_s, &block)
-      when 'http://www.w3.org/ns/md'
-        Kernel.open(RDF::Microdata::Reader::DEFAULT_REGISTRY)
-      when /^#{REMOTE_PATH}/
-        begin
-          #puts "attempt to open #{filename_or_url} locally"
-          #puts " => #{filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH)}"
-          response = ::File.open(filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH))
-          case filename_or_url.to_s
-          when /\.html$/
-            def response.content_type; 'text/html'; end
-          when /\.ttl$/
-            def response.content_type; 'text/turtle'; end
-          when /\.json$/
-            def response.content_type; 'application/json'; end
-          when /\.jsonld$/
-            def response.content_type; 'application/ld+json'; end
-          else
-            def response.content_type; 'unknown'; end
-          end
-          #puts "use #{filename_or_url} locally as #{response.content_type}"
-
-          response
-        rescue Errno::ENOENT
-          # Not there, don't run tests
-          Kernel.open(path.to_s, &block)
-        end
-      else
+      
+      # Translate test URI to remote location
+      if filename_or_url.to_s.index(TEST_PATH) == 0
+        filename_or_url = filename_or_url.sub(TEST_PATH, REMOTE_PATH)
       end
+      
+      # Look up remote files locally, if we have them mapped
+      if filename_or_url.to_s.index(REMOTE_PATH) == 0 and ::File.exist?(LOCAL_PATH)
+        #puts "attempt to open #{filename_or_url} locally"
+        #puts " => #{filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH)}"
+        response = ::File.open(filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH))
+        case filename_or_url.to_s
+        when /\.html$/
+          def response.content_type; 'text/html'; end
+        when /\.ttl$/
+          def response.content_type; 'text/turtle'; end
+        when /\.json$/
+          def response.content_type; 'application/json'; end
+        when /\.jsonld$/
+          def response.content_type; 'application/ld+json'; end
+        else
+          def response.content_type; 'unknown'; end
+        end
+        #puts "use #{filename_or_url} locally as #{response.content_type}"
 
-      if block_given?
-        begin
-          yield f
-        ensure
-          f.close
+        if block_given?
+          begin
+            yield response
+          ensure
+            response.close
+          end
+        else
+          response
         end
       else
-        f
+        # Standard implementation
+        filename_or_url = $1 if filename_or_url.to_s.match(/^file:(.*)$/)
+        Kernel.open(filename_or_url.to_s, &block)
       end
     end
   end
@@ -103,7 +101,7 @@ module JSON::LD
 
     def inspect
       "<Resource" +
-      attributes.map do |k, v|
+      attributes.dup.keep_if {|k, v| %(@id @type comment).include?(k)}.map do |k, v|
         "\n  #{k}: #{v.inspect}"
       end.join(" ") +
       ">"
@@ -141,14 +139,18 @@ module Fixtures
       def data
         self.action['data']
       end
-
+      
+      def query
+        self.action['query']
+      end
+      
       def registry
-        property('registry') ||
-          "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/test-registry.json"
+        self.action.fetch('registry',
+          "http://www.w3.org/TR/microdata-rdf/tests/test-registry.json")
       end
 
-      def positiveTest
-        property('positiveTest') == 'true'
+      def result
+        property('result') == 'true'
       end
       
       def trace; @debug.join("\n"); end
