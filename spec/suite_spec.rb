@@ -17,6 +17,7 @@ describe RDF::Microdata::Reader do
               :strict => true,
               :validate => true,
               :registry_uri => t.registry,
+              #:library => :nokogiri,
               :debug => t.debug)
             reader.should be_a RDF::Reader
 

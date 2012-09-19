@@ -54,7 +54,7 @@ module RDF::Util
       else
       end
 
-      if block_given?
+      if f && block_given?
         begin
           yield f
         ensure
@@ -113,6 +113,7 @@ end
 
 module Fixtures
   module SuiteTest
+    BASE = RDF::URI("http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/")
     class Manifest < JSON::LD::Resource
       def self.open(file)
         #puts "open: #{file}"
@@ -139,12 +140,17 @@ module Fixtures
 
       # Alias data and query
       def data
-        self.action['data']
+        BASE.join(self.action['data'])
       end
 
       def registry
-        property('registry') ||
+        reg = property('registry') ||
           "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/test-registry.json"
+        BASE.join(reg)
+      end
+
+      def result
+        BASE.join(property('result'))
       end
 
       def positiveTest
