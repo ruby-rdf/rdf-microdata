@@ -20,11 +20,14 @@ module RDF
   #
   # @author [Gregg Kellogg](http://greggkellogg.net/)
   module Microdata
+    USES_VOCAB = RDF::URI("http://www.w3.org/ns/rdfa#usesVocabulary")
+
     require 'rdf/microdata/format'
     require 'rdf/microdata/vocab'
-    autoload :Profile, 'rdf/microdata/profile'
-    autoload :Reader,  'rdf/microdata/reader'
-    autoload :VERSION, 'rdf/microdata/version'
+    autoload :Expansion,  'rdf/microdata/expansion'
+    autoload :Profile,    'rdf/microdata/profile'
+    autoload :Reader,     'rdf/microdata/reader'
+    autoload :VERSION,    'rdf/microdata/version'
     
     def self.debug?; @debug; end
     def self.debug=(value); @debug = value; end

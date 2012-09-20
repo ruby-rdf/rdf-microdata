@@ -36,5 +36,17 @@
       "list": {"multipleValues": "list"},
       "typed": {"datatype": "http://typed"}
     }
+  },
+  "http://expansion/": {
+    "propertyURI":  "vocabulary",
+    "multipleValues": "unordered",
+    "properties": {
+      "equivalentProperty": {
+        "equivalentProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "subPropertyOf": {
+        "subPropertyOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      }
+    }
   }
 }

@@ -17,9 +17,9 @@ module RDF::Microdata
   # @author [Gregg Kellogg](http://greggkellogg.net/)
   class Reader < RDF::Reader
     format Format
+    include Expansion
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)
     DEFAULT_REGISTRY = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "etc", "registry.json"))
-    USES_VOCAB = RDF::URI("http://www.w3.org/ns/rdfa#usesVocabulary")
     
     class CrawlFailure < StandardError  #:nodoc:
     end
@@ -117,29 +117,26 @@ module RDF::Microdata
         n = frag_escape(name)
         if ec[:current_type].nil?
           # 2) If current type from context is null, there can be no current vocabulary.
-          #    Return the URI reference that is the document base with its fragment set to
-          #    the fragment-escaped value of name
+          #    Return the URI reference that is the document base with its fragment set to the fragment-escaped value of name
           u = RDF::URI(ec[:document_base].to_s)
           u.fragment = frag_escape(name)
           u
         elsif @scheme == :vocabulary
-          # 4) If scheme is vocabulary return the URI reference constructed by appending the fragment escaped value of name
-          #    to current vocabulary, separated by a U+0023 NUMBER SIGN character (#) unless the current vocabulary ends
-          #    with either a U+0023 NUMBER SIGN character (#) or SOLIDUS U+002F (/).
+          # 4) If scheme is vocabulary return the URI reference constructed by appending the fragment escaped value of name to current vocabulary, separated by a U+0023 NUMBER SIGN character (#) unless the current vocabulary ends with either a U+0023 NUMBER SIGN character (#) or SOLIDUS U+002F (/).
           RDF::URI(@property_base + n)
         else  # @scheme == :contextual
           if ec[:current_name].to_s.index(@property_base) == 0
             # 5.2) return the concatenation of s, a U+002E FULL STOP character (.) and the fragment-escaped value of name.
             RDF::URI(ec[:current_name] + '.' + n)
           else
-            # 5.3) return the concatenation of http://www.w3.org/ns/md?type=, the fragment-escaped value of current type,
-            # the string &prop=, and the fragment-escaped value of name
-            RDF::URI(@property_base + frag_escape(ec[:current_type]) + '&prop=' + n)
+            # 5.3) return the concatenation of http://www.w3.org/ns/md?type=, the fragment-escaped value of current type, the string &prop=, and the fragment-escaped value of name
+            RDF::URI(@property_base +
+                     frag_escape(ec[:current_type]) +
+                     '&prop=' + n)
           end
         end
       end
-      
-      
+
       ##
       # Turn a predicateURI into a simple token
       # @param [RDF::URI] predicateURI
@@ -159,10 +156,37 @@ module RDF::Microdata
       # @return [Boolean]
       def as_list(predicateURI)
         tok = tokenize(predicateURI)
-        if @properties[tok].is_a?(Hash)
+        if @properties[tok].is_a?(Hash) &&
+           @properties[tok].has_key?("multipleValues")
           @properties[tok]["multipleValues"].to_sym == :list
         else
           @multipleValues == :list
+        end
+      end
+
+      ##
+      # Yield a equivalentProperty or subPropertyOf if appropriate
+      # @param [RDF::URI] predicateURI
+      # @yield :statement
+      # @yieldparam [RDF::Statement] statement
+      # @return [Boolean]
+      def expand(predicateURI)
+        tok = tokenize(predicateURI)
+        if @properties[tok].is_a?(Hash)
+          if value = @properties[tok]["equivalentProperty"]
+            [value].flatten.each do |v|
+              yield RDF::Statement.new(predicateURI,
+                                       RDF::OWL.equivalentProperty,
+                                       RDF::URI(v))
+            end
+          elsif value = @properties[tok]["subPropertyOf"]
+            [value].flatten.each do |v|
+              yield RDF::Statement.new(predicateURI,
+                                       RDF::RDFS.subPropertyOf,
+                                       RDF::URI(v))
+            end
+          end
+          value = @properties[tok]
         end
       end
 
@@ -193,6 +217,8 @@ module RDF::Microdata
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
     # @option options [#to_s]    :registry_uri (DEFAULT_REGISTRY)
+    # @option options [Boolean]  :vocab_expansion (true)
+    #   whether to perform OWL2 expansion on the resulting graph
     # @option options [Array] :debug
     #   Array to place debug messages
     # @return [reader]
@@ -203,6 +229,7 @@ module RDF::Microdata
     def initialize(input = $stdin, options = {}, &block)
       super do
         @debug = options[:debug]
+        @vocab_expansion = options.fetch(:vocab_expansion, true)
 
         @library = case options[:library]
           when nil
@@ -228,7 +255,7 @@ module RDF::Microdata
         errors = doc_errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
         raise RDF::ReaderError, "Syntax errors:\n#{errors}" if !errors.empty? && validate?
 
-        add_debug(@doc, "library = #{@library}")
+        add_debug(@doc, "library = #{@library}, expand = #{@vocab_expansion}")
 
         # Load registry
         begin
@@ -251,14 +278,22 @@ module RDF::Microdata
     ##
     # Iterates the given block for each RDF statement in the input.
     #
+    # Reads to graph and performs expansion if required.
+    #
     # @yield  [statement]
     # @yieldparam [RDF::Statement] statement
     # @return [void]
     def each_statement(&block)
-      @callback = block
+      if @vocab_expansion
+        @vocab_expansion = false
+        expand.each_statement(&block)
+        @vocab_expansion = true
+      else
+        @callback = block
 
-      # parse
-      parse_whole_document(@doc, base_uri)
+        # parse
+        parse_whole_document(@doc, base_uri)
+      end
     end
 
     ##
@@ -433,6 +468,15 @@ module RDF::Microdata
           
           # 11.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
           predicate = vocab.predicateURI(name, ec_new)
+          
+          # (Generate Predicate URI steps 6 and 7)
+          vocab.expand(predicate) do |statement|
+            add_debug(item) {
+              "gentrips(11.1.2): expansion #{statement.inspect}"
+            }
+            @callback.call(statement)
+          end
+
           ec_new[:current_name] = predicate
           add_debug(item) {"gentrips(11.1.2): predicate=#{predicate}"}
           

@@ -712,6 +712,94 @@ describe "RDF::Microdata::Reader" do
           end
         end
 
+        context "vocabulary expansion" do
+          it "expands if vocab_expansion is true" do
+            md = %q(
+              <div itemscope='' itemtype='http://expansion/MainType'>
+                <link itemprop='subPropertyOf' href='http://expansion/AdditionalType' />
+              </div>
+            )
+            ttl = %q(
+              <> <http://www.w3.org/ns/md#item> (
+                  [ a <http://expansion/MainType>,
+                      <http://expansion/AdditionalType>;
+                    <http://expansion/subPropertyOf>
+                      <http://expansion/AdditionalType>]
+                );
+                <http://www.w3.org/ns/rdfa#usesVocabulary>
+                  <http://expansion/> .
+              <http://expansion/subPropertyOf>
+                <http://www.w3.org/2000/01/rdf-schema#subPropertyOf>
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+            )
+
+              parse(md, :vocab_expansion => true).should be_equivalent_graph(ttl, :trace => @debug)
+          end
+
+          it "expands by default" do
+            md = %q(
+              <div itemscope='' itemtype='http://expansion/MainType'>
+                <link itemprop='subPropertyOf' href='http://expansion/AdditionalType' />
+              </div>
+            )
+            ttl = %q(
+              <> <http://www.w3.org/ns/md#item> (
+                  [ a <http://expansion/MainType>,
+                      <http://expansion/AdditionalType>;
+                    <http://expansion/subPropertyOf>
+                      <http://expansion/AdditionalType>]
+                );
+                <http://www.w3.org/ns/rdfa#usesVocabulary>
+                  <http://expansion/> .
+              <http://expansion/subPropertyOf>
+                <http://www.w3.org/2000/01/rdf-schema#subPropertyOf>
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+            )
+
+              parse(md).should be_equivalent_graph(ttl, :trace => @debug)
+          end
+
+          it "expands equivalentProperty" do
+            md = %q(
+              <div itemscope='' itemtype='http://expansion/MainType'>
+                <link itemprop='equivalentProperty' href='http://expansion/AdditionalType' />
+              </div>
+            )
+            ttl = %q(
+              <> <http://www.w3.org/ns/md#item> (
+                [ a <http://expansion/MainType>,
+                    <http://expansion/AdditionalType>;
+                  <http://expansion/equivalentProperty>
+                    <http://expansion/MainType>,
+                    <http://expansion/AdditionalType>]
+              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/>               <http://expansion/equivalentProperty>
+                <http://www.w3.org/2002/07/owl#equivalentProperty>
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+            )
+
+              parse(md, :vocab_expansion => true).should be_equivalent_graph(ttl, :trace => @debug)
+          end
+
+          it "does not expand if vocab_expansion is false" do
+            md = %q(
+              <div itemscope='' itemtype='http://expansion/MainType'>
+                <link itemprop='equivalentProperty' href='http://expansion/AdditionalType' />
+              </div>
+            )
+            ttl = %q(
+              <> <http://www.w3.org/ns/md#item> (
+                [ a <http://expansion/MainType>;
+                  <http://expansion/equivalentProperty>
+                    <http://expansion/AdditionalType>]
+              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/>               <http://expansion/equivalentProperty>
+                <http://www.w3.org/2002/07/owl#equivalentProperty>
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+            )
+
+              parse(md, :vocab_expansion => false).should be_equivalent_graph(ttl, :trace => @debug)
+          end
+        end
+
         context "test-files" do
           Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), "test-files", "*.html")).each do |md|
             it "parses #{md}" do
