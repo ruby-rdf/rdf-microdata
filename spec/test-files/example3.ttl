@@ -1,6 +1,7 @@
 @prefix md: <http://www.w3.org/ns/md#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix schema: <http://schema.org/> .
+@prefix rdfa: <http://www.w3.org/ns/rdfa#> .
 
 <> md:item ([ a schema:MusicPlaylist;
   schema:name "Classic Rock Playlist";
@@ -15,4 +16,5 @@
       schema:byArtist ("AC/DC");;
       schema:name "Shook you all Night Long";
       schema:url <shook-you-all-night-long>]
-  )]); .
+  )]);
+  rdfa:usesVocabulary <http://schema.org/> .

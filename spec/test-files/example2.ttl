@@ -1,5 +1,6 @@
 @prefix md: <http://www.w3.org/ns/md#> .
 @prefix hcard: <http://microformats.org/profile/hcard#> .
+@prefix rdfa: <http://www.w3.org/ns/rdfa#> .
 
 <> md:item (
   [ a <http://microformats.org/profile/hcard>;
@@ -11,6 +12,7 @@
     hcard:fn "Trekkie";
     hcard:n [ hcard:given-name "Trekkie" ];
     hcard:adr _:a
-  ]) .
+  ]);
+  rdfa:usesVocabulary <http://microformats.org/profile/hcard> .
 
 _:a hcard:street-address "Avenue Q" .

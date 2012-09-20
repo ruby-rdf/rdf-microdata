@@ -19,6 +19,7 @@ module RDF::Microdata
     format Format
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)
     DEFAULT_REGISTRY = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "etc", "registry.json"))
+    USES_VOCAB = RDF::URI("http://www.w3.org/ns/rdfa#usesVocabulary")
     
     class CrawlFailure < StandardError  #:nodoc:
     end
@@ -42,6 +43,9 @@ module RDF::Microdata
 
     # Interface to registry
     class Registry
+      # @attr_reader [RDF::URI] uri Prefix of vocabulary
+      attr_reader :uri
+
       ##
       # Initialize the registry from a URI or file path
       #
@@ -76,6 +80,7 @@ module RDF::Microdata
       # @param [#to_sym] multipleValues (:unordered)
       # @param [Hash] properties ({})
       def initialize(prefixURI, propertyURI = :vocabulary, multipleValues = :unordered, properties = {})
+        @uri = prefixURI
         @scheme = propertyURI.to_sym
         @multipleValues = multipleValues.to_sym
         @properties = properties
@@ -397,9 +402,9 @@ module RDF::Microdata
       type ||= ec[:current_type]
       add_debug(item)  {"gentrips(6): type=#{type.inspect}"}
 
-      # 7) If the registry contains a URI prefix that is a character for character match of type up to the length of the
-      #    URI prefix, set vocab as that URI prefix
+      # 7) If the registry contains a URI prefix that is a character for character match of type up to the length of the URI prefix, set vocab as that URI prefix and generate the following triple (unless it has already been generated):
       vocab = Registry.find(type)
+      add_triple(item, base_uri, USES_VOCAB, RDF::URI(vocab.uri)) if vocab
 
       # 8) Otherwise, if type is not empty, construct vocab by removing everything following the last
       #    SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.

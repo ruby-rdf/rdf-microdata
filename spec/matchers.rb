@@ -1,5 +1,6 @@
 require 'rdf/isomorphic'
 require 'rspec/matchers'
+require 'rdf/rdfa'
 
 RSpec::Matchers.define :have_xpath do |xpath, value|
   match do |actual|

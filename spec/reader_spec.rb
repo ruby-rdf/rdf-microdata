@@ -636,7 +636,7 @@ describe "RDF::Microdata::Reader" do
                 %q(
                   <> <http://www.w3.org/ns/md#item> (
                     [ a <http://foo/bar>; <http://foo/baz> "FooBar" ]
-                  ) .
+                  ).
                 )
               ],
               "http://foo#bar + baz => http://foo#baz" =>
@@ -686,7 +686,7 @@ describe "RDF::Microdata::Reader" do
                   <> <http://www.w3.org/ns/md#item> (
                     [ a <http://contextual.unordered/>;
                       <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=baz> "FooBar" ]
-                  ) .
+                  ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://contextual.unordered/> .
                 )
               ],
               "http://contextual.unordered/ + bar + baz => http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar.baz" =>
@@ -701,7 +701,7 @@ describe "RDF::Microdata::Reader" do
                     [ a <http://contextual.unordered/>;
                       <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar> [
                         <http://www.w3.org/ns/md?type=http://contextual.unordered/&prop=bar.baz> "Baz"]]
-                  )
+                  ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://contextual.unordered/> .
                 )
               ],
             }.each do |name, (md, nt)|
