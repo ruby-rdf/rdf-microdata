@@ -6,9 +6,14 @@ require 'rspec'
 require 'rdf/isomorphic'
 require 'rdf/microdata'
 require 'rdf/turtle'
-#require 'rdf/spec'
 require 'rdf/spec/matchers'
 require 'matchers'
+require 'open-uri/cached'
+
+# Create and maintain a cache of downloaded URIs
+URI_CACHE = File.expand_path(File.join(File.dirname(__FILE__), "uri-cache"))
+Dir.mkdir(URI_CACHE) unless File.directory?(URI_CACHE)
+OpenURI::Cache.class_eval { @cache_path = URI_CACHE }
 
 ::RSpec.configure do |c|
   c.filter_run :focus => true

@@ -35,8 +35,9 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf-xsd',         '>= 0.3.4'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
 
-  gem.add_development_dependency 'nokogiri' ,       '>= 1.5.0'  #unless  RUBY_ENGINE == "java"
-  gem.add_development_dependency 'equivalent-xml' , '>= 0.2.8'  #unless  RUBY_ENGINE == "java"
+  gem.add_development_dependency 'nokogiri' ,       '>= 1.5.0'
+  gem.add_development_dependency 'equivalent-xml' , '>= 0.2.8'
+  gem.add_development_dependency 'open-uri-cached', '>= 0.0.5'
   gem.add_development_dependency 'yard' ,           '>= 0.6.0'
   gem.add_development_dependency 'spira',           '>= 0.0.12'
   gem.add_development_dependency 'rspec',           '>= 2.8.0'

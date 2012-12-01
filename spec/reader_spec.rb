@@ -8,7 +8,7 @@ describe "RDF::Microdata::Reader" do
     @reader = RDF::Microdata::Reader.new(StringIO.new(""))
   end
 
-  it_should_behave_like RDF_Reader
+  include RDF_Reader
 
   describe ".for" do
     formats = [

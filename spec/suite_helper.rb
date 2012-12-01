@@ -20,48 +20,48 @@ module RDF::Util
     # @return [IO] File stream
     # @yield [IO] File stream
     def self.open_file(filename_or_url, options = {}, &block)
-      #puts "open #{filename_or_url}"
-      f = case filename_or_url.to_s
+      case filename_or_url.to_s
       when /^file:/
         path = filename_or_url[5..-1]
         Kernel.open(path.to_s, &block)
       when 'http://www.w3.org/ns/md'
-        Kernel.open(RDF::Microdata::Reader::DEFAULT_REGISTRY)
+        Kernel.open(RDF::Microdata::Reader::DEFAULT_REGISTRY, &block)
       when /^#{REMOTE_PATH}/
         begin
           #puts "attempt to open #{filename_or_url} locally"
-          #puts " => #{filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH)}"
-          response = ::File.open(filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH))
-          case filename_or_url.to_s
-          when /\.html$/
-            def response.content_type; 'text/html'; end
-          when /\.ttl$/
-            def response.content_type; 'text/turtle'; end
-          when /\.json$/
-            def response.content_type; 'application/json'; end
-          when /\.jsonld$/
-            def response.content_type; 'application/ld+json'; end
-          else
-            def response.content_type; 'unknown'; end
-          end
-          #puts "use #{filename_or_url} locally as #{response.content_type}"
+          if response = ::File.open(filename_or_url.to_s.sub(REMOTE_PATH, LOCAL_PATH))
+            #puts "use #{filename_or_url} locally"
+            case filename_or_url.to_s
+            when /\.html$/
+              def response.content_type; 'text/html'; end
+            when /\.ttl$/
+              def response.content_type; 'text/turtle'; end
+            when /\.json$/
+              def response.content_type; 'application/json'; end
+            when /\.jsonld$/
+              def response.content_type; 'application/ld+json'; end
+            else
+              def response.content_type; 'unknown'; end
+            end
 
-          response
+            if block_given?
+              begin
+                yield response
+              ensure
+                response.close
+              end
+            else
+              response
+            end
+          else
+            Kernel.open(filename_or_url.to_s, &block)
+          end
         rescue Errno::ENOENT
           # Not there, don't run tests
-          Kernel.open(path.to_s, &block)
+          StringIO.new("")
         end
       else
-      end
-
-      if f && block_given?
-        begin
-          yield f
-        ensure
-          f.close
-        end
-      else
-        f
+        Kernel.open(filename_or_url.to_s, &block)
       end
     end
   end

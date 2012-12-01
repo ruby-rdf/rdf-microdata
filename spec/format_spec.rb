@@ -8,7 +8,7 @@ describe RDF::Microdata::Format do
     @format_class = RDF::Microdata::Format
   end
 
-  it_should_behave_like RDF_Format
+  include RDF_Format
 
   describe ".for" do
     formats = [

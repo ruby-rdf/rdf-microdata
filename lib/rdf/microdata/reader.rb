@@ -439,6 +439,7 @@ module RDF::Microdata
 
       # 7) If the registry contains a URI prefix that is a character for character match of type up to the length of the URI prefix, set vocab as that URI prefix and generate the following triple (unless it has already been generated):
       vocab = Registry.find(type)
+      add_debug(item)  {"gentrips(7): vocab=#{vocab.inspect}"}
       add_triple(item, base_uri, USES_VOCAB, RDF::URI(vocab.uri)) if vocab
 
       # 8) Otherwise, if type is not empty, construct vocab by removing everything following the last
