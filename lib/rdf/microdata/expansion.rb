@@ -6,7 +6,7 @@ module RDF::Microdata
     ##
     # Perform vocabulary expansion on the resulting default graph.
     #
-    #   Vocabulary expansion relies on a sub-set of OWL [OWL2-PROFILES] entailment to add triples to the default graph based on rules and property/class relationships described in referenced vocabularies.
+    #   Vocabulary expansion relies on a sub-set of OWL [OWL2-PROFILES](http://www.w3.org/TR/2009/REC-owl2-profiles-20091027/#Reasoning_in_OWL_2_RL_and_RDF_Graphs_using_Rules) entailment to add triples to the default graph based on rules and property/class relationships described in referenced vocabularies.
     #
     # For all objects that are the target of an rdfa:usesVocabulary property, load the IRI into a repository.
     #
@@ -21,7 +21,7 @@ module RDF::Microdata
     #    {p1 rdfs:subPropertyOf p2 . x p1 y} => {x p2 y}
     #
     # @return [RDF::Graph]
-    # @see [OWL2 PROFILES](http://www.w3.org/TR/2009/REC-owl2-profiles-20091027/#Reasoning_in_OWL_2_RL_and_RDF_Graphs_using_Rules)
+    # @see [OWL2 PROFILES][]
     def expand
       repo = RDF::Repository.new
       repo << self  # Add default graph

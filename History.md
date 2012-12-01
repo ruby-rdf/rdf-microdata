@@ -40,8 +40,8 @@
 ### 0.2.0
 * There is no longer any official way to generate RDF and use gem as an experimentation platform.
 * Use rdf_term-type property generation and remove option to set it.
-* Don't generate triple for html>head>title
-* @datetime values are scanned lexically to find appropriate datatype
+* Don't generate triple for html\>head\>title
+* \@datetime values are scanned lexically to find appropriate datatype
 
 ### 0.1.3
 * Fixed ruby 1.8 regular expression bug.

@@ -20,9 +20,9 @@ module RDF::Microdata
     include Expansion
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)
     DEFAULT_REGISTRY = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "etc", "registry.json"))
-    
-    class CrawlFailure < StandardError  #:nodoc:
-    end
+
+    # @private
+    class CrawlFailure < StandardError; end
 
     # Returns the HTML implementation module for this reader instance.
     #
@@ -167,7 +167,7 @@ module RDF::Microdata
       ##
       # Yield a equivalentProperty or subPropertyOf if appropriate
       # @param [RDF::URI] predicateURI
-      # @yield :statement
+      # @yield statement
       # @yieldparam [RDF::Statement] statement
       # @return [Boolean]
       def expand(predicateURI)
@@ -225,7 +225,7 @@ module RDF::Microdata
     # @yield  [reader] `self`
     # @yieldparam  [RDF::Reader] reader
     # @yieldreturn [void] ignored
-    # @raise [Error]:: Raises RDF::ReaderError if _validate_
+    # @raise [Error] Raises `RDF::ReaderError` when validating
     def initialize(input = $stdin, options = {}, &block)
       super do
         @debug = options[:debug]
