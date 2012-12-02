@@ -47,13 +47,16 @@ module RDF::Microdata
     # Takes a list of antecedent patterns used to find solutions against a queryable
     # object. Yields each consequent with bindings from the solution
     class Rule
-      # @attr [Array<RDF::Query::Pattern>]
+      # @!attribute [r]
+      # @return [Array<RDF::Query::Pattern>] patterns necessary to invoke this rule
       attr_reader :antecedents
 
-      # @attr [Array<RDF::Query::Pattern>]
+      # @!attribute [r] consequents
+      # @return [Array<RDF::Query::Pattern>] result of this rule
       attr_reader :consequents
 
-      # @attr [String] name
+      # @!attribute [r] name
+      # @return [String] Name of this rule
       attr_reader :name
 
       ##

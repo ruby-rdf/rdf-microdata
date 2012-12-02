@@ -24,9 +24,8 @@ module RDF::Microdata
     # @private
     class CrawlFailure < StandardError; end
 
-    # Returns the HTML implementation module for this reader instance.
-    #
-    # @attr_reader [Module]
+    # @!attribute [r] implementation
+    # @return [Module] Returns the HTML implementation module for this reader instance.
     attr_reader :implementation
 
     ##
@@ -43,7 +42,8 @@ module RDF::Microdata
 
     # Interface to registry
     class Registry
-      # @attr_reader [RDF::URI] uri Prefix of vocabulary
+      # @!attribute [r] uri
+      # @return [RDF::URI] Prefix of vocabulary
       attr_reader :uri
 
       ##
