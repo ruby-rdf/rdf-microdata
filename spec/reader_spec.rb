@@ -772,7 +772,8 @@ describe "RDF::Microdata::Reader" do
                   <http://expansion/equivalentProperty>
                     <http://expansion/MainType>,
                     <http://expansion/AdditionalType>]
-              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/>               <http://expansion/equivalentProperty>
+              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/> .
+              <http://expansion/equivalentProperty>
                 <http://www.w3.org/2002/07/owl#equivalentProperty>
                   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
             )
@@ -791,7 +792,8 @@ describe "RDF::Microdata::Reader" do
                 [ a <http://expansion/MainType>;
                   <http://expansion/equivalentProperty>
                     <http://expansion/AdditionalType>]
-              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/>               <http://expansion/equivalentProperty>
+              ); <http://www.w3.org/ns/rdfa#usesVocabulary> <http://expansion/> .
+              <http://expansion/equivalentProperty>
                 <http://www.w3.org/2002/07/owl#equivalentProperty>
                   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
             )
@@ -816,7 +818,7 @@ describe "RDF::Microdata::Reader" do
     graph = options[:graph] || RDF::Graph.new
     RDF::Microdata::Reader.new(input, {
         :debug => @debug,
-        :validate => true,
+        :validate => false,
         :library => @library,
         :registry_uri => File.expand_path("../test-files/test-registry.json", __FILE__),
         :canonicalize => false}.merge(options)).each do |statement|
