@@ -15,7 +15,7 @@ describe RDF::Microdata::Reader do
             reader = RDF::Microdata::Reader.open(t.data,
               :base_uri => t.data,
               :strict => true,
-              :validate => true,
+              :validate => false,
               :registry_uri => t.registry,
               #:library => :nokogiri,
               :debug => t.debug)
