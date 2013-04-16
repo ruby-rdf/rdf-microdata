@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.date                  = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name                  = "rdf-microdata"
-  gem.homepage              = "http://github.com/ruby-rdf/rdf-microdata"
+  gem.homepage              = "http://ruby-rdf.github.com/rdf-microdata"
   gem.license               = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary               = "Microdata reader for Ruby."
   gem.description           = gem.summary
@@ -28,22 +28,22 @@ Gem::Specification.new do |gem|
   gem.test_files            = %w()
   gem.has_rdoc              = false
 
-  gem.required_ruby_version = '>= 1.8.1'
+  gem.required_ruby_version = '>= 1.9.2'
   gem.requirements          = []
-  gem.add_runtime_dependency     'rdf',             '>= 1.0'
-  gem.add_runtime_dependency     'json',            '>= 1.7.6'
-  gem.add_runtime_dependency     'rdf-xsd',         '>= 1.0'
+  gem.add_runtime_dependency     'rdf',             '>= 1.1'
+  gem.add_runtime_dependency     'json',            '>= 1.7.7'
+  gem.add_runtime_dependency     'rdf-xsd',         '>= 1.1'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
 
-  gem.add_development_dependency 'nokogiri' ,       '>= 1.5.6'
+  gem.add_development_dependency 'nokogiri' ,       '>= 1.5.9'
   gem.add_development_dependency 'equivalent-xml' , '>= 0.3.0'
   gem.add_development_dependency 'open-uri-cached', '>= 0.0.5'
-  gem.add_development_dependency 'yard' ,           '>= 0.8.3'
+  gem.add_development_dependency 'yard' ,           '>= 0.8.5'
   gem.add_development_dependency 'spira',           '= 0.0.12'
-  gem.add_development_dependency 'rspec',           '>= 2.12.0'
-  gem.add_development_dependency 'rdf-spec',        '>= 1.0'
-  gem.add_development_dependency 'rdf-rdfa'
-  gem.add_development_dependency 'rdf-turtle'
-  gem.add_development_dependency 'rdf-isomorphic'
+  gem.add_development_dependency 'rspec',           '>= 2.13.0'
+  gem.add_development_dependency 'rdf-spec',        '>= 1.1'
+  gem.add_development_dependency 'rdf-rdfa',        '>= 1.1'
+  gem.add_development_dependency 'rdf-turtle',      '>= 1.1'
+  gem.add_development_dependency 'rdf-isomorphic',  '>= 1.1'
   gem.post_install_message  = nil
 end
