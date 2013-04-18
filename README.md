@@ -2,7 +2,7 @@
 
 [Microdata][] parser for RDF.rb.
 
-[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)][gem]
+[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)](http://badge.fury.io/rb/rdf-microdata)
 [![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](http://travis-ci.org/ruby-rdf/rdf-microdata)
 
 ## DESCRIPTION
