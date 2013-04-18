@@ -1,7 +1,9 @@
 # RDF::Microdata reader/writer
-[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](http://travis-ci.org/ruby-rdf/rdf-microdata)
 
 [Microdata][] parser for RDF.rb.
+
+[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)][gem]
+[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](http://travis-ci.org/ruby-rdf/rdf-microdata)
 
 ## DESCRIPTION
 RDF::Microdata is a Microdata reader for Ruby using the [RDF.rb][RDF.rb] library suite.
