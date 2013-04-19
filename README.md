@@ -12,7 +12,7 @@ RDF::Microdata is a Microdata reader for Ruby using the [RDF.rb][RDF.rb] library
 RDF::Microdata parses [Microdata][] into statements or triples using the rules defined in [Microdata RDF][].
 
 * Microdata parser.
-* If available, Uses Nokogiri for parsing HTML/SVG, falls back to REXML otherwise (and for JRuby)
+* Uses Nokogiri for parsing HTML
 
 Install with 'gem install rdf-microdata'
 
@@ -38,6 +38,7 @@ If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert cont
 ## Dependencies
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 1.1)
 * [RDF::XSD](http://rubygems.org/gems/rdf-xsd) (>= 1.1)
+* [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.5.9)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
 * Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.5.9)
 
@@ -49,13 +50,8 @@ Full documentation available on [Rubydoc.info][Microdata doc]
   Asserts :html format, text/html mime-type and .html file extension.
 * {RDF::Microdata::Reader}
   * {RDF::Microdata::Reader::Nokogiri}
-  * {RDF::Microdata::Reader::REXML}
 
 ### Additional vocabularies
-
-## TODO
-* Add support for LibXML and REXML bindings, and use the best available
-* Consider a SAX-based parser for improved performance
 
 ## Resources
 * [RDF.rb][RDF.rb]
