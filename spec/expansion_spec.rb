@@ -172,14 +172,14 @@ describe RDF::Microdata::Expansion do
     end
   end
   
-  context "with empty graph", :no_rbx => true do
+  context "with empty graph" do
     it "returns an empty graph" do
       rdfa = %q(<http></http>)
       parse(rdfa).should be_equivalent_graph("", :trace => @debug)
     end
   end
   
-  context "with graph not referencing vocabularies", :no_rbx => true do
+  context "with graph not referencing vocabularies" do
     it "returns unexpanded input" do
       rdfa = %(
         <html prefix="doap: http://usefulinc.com/ns/doap#">
@@ -209,7 +209,7 @@ describe RDF::Microdata::Expansion do
   end
   
   context "with @vocab" do
-    it "returns unexpanded input", :no_rbx => true do
+    it "returns unexpanded input" do
       rdfa = %(
         <html vocab="http://usefulinc.com/ns/doap#">
           <body about="" typeof="Project">
