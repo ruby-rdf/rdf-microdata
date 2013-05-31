@@ -30,7 +30,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 1.8.1'
   gem.requirements          = []
-  gem.add_runtime_dependency     'rdf',             '>= 1.0.5'
+  gem.add_runtime_dependency     'rdf',             '>= 1.0.7'
   gem.add_runtime_dependency     'json',            '>= 1.7.7'
   gem.add_runtime_dependency     'rdf-xsd',         '>= 1.0'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
@@ -43,7 +43,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec',           '>= 2.13.0'
   gem.add_development_dependency 'rdf-spec',        '>= 1.0'
   gem.add_development_dependency 'rdf-rdfa'
-  gem.add_development_dependency 'rdf-turtle'
+  gem.add_development_dependency 'rdf-turtle',      '>= 1.0.7'
   gem.add_development_dependency 'rdf-isomorphic'
   gem.post_install_message  = nil
 end
