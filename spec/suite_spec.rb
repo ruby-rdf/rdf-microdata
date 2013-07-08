@@ -21,10 +21,10 @@ describe RDF::Microdata::Reader do
               :debug => t.debug)
             reader.should be_a RDF::Reader
 
-            graph = RDF::Graph.new << reader
+            graph = RDF::Repository.new << reader
 
             #puts "parse #{t.query} as #{RDF::Reader.for(t.query)}"
-            output_graph = RDF::Graph.load(t.result, :base_uri => t.data)
+            output_graph = RDF::Repository.load(t.result, :base_uri => t.data)
             puts "result: #{CGI.escapeHTML(graph.dump(:ttl))}" if ::RDF::Microdata::debug?
             if t.positiveTest
               graph.should be_equivalent_graph(output_graph, t)

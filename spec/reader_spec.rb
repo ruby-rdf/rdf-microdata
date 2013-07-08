@@ -34,7 +34,7 @@ describe "RDF::Microdata::Reader" do
     end
 
     it "should yield reader" do
-      inner = mock("inner")
+      inner = double("inner")
       inner.should_receive(:called).with(RDF::Microdata::Reader)
       RDF::Microdata::Reader.new(@sampledoc) do |reader|
         inner.called(reader.class)
@@ -46,7 +46,7 @@ describe "RDF::Microdata::Reader" do
     end
 
     it "should yield statements" do
-      inner = mock("inner")
+      inner = double("inner")
       inner.should_receive(:called).at_least(1).times.with(RDF::Statement)
       RDF::Microdata::Reader.new(@sampledoc).each_statement do |statement|
         inner.called(statement.class)
@@ -54,7 +54,7 @@ describe "RDF::Microdata::Reader" do
     end
 
     it "should yield triples" do
-      inner = mock("inner")
+      inner = double("inner")
       inner.should_receive(:called).at_least(1).times
       RDF::Microdata::Reader.new(@sampledoc).each_triple do |subject, predicate, object|
         inner.called(subject.class, predicate.class, object.class)

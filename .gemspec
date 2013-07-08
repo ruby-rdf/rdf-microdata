@@ -40,7 +40,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'open-uri-cached', '>= 0.0.5'
   gem.add_development_dependency 'yard' ,           '>= 0.8.5'
   gem.add_development_dependency 'spira',           '= 0.0.12'
-  gem.add_development_dependency 'rspec',           '>= 2.13.0'
+  gem.add_development_dependency 'rspec',           '>= 2.14.0'
   gem.add_development_dependency 'rdf-spec',        '>= 1.0'
   gem.add_development_dependency 'rdf-rdfa'
   gem.add_development_dependency 'rdf-turtle',      '>= 1.0.7'
