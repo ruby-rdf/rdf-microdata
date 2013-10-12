@@ -19,7 +19,7 @@ describe RDF::Microdata::Format do
       {:content_type   => 'text/html'},
     ].each do |arg|
       it "discovers with #{arg.inspect}" do
-        RDF::Format.for(arg).should == @format_class
+        expect([RDF::Microdata::Format, RDF::RDFa::Format]).to include RDF::Format.for(arg)
       end
     end
 
@@ -27,13 +27,13 @@ describe RDF::Microdata::Format do
       :microdata => '<div itemref="bar"></div>',
     }.each do |sym, str|
       it "detects #{sym}" do
-        @format_class.for {str}.should == @format_class
+        expect(@format_class.for {str}).to eq @format_class
       end
     end
   end
 
   describe "#to_sym" do
-    specify {@format_class.to_sym.should == :microdata}
+    specify {expect(@format_class.to_sym).to eq :microdata}
   end
 
   describe ".detect" do
@@ -45,7 +45,7 @@ describe RDF::Microdata::Format do
       :itemid =>    '<div itemid="bar"></div>',
     }.each do |sym, str|
       it "detects #{sym}" do
-        @format_class.detect(str).should be_true
+        expect(@format_class.detect(str)).to be_true
       end
     end
 
@@ -69,7 +69,7 @@ describe RDF::Microdata::Format do
       :STRING_LITERAL_LONG2  => %(<a> <b> """\nliteral\n""" .),
     }.each do |sym, str|
       it "does not detect #{sym}" do
-        @format_class.detect(str).should be_false
+        expect(@format_class.detect(str)).to be_false
       end
     end
   end

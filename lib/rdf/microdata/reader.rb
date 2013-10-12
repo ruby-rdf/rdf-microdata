@@ -350,6 +350,7 @@ module RDF::Microdata
     # @raise [ReaderError] Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
+      raise RDF::ReaderError, "#{statement.inspect} is inalid" if validate? && statement.invalid?
       add_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
       @callback.call(statement)
     end
