@@ -5,6 +5,8 @@ require 'rdf/spec/reader'
 
 describe "RDF::Microdata::Reader" do
   before :each do
+    # RDF_Reader expects to either be valid or raise ReaderError
+    RDF::Microdata::Reader.any_instance.stub(:valid?).and_return(true)
     @reader = RDF::Microdata::Reader.new(StringIO.new(""))
   end
 
