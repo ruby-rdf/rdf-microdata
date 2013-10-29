@@ -169,13 +169,13 @@ module RDF::Microdata
         tok = tokenize(predicateURI)
         if @properties[tok].is_a?(Hash)
           if value = @properties[tok]["equivalentProperty"]
-            [value].flatten.each do |v|
+            Array(value).each do |v|
               yield RDF::Statement.new(predicateURI,
                                        RDF::OWL.equivalentProperty,
                                        RDF::URI(v))
             end
           elsif value = @properties[tok]["subPropertyOf"]
-            [value].flatten.each do |v|
+            Array(value).each do |v|
               yield RDF::Statement.new(predicateURI,
                                        RDF::RDFS.subPropertyOf,
                                        RDF::URI(v))
