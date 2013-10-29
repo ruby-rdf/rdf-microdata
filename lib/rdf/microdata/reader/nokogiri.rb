@@ -183,6 +183,7 @@ module RDF::Microdata
           
           # Otherwise, default is utf-8
           options[:encoding] ||= 'utf-8'
+          options[:encoding] = options[:encoding].to_s if options[:encoding]
 
           ::Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
         end
