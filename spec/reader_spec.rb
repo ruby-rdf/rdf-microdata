@@ -21,7 +21,7 @@ describe "RDF::Microdata::Reader" do
       {:content_type   => 'text/html'},
     ].each do |arg|
       it "discovers with #{arg.inspect}" do
-        RDF::Reader.for(arg).should == RDF::Microdata::Reader
+        expect([RDF::Microdata::Reader, RDF::RDFa::Reader]).to include RDF::Reader.for(arg)
       end
     end
   end

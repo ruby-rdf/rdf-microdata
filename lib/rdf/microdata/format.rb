@@ -1,3 +1,10 @@
+# Attempt to load RDF::RDFa first, so that RDF::Format.for(:rdfa) is defined
+begin
+  require 'rdf/rdfa'
+rescue => LoadError
+  # Soft error
+end
+
 module RDF::Microdata
   ##
   # Microdata format specification.
