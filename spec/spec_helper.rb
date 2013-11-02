@@ -19,7 +19,6 @@ OpenURI::Cache.class_eval { @cache_path = URI_CACHE }
   c.filter_run :focus => true
   c.run_all_when_everything_filtered = true
   c.exclusion_filter = {
-    :no_jruby => lambda { |version| !(RUBY_PLATFORM.to_s != 'java') },
   }
   c.include(RDF::Spec::Matchers)
 end
