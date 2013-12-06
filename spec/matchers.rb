@@ -76,8 +76,8 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
     "\n#{info + "\n" unless info.empty?}" +
     (@info.inputDocument ? "Input file: #{@info.inputDocument}\n" : "") +
     (@info.outputDocument ? "Output file: #{@info.outputDocument}\n" : "") +
-    "Expected:\n#{@expected.dump(:ttl, :standard_prefixes => true)}" +
-    "Results:\n#{@actual.dump(:ttl, :standard_prefixes => true)}" +
+    "Expected:\n#{@expected.dump(:ntriples, :standard_prefixes => true)}" +
+    "Results:\n#{@actual.dump(:ntriples, :standard_prefixes => true)}" +
     (@info.trace ? "\nDebug:\n#{@info.trace}" : "")
   end  
 end

@@ -7,7 +7,6 @@ class ExpansionTester
   include RDF::Enumerable
 
   attr_reader :about, :information, :repo, :inputDocument, :outputDocument, :options
-  attr :format, true
 
   def initialize(name)
     @about = @information = name

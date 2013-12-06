@@ -1,9 +1,4 @@
-begin
-  raise LoadError, "not with java" if RUBY_PLATFORM == "java"
-  require 'nokogiri'
-rescue LoadError => e
-  :rexml
-end
+require 'nokogiri'
 require 'rdf/xsd'
 require 'json'
 
@@ -204,8 +199,6 @@ module RDF::Microdata
     #   the input stream to read
     # @param  [Hash{Symbol => Object}] options
     #   any additional options
-    # @option options [Symbol] :library (:nokogiri)
-    #   One of :nokogiri or :rexml. If nil/unspecified uses :nokogiri if available, :rexml otherwise.
     # @option options [Encoding] :encoding     (Encoding::UTF_8)
     #   the encoding of the input stream (Ruby 1.9+)
     # @option options [Boolean]  :validate     (false)
@@ -231,20 +224,10 @@ module RDF::Microdata
         @debug = options[:debug]
         @vocab_expansion = options.fetch(:vocab_expansion, true)
 
-        @library = case options[:library]
-          when nil
-            (defined?(::Nokogiri) && RUBY_PLATFORM != 'java') ? :nokogiri : :rexml
-          when :nokogiri, :rexml
-            options[:library]
-          else
-            raise ArgumentError.new("expected :rexml or :nokogiri, but got #{options[:library].inspect}")
-        end
+        @library = :nokogiri
 
         require "rdf/microdata/reader/#{@library}"
-        @implementation = case @library
-          when :nokogiri then Nokogiri
-          when :rexml    then REXML
-        end
+        @implementation = Nokogiri
         self.extend(@implementation)
 
         initialize_html(input, options) rescue raise RDF::ReaderError.new($!.message)
