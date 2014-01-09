@@ -33,8 +33,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',             '>= 1.1.0'
   gem.add_runtime_dependency     'rdf-xsd',         '>= 1.1.0'
   gem.add_runtime_dependency     'htmlentities',    '>= 4.3.0'
+  gem.add_runtime_dependency     'nokogiri' ,       '>= 1.6.1'
 
-  gem.add_development_dependency 'nokogiri' ,       '>= 1.6.0'
   gem.add_development_dependency 'equivalent-xml' , '>= 0.3.0'
   gem.add_development_dependency 'open-uri-cached', '>= 0.0.5'
   gem.add_development_dependency 'yard' ,           '>= 0.8.7'
