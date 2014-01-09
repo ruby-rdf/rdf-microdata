@@ -9,3 +9,10 @@ rvm:
   - 2.1.0
   - jruby-19mode
   - rbx
+env:
+  global:
+    - CI=true
+  matrix:
+    - WITH_NOKOGIRI=true
+    - WITH_NOKOGIRI=false
+cache: bundler
