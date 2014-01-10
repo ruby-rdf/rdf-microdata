@@ -384,7 +384,7 @@ describe "RDF::Microdata::Reader" do
           <> <http://www.w3.org/ns/md#item>
             ([ a <http://schema.org/Person> ;
               <http://schema.org/name> "Amanda" ;
-            ])
+            ]) .
           )
         ],
         "with multipe types and token property" => [
@@ -399,7 +399,7 @@ describe "RDF::Microdata::Reader" do
           <> <http://www.w3.org/ns/md#item>
             ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
               <http://schema.org/name> "Amanda" ;
-            ])
+            ]) .
           )
         ],
         "with no type and URI property" => [
@@ -453,7 +453,7 @@ describe "RDF::Microdata::Reader" do
           <> <http://www.w3.org/ns/md#item>
             ([ a <http://schema.org/Person> ;
               <http://schema.org/name> "Amanda" ;
-            ])
+            ]) .
           )
         ],
         "with multipe types and URI property" => [
@@ -468,7 +468,7 @@ describe "RDF::Microdata::Reader" do
           <> <http://www.w3.org/ns/md#item>
             ([ a <http://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> ;
               <http://schema.org/name> "Amanda" ;
-            ])
+            ]) .
           )
         ],
         "with inherited type and token property" => [
@@ -487,7 +487,7 @@ describe "RDF::Microdata::Reader" do
             ([ a schema:Person ;
               schema:name "Gregg" ;
               schema:knows [ schema:name "Jeni" ]
-            ])
+            ]) .
           )
         ]
       }.each do |name, (md, nt)|
@@ -511,7 +511,7 @@ describe "RDF::Microdata::Reader" do
             <> <http://www.w3.org/ns/md#item>
               ([ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Amanda" ;
-              ])
+              ]) .
           )
         ],
         "to generate listed property values" =>
@@ -528,7 +528,7 @@ describe "RDF::Microdata::Reader" do
             <> <http://www.w3.org/ns/md#item>
               ([ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Gregg", "Kellogg" ;
-              ])
+              ]) .
           )
         ],
         "to single id with different types" =>
@@ -548,7 +548,7 @@ describe "RDF::Microdata::Reader" do
               [ a <http://xmlns.com/foaf/0.1/Person> ;
                 <http://xmlns.com/foaf/0.1/name> "Amanda" ;
               ]
-              )
+              ) .
           )
         ],
         "to multiple ids" =>
@@ -565,7 +565,7 @@ describe "RDF::Microdata::Reader" do
               ([ a <http://schema.org/Person> ;
                 <http://schema.org/name> "Amanda" ;
                 <http://schema.org/band> "Jazz Band" ;
-              ])
+              ]) .
           )
         ],
         "with chaining" =>
@@ -590,7 +590,7 @@ describe "RDF::Microdata::Reader" do
                   <http://schema.org/name> "Jazz Band";
                   <http://schema.org/size> "12"
                 ]
-              ])
+              ]) .
           )
         ],
         "shared" =>
@@ -609,7 +609,7 @@ describe "RDF::Microdata::Reader" do
               [ <#refers-to> _:a ]
               [ <#refers-to> _:a ]
             ) .
-            _:a <#name> "Amanda"
+            _:a <#name> "Amanda" .
           )
       
         ],
@@ -633,7 +633,7 @@ describe "RDF::Microdata::Reader" do
             %q(
               <> <http://www.w3.org/ns/md#item> (
                 [ a <http://foo/bar>; <http://foo/baz> "FooBar" ]
-              ).
+              ) .
             )
           ],
           "http://foo#bar + baz => http://foo#baz" =>
@@ -660,7 +660,7 @@ describe "RDF::Microdata::Reader" do
               <> <http://www.w3.org/ns/md#item> (
                 [ a <http://foo#Type>;
                   <http://foo#bar> [ <http://foo#baz> "Baz"]]
-              )
+              ) .
             )
           ],
         }.each do |name, (md, nt)|
