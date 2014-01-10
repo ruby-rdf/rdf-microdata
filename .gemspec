@@ -45,5 +45,10 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rdf-turtle',      '>= 1.1.0'
   gem.add_development_dependency 'rdf-isomorphic',  '>= 1.1.0'
 
+  # Rubinius has it's own dependencies
+  if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
+     gem.add_runtime_dependency     "racc"
+  end
+
   gem.post_install_message  = nil
 end
