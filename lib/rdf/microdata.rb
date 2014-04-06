@@ -3,7 +3,7 @@ require 'rdf'
 
 module RDF
   ##
-  # **`RDF::Microdata`** is a Microdata plugin for RDF.rb.
+  # **`RDF::Microdata`** is a Microdata extension for RDF.rb.
   #
   # @example Requiring the `RDF::Microdata` module
   #   require 'rdf/microdata'
