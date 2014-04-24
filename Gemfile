@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gemspec :name => ""
+gemspec
 
 gem 'rdf', :git => "git://github.com/ruby-rdf/rdf.git", :branch => "develop"
 gem "rdf-xsd",        :git => "git://github.com/ruby-rdf/rdf-xsd.git", :branch => "develop"
@@ -20,4 +20,5 @@ end
 platforms :rbx do
   gem 'rubysl', '~> 2.0'
   gem 'rubinius', '~> 2.0'
+  gem 'json'
 end

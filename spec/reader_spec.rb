@@ -4,10 +4,14 @@ require 'spec_helper'
 require 'rdf/spec/reader'
 
 describe "RDF::Microdata::Reader" do
-  before :each do
-    # RDF_Reader expects to either be valid or raise ReaderError
-    RDF::Microdata::Reader.any_instance.stub(:valid?).and_return(true)
-    @reader = RDF::Microdata::Reader.new(StringIO.new(""))
+  let!(:doap) {File.expand_path("../../etc/doap.html", __FILE__)}
+  let!(:doap_nt) {File.expand_path("../../etc/doap.nt", __FILE__)}
+  let!(:doap_count) {File.open(doap_nt).each_line.to_a.length}
+
+  before(:each) do
+    @reader_input = File.read(doap)
+    @reader = RDF::Microdata::Reader.new(@reader_input)
+    @reader_count = doap_count
   end
 
   include RDF_Reader
