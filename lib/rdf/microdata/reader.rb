@@ -267,16 +267,19 @@ module RDF::Microdata
     # @yieldparam [RDF::Statement] statement
     # @return [void]
     def each_statement(&block)
-      if @vocab_expansion
-        @vocab_expansion = false
-        expand.each_statement(&block)
-        @vocab_expansion = true
-      else
-        @callback = block
+      if block_given?
+        if @vocab_expansion
+          @vocab_expansion = false
+          expand.each_statement(&block)
+          @vocab_expansion = true
+        else
+          @callback = block
 
-        # parse
-        parse_whole_document(@doc, base_uri)
+          # parse
+          parse_whole_document(@doc, base_uri)
+        end
       end
+      enum_for(:each_statement)
     end
 
     ##
@@ -288,9 +291,12 @@ module RDF::Microdata
     # @yieldparam [RDF::Value]    object
     # @return [void]
     def each_triple(&block)
-      each_statement do |statement|
-        block.call(*statement.to_triple)
+      if block_given?
+        each_statement do |statement|
+          block.call(*statement.to_triple)
+        end
       end
+      enum_for(:each_triple)
     end
     
     private
@@ -333,7 +339,7 @@ module RDF::Microdata
     # @raise [ReaderError] Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
-      raise RDF::ReaderError, "#{statement.inspect} is inalid" if validate? && statement.invalid?
+      raise RDF::ReaderError, "#{statement.inspect} is invalid" if validate? && statement.invalid?
       add_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
       @callback.call(statement)
     end
