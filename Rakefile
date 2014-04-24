@@ -5,7 +5,7 @@ require 'rspec/core/rake_task'
 namespace :gem do
   desc "Build the rdf-microdata-#{File.read('VERSION').chomp}.gem file"
   task :build do
-    sh "gem build .gemspec && mv rdf-microdata-#{File.read('VERSION').chomp}.gem pkg/"
+    sh "gem build rdf-microdata.gemspec && mv rdf-microdata-#{File.read('VERSION').chomp}.gem pkg/"
   end
 
   desc "Release the rdf-microdata-#{File.read('VERSION').chomp}.gem file"
