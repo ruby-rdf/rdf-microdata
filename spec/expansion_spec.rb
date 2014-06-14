@@ -109,7 +109,7 @@ describe RDF::Microdata::Expansion do
         mt = ExpansionTester.new(test)
         result = mt.load(elements)
         mt.send(:owl_entailment, mt.repo)
-        mt.graph.should be_equivalent_graph(result, mt)
+        expect(mt.graph).to be_equivalent_graph(result, mt)
       end
     end
   end
@@ -165,9 +165,9 @@ describe RDF::Microdata::Expansion do
         result = mt.load(elements)
         vocab = RDF::URI("http://example.org/vocab#")
         graph = RDF::Graph.new
-        RDF::Graph.should_receive(:new).at_least(1).times.and_return(graph)
+        expect(RDF::Graph).to receive(:new).at_least(1).times.and_return(graph)
         graph = mt.expand
-        graph.should be_equivalent_graph(result, mt)
+        expect(graph).to be_equivalent_graph(result, mt)
       end
     end
   end
@@ -175,7 +175,7 @@ describe RDF::Microdata::Expansion do
   context "with empty graph" do
     it "returns an empty graph" do
       rdfa = %q(<http></http>)
-      parse(rdfa).should be_equivalent_graph("", :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph("", :trace => @debug)
     end
   end
   
@@ -204,7 +204,7 @@ describe RDF::Microdata::Expansion do
           doap:name "RDF::RDFa";
           dc:creator <http://greggkellogg.net/foaf#me> .
       )
-      parse(rdfa).should be_equivalent_graph(ttl, :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph(ttl, :trace => @debug)
     end
   end
   
@@ -239,7 +239,7 @@ describe RDF::Microdata::Expansion do
           rdfs:label "RDF::RDFa";
           dc:creator <http://greggkellogg.net/foaf#me> .
       )
-      parse(rdfa).should be_equivalent_graph(ttl, :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph(ttl, :trace => @debug)
     end
   end
   

@@ -5,24 +5,24 @@ require 'rdf/rdfa'
 RSpec::Matchers.define :have_xpath do |xpath, value|
   match do |actual|
     @doc = Nokogiri::XML.parse(actual)
-    @doc.should be_a(Nokogiri::XML::Document)
-    @doc.root.should be_a(Nokogiri::XML::Element)
+    return false unless @doc.is_a?(Nokogiri::XML::Document)
+    return false unless @doc.root.is_a?(Nokogiri::XML::Element)
     @namespaces = @doc.namespaces.merge("xhtml" => "http://www.w3.org/1999/xhtml", "xml" => "http://www.w3.org/XML/1998/namespace")
     case value
     when false
-      @doc.root.at_xpath(xpath, @namespaces).should be_nil
+      @doc.root.at_xpath(xpath, @namespaces).nil?
     when true
-      @doc.root.at_xpath(xpath, @namespaces).should_not be_nil
+      !@doc.root.at_xpath(xpath, @namespaces).nil?
     when Array
-      @doc.root.at_xpath(xpath, @namespaces).to_s.split(" ").should include(*value)
+      @doc.root.at_xpath(xpath, @namespaces).to_s.split(" ").include?(*value)
     when Regexp
-      @doc.root.at_xpath(xpath, @namespaces).to_s.should =~ value
+      @doc.root.at_xpath(xpath, @namespaces).to_s match value
     else
-      @doc.root.at_xpath(xpath, @namespaces).to_s.should == value
+      @doc.root.at_xpath(xpath, @namespaces).to_s == value
     end
   end
   
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     msg = "expected that #{xpath.inspect} would be #{value.inspect} in:\n" + actual.to_s
     msg += "was: #{@doc.root.at_xpath(xpath, @namespaces)}"
   end
@@ -64,7 +64,7 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
     @actual.isomorphic_with?(@expected)
   end
   
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     info = @info.respond_to?(:information) ? @info.information : @info.inspect
     if @expected.is_a?(RDF::Enumerable) && @actual.size != @expected.size
       "Graph entry count differs:\nexpected: #{@expected.size}\nactual:   #{@actual.size}"
