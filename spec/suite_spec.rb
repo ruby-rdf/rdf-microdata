@@ -19,7 +19,7 @@ describe RDF::Microdata::Reader do
               :registry_uri => t.registry,
               #:library => :nokogiri,
               :debug => t.debug)
-            reader.should be_a RDF::Reader
+            expect(reader).to be_a RDF::Reader
 
             graph = RDF::Repository.new << reader
 
@@ -27,9 +27,9 @@ describe RDF::Microdata::Reader do
             output_graph = RDF::Repository.load(t.result, :base_uri => t.data)
             puts "result: #{CGI.escapeHTML(graph.dump(:ttl))}" if ::RDF::Microdata::debug?
             if t.positiveTest
-              graph.should be_equivalent_graph(output_graph, t)
+              expect(graph).to be_equivalent_graph(output_graph, t)
             else
-              graph.should_not be_equivalent_graph(output_graph, t)
+              expect(graph).not_to be_equivalent_graph(output_graph, t)
             end
           end
         end

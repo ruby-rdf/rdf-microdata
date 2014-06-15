@@ -41,19 +41,19 @@ describe "RDF::Microdata::Reader" do
 
     it "should yield reader" do
       inner = double("inner")
-      inner.should_receive(:called).with(RDF::Microdata::Reader)
+      expect(inner).to receive(:called).with(RDF::Microdata::Reader)
       RDF::Microdata::Reader.new(@sampledoc) do |reader|
         inner.called(reader.class)
       end
     end
 
     it "should return reader" do
-      RDF::Microdata::Reader.new(@sampledoc).should be_a(RDF::Microdata::Reader)
+      expect(RDF::Microdata::Reader.new(@sampledoc)).to be_a(RDF::Microdata::Reader)
     end
 
     it "should yield statements" do
       inner = double("inner")
-      inner.should_receive(:called).at_least(1).times.with(RDF::Statement)
+      expect(inner).to receive(:called).at_least(1).times.with(RDF::Statement)
       RDF::Microdata::Reader.new(@sampledoc).each_statement do |statement|
         inner.called(statement.class)
       end
@@ -61,7 +61,7 @@ describe "RDF::Microdata::Reader" do
 
     it "should yield triples" do
       inner = double("inner")
-      inner.should_receive(:called).at_least(1).times
+      expect(inner).to receive(:called).at_least(1).times
       RDF::Microdata::Reader.new(@sampledoc).each_triple do |subject, predicate, object|
         inner.called(subject.class, predicate.class, object.class)
       end
@@ -85,7 +85,7 @@ describe "RDF::Microdata::Reader" do
     it "parses a simple graph" do
       md = %q(<p>My name is <span itemprop="name">Gregg Kellogg</span>.</p>)
       nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-      parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+      expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
     end
 
     context "values" do
@@ -186,7 +186,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
       end
     end
@@ -251,7 +251,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          parse(@md_ctx % md, :base_uri => 'http://example.com/').should be_equivalent_graph(@nt_ctx % nt, :trace => @debug, :format => :ttl)
+          expect(parse(@md_ctx % md, :base_uri => 'http://example.com/')).to be_equivalent_graph(@nt_ctx % nt, :trace => @debug, :format => :ttl)
         end
       end
     end
@@ -333,7 +333,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          parse(@md_ctx % md).should be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
+          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, :trace => @debug)
         end
       end
     end
@@ -496,7 +496,7 @@ describe "RDF::Microdata::Reader" do
         ]
       }.each do |name, (md, nt)|
         it "#{name}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+          expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
         end
       end
     end
@@ -619,7 +619,7 @@ describe "RDF::Microdata::Reader" do
         ],
       }.each do |name, (md, nt)|
         it "parses #{name}" do
-          parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+          expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
         end
       end
     end
@@ -669,7 +669,7 @@ describe "RDF::Microdata::Reader" do
           ],
         }.each do |name, (md, nt)|
           it "expands #{name}" do
-            parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+            expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
           end
         end
       end
@@ -707,7 +707,7 @@ describe "RDF::Microdata::Reader" do
           ],
         }.each do |name, (md, nt)|
           it "expands #{name}" do
-            parse(md).should be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+            expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
           end
         end
       end
@@ -734,7 +734,7 @@ describe "RDF::Microdata::Reader" do
               <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
         )
 
-          parse(md, :vocab_expansion => true).should be_equivalent_graph(ttl, :trace => @debug)
+        expect(parse(md, :vocab_expansion => true)).to be_equivalent_graph(ttl, :trace => @debug)
       end
 
       it "expands by default" do
@@ -757,7 +757,7 @@ describe "RDF::Microdata::Reader" do
               <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
         )
 
-          parse(md).should be_equivalent_graph(ttl, :trace => @debug)
+        expect(parse(md)).to be_equivalent_graph(ttl, :trace => @debug)
       end
 
       it "expands equivalentProperty" do
@@ -779,7 +779,7 @@ describe "RDF::Microdata::Reader" do
               <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
         )
 
-          parse(md, :vocab_expansion => true).should be_equivalent_graph(ttl, :trace => @debug)
+        expect(parse(md, :vocab_expansion => true)).to be_equivalent_graph(ttl, :trace => @debug)
       end
 
       it "does not expand if vocab_expansion is false" do
@@ -799,7 +799,7 @@ describe "RDF::Microdata::Reader" do
               <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
         )
 
-          parse(md, :vocab_expansion => false).should be_equivalent_graph(ttl, :trace => @debug)
+        expect(parse(md, :vocab_expansion => false)).to be_equivalent_graph(ttl, :trace => @debug)
       end
     end
 
@@ -829,6 +829,6 @@ describe "RDF::Microdata::Reader" do
     graph = parse(File.open(filepath), :registry_uri => nil)
 
     ttl_string = File.read(filepath.sub('.html', '.ttl'))
-    graph.should be_equivalent_graph(ttl_string, :trace => @debug, :format => :ttl)
+    expect(graph).to be_equivalent_graph(ttl_string, :trace => @debug, :format => :ttl)
   end
 end
