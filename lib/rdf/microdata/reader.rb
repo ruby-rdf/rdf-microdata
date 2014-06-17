@@ -511,7 +511,7 @@ module RDF::Microdata
 
     ##
     # Called when values has more than one entry
-    # @param [Nokogiri::HTML::Element] element
+    # @param [Nokogiri::XML::Element] element
     # @param [Array<RDF::Value>] values
     # @return [RDF::Node]
     def generateRDFCollection(element, values)

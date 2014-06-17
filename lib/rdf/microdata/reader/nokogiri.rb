@@ -35,9 +35,9 @@ module RDF::Microdata
         # @return [String]
         def language
           language = case
-          when @node.document.is_a?(::Nokogiri::HTML::Document) && @node.attributes["xml:lang"]
+          when @node.document.is_a?(::Nokogiri::XML::Document) && @node.attributes["xml:lang"]
             @node.attributes["xml:lang"].to_s
-          when @node.document.is_a?(::Nokogiri::HTML::Document) && @node.attributes["lang"]
+          when @node.document.is_a?(::Nokogiri::XML::Document) && @node.attributes["lang"]
             @node.attributes["lang"].to_s
           when @node.attribute("lang")
             @node.attribute("lang").to_s
@@ -175,7 +175,7 @@ module RDF::Microdata
       def initialize_html(input, options = {})
         require 'nokogiri' unless defined?(::Nokogiri)
         @doc = case input
-        when ::Nokogiri::HTML::Document
+        when ::Nokogiri::XML::Document
           input
         else
           # Try to detect charset from input
