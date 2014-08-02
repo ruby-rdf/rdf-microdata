@@ -147,6 +147,7 @@ module RDF::Microdata
 
       ##
       # Determine if property should be serialized as a list or not
+      #
       # @param [RDF::URI] predicateURI
       # @return [Boolean]
       def as_list(predicateURI)
@@ -161,6 +162,7 @@ module RDF::Microdata
 
       ##
       # Yield a equivalentProperty or subPropertyOf if appropriate
+      #
       # @param [RDF::URI] predicateURI
       # @yield statement
       # @yieldparam [RDF::Statement] statement
@@ -311,10 +313,12 @@ module RDF::Microdata
     def node_path(node)
       "<#{base_uri}>#{node.respond_to?(:display_path) ? node.display_path : node}"
     end
-    
+
+    ##
     # Add debug event to debug array, if specified
     #
     # @param [Nokogiri::XML::Node, #to_s] node XML Node or string for showing context
+    #
     # @param [String] message
     # @yieldreturn [String] appended to message, to allow for lazy-evaulation of message
     def add_debug(node, message = "")
@@ -329,9 +333,11 @@ module RDF::Microdata
       raise RDF::ReaderError, message if validate?
     end
     
+    ##
     # add a statement, object can be literal or URI or bnode
     #
     # @param [Nokogiri::XML::Node, any] node XML Node or string for showing context
+    #
     # @param [URI, BNode] subject the subject of the statement
     # @param [URI] predicate the predicate of the statement
     # @param [URI, BNode, Literal] object the object of the statement
@@ -367,16 +373,14 @@ module RDF::Microdata
       items = []
       # 1) For each element that is also a top-level item run the following algorithm:
       #
-      #   1) Generate the triples for an item item, using the evaluation context.
-      #      Let result be the (URI reference or blank node) subject returned.
+      #   1) Generate the triples for an item item, using the evaluation context. Let result be the (URI reference or blank node) subject returned.
       #   2) Append result to item list.
       getItems.each do |el|
         result = generate_triples(el, ec)
         items << result
       end
       
-      # 2) Generate an RDF Collection list from
-      #    the ordered list of values. Set value to the value returned from generate an RDF Collection.
+      # 2) Generate an RDF Collection list from the ordered list of values. Set value to the value returned from generate an RDF Collection.
       value = generateRDFCollection(root, items)
 
       # 3) Generate the following triple:
@@ -390,6 +394,7 @@ module RDF::Microdata
 
     ##
     # Generate triples for an item
+    #
     # @param [RDF::Resource] item
     # @param [Hash{Symbol => Object}] ec
     # @option ec [Hash{Nokogiri::XML::Element} => RDF::Resource] memory
@@ -397,9 +402,7 @@ module RDF::Microdata
     # @return [RDF::Resource]
     def generate_triples(item, ec = {})
       memory = ec[:memory]
-      # 1) If there is an entry for item in memory, then let subject be the subject of that entry.
-      #    Otherwise, if item has a global identifier and that global identifier is an absolute URL,
-      #    let subject be that global identifier. Otherwise, let subject be a new blank node.
+      # 1) If there is an entry for item in memory, then let subject be the subject of that entry. Otherwise, if item has a global identifier and that global identifier is an absolute URL, let subject be that global identifier. Otherwise, let subject be a new blank node.
       subject = if memory.include?(item.node)
         memory[item.node][:subject]
       elsif item.has_attribute?('itemid')
@@ -432,8 +435,7 @@ module RDF::Microdata
       add_debug(item)  {"gentrips(7): vocab=#{vocab.inspect}"}
       add_triple(item, base_uri, USES_VOCAB, RDF::URI(vocab.uri)) if vocab
 
-      # 8) Otherwise, if type is not empty, construct vocab by removing everything following the last
-      #    SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.
+      # 8) Otherwise, if type is not empty, construct vocab by removing everything following the last SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.
       vocab ||= begin
         type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
         add_debug(item)  {"gentrips(8): type_vocab=#{type_vocab.inspect}"}
@@ -446,9 +448,7 @@ module RDF::Microdata
       # 10) Set property list to an empty mapping between properties and one or more ordered values as established below.
       property_list = {}
 
-      # 11. For each element _element_ that has one or more property names and is one of the
-      #    properties of the item _item_, in the order those elements are given by the algorithm
-      #    that returns the properties of an item, run the following substep:
+      # 11. For each element _element_ that has one or more property names and is one of the properties of the item _item_, in the order those elements are given by the algorithm that returns the properties of an item, run the following substep:
       props = item_properties(item)
       # 11.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
@@ -475,8 +475,7 @@ module RDF::Microdata
           value = property_value(element)
           add_debug(item) {"gentrips(11.1.3) value=#{value.inspect}"}
           
-          # 11.1.4) If value is an item, then generate the triples for value context.
-          #         Replace value by the subject returned from those steps.
+          # 11.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec_new) 
             add_debug(item) {"gentrips(11.1.4): value=#{value.inspect}"}
@@ -487,7 +486,49 @@ module RDF::Microdata
           property_list[predicate] << value
         end
       end
-      
+
+      # 11r. For each element _element_ that has one or more property names and is one of the reverse properties of the item _item_, in the order those elements are given by the algorithm that returns the properties of an item, run the following substep:
+      props = item_properties(item, true)
+      # 11r.1. For each name name in element's reverse property names, run the following substeps:
+      props.each do |element|
+        element.attribute('itemprop-reverse').to_s.split(' ').compact.each do |name|
+          add_debug(item) {"gentrips(11r.1): name=#{name.inspect}, type=#{type}"}
+          # 11r.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
+          ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
+          
+          # 11r.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
+          predicate = vocab.predicateURI(name, ec_new)
+          
+          # (Generate Predicate URI steps 6 and 7)
+          vocab.expand(predicate) do |statement|
+            add_debug(item) {
+              "gentrips(11.1.2): expansion #{statement.inspect}"
+            }
+            @callback.call(statement)
+          end
+
+          ec_new[:current_name] = predicate
+          add_debug(item) {"gentrips(11r.1.2): predicate=#{predicate}"}
+          
+          # 11r.1.3) Let value be the property value of element.
+          value = property_value(element)
+          add_debug(item) {"gentrips(11r.1.3) value=#{value.inspect}"}
+
+          # 11r.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
+          if value.is_a?(Hash)
+            value = generate_triples(element, ec_new) 
+            add_debug(item) {"gentrips(11.1.4): value=#{value.inspect}"}
+          elsif value.is_a?(RDF::Literal)
+            # 11r.1.4r) Otherwise, if value is a literal, ignore the value and continue to the next name; it is an error for the value of @itemprop-reverse to be a literal
+            add_error(element, "Value of @itemprop-reverse may not be a literal: #{value.inspect}")
+            next
+          end
+
+          # 11r.1.5r) Generate a property value using value as the subject and subject as the object
+          generatePropertyValues(item, value, predicate, [subject])
+        end
+      end
+
       # 12) For each predicate in property list
       property_list.each do |predicate, values|
         generatePropertyValues(item, subject, predicate, values)
@@ -497,8 +538,7 @@ module RDF::Microdata
     end
 
     def generatePropertyValues(element, subject, predicate, values)
-      # If the registry contains a URI prefix that is a character for character match of predicate up to the length
-      # of the URI prefix, set vocab as that URI prefix. Otherwise set vocab to null
+      # If the registry contains a URI prefix that is a character for character match of predicate up to the length of the URI prefix, set vocab as that URI prefix. Otherwise set vocab to null
       registry = Registry.find(predicate)
       add_debug("generatePropertyValues") { "list(#{predicate})? #{registry.as_list(predicate).inspect}"} if registry
       if registry && registry.as_list(predicate)
@@ -523,17 +563,15 @@ module RDF::Microdata
     end
 
     ##
-    # To find the properties of an item defined by the element root, the user agent must try
-    # to crawl the properties of the element root, with an empty list as the value of memory:
-    # if this fails, then the properties of the item defined by the element root is an empty
-    # list; otherwise, it is the returned list.
+    # To find the properties of an item defined by the element root, the user agent must try to crawl the properties of the element root, with an empty list as the value of memory: if this fails, then the properties of the item defined by the element root is an empty list; otherwise, it is the returned list.
     #
     # @param [Nokogiri::XML::Element] item
+    # @param [Boolean] reverse (false) return reverse properties
     # @return [Array<Nokogiri::XML::Element>]
     #   List of property elements for an item
-    def item_properties(item)
-      add_debug(item, "item_properties")
-      results, errors = crawl_properties(item, [])
+    def item_properties(item, reverse = false)
+      add_debug(item, "item_properties (#{reverse.inspect})")
+      results, errors = crawl_properties(item, [], reverse)
       raise CrawlFailure, "item_props: errors=#{errors}" if errors > 0
       results
     rescue CrawlFailure => e
@@ -542,38 +580,34 @@ module RDF::Microdata
     end
     
     ##
-    # To crawl the properties of an element root with a list memory, the user agent must run
-    # the following steps. These steps either fail or return a list with a count of errors.
-    # The count of errors is used as part of the authoring conformance criteria below.
+    # To crawl the properties of an element root with a list memory, the user agent must run the following steps. These steps either fail or return a list with a count of errors. The count of errors is used as part of the authoring conformance criteria below.
     #
     # @param [Nokogiri::XML::Element] root
     # @param [Array<Nokokogiri::XML::Element>] memory
+    # @param [Boolean] reverse crawl reverse properties
     # @return [Array<Array<Nokogiri::XML::Element>, Integer>]
     #   Resultant elements and error count
-    def crawl_properties(root, memory)
+    def crawl_properties(root, memory, reverse)
       
       # 1. If root is in memory, then the algorithm fails; abort these steps.
       raise CrawlFailure, "crawl_props mem already has #{root.inspect}" if memory.include?(root)
       
-      # 2. Collect all the elements in the item root; let results be the resulting
-      #    list of elements, and errors be the resulting count of errors.
+      # 2. Collect all the elements in the item root; let results be the resulting list of elements, and errors be the resulting count of errors.
       results, errors = elements_in_item(root)
-      add_debug(root) {"crawl_properties results=#{results.map {|e| node_path(e)}.inspect}, errors=#{errors}"}
+      add_debug(root) {"crawl_properties reverse=#{reverse.inspect} results=#{results.map {|e| node_path(e)}.inspect}, errors=#{errors}"}
 
-      # 3. Remove any elements from results that do not have an itemprop attribute specified.
-      results = results.select {|e| e.has_attribute?('itemprop')}
+      # 3. Remove any elements from results that do not have an @itemprop (@itemprop-reverse) attribute specified.
+      results = results.select {|e| e.has_attribute?(reverse ? 'itemprop-reverse' : 'itemprop')}
       
       # 4. Let new memory be a new list consisting of the old list memory with the addition of root.
       new_memory = memory + [root]
       
-      # 5. For each element in results that has an itemscope attribute specified,
-      #    crawl the properties of the element, with new memory as the memory.
+      # 5. For each element in results that has an @itemscope attribute specified, crawl the properties of the element, with new memory as the memory.
       results.select {|e| e.has_attribute?('itemscope')}.each do |element|
         begin
-          crawl_properties(element, new_memory)
+          crawl_properties(element, new_memory, reverse)
         rescue CrawlFailure => e
-          # If this fails, then remove the element from results and increment errors.
-          # (If it succeeds, the return value is discarded.)
+          # If this fails, then remove the element from results and increment errors. (If it succeeds, the return value is discarded.)
           memory -= element
           add_error(element, e.message)
           errors += 1
@@ -584,8 +618,7 @@ module RDF::Microdata
     end
 
     ##
-    # To collect all the elements in the item root, the user agent must run these steps.
-    # They return a list of elements and a count of errors.
+    # To collect all the elements in the item root, the user agent must run these steps. They return a list of elements and a count of errors.
     #
     # @param [Nokogiri::XML::Element] root
     # @return [Array<Array<Nokogiri::XML::Element>, Integer>]
@@ -616,8 +649,7 @@ module RDF::Microdata
           add_error(current, "elements_in_item: results already includes #{current.inspect}")
           errors += 1
         elsif !current.has_attribute?('itemscope')
-          # If current is not already in results and current does not have an itemscope attribute,
-          # then: add all the child elements of current to pending.
+          # If current is not already in results and current does not have an itemscope attribute, then: add all the child elements of current to pending.
           pending += current.elements
         end
         

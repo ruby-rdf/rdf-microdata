@@ -713,6 +713,99 @@ describe "RDF::Microdata::Reader" do
       end
     end
 
+    context "itemprop-reverse" do
+      {
+        "link" => [
+          %q(
+            <div itemscope itemtype="http://schema.org/Person">
+              <span itemprop="name">William Shakespeare</span>
+              <link itemprop-reverse="creator" href="http://www.freebase.com/m/0yq9mqd">
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/ns/md#item> (_:a) .
+            _:a a <http://schema.org/Person>;
+                <http://schema.org/name> "William Shakespeare" .
+            <http://www.freebase.com/m/0yq9mqd> <http://schema.org/creator> _:a .
+          )
+        ],
+        "itemscope" => [
+          %q(
+            <div itemscope itemtype="http://schema.org/ShoppingCenter">
+              <span itemprop="name">The ACME Shopping Mall on Structured Data Avenue</span>
+              <span itemprop="description">The ACME Shopping Mall is your one-stop paradise for all data-related shopping needs, from schemas to instance data</span>
+              <p>Here is a list of shops inside:</p>
+              <div itemprop-reverse="containedIn" itemscope itemtype="http://schema.org/Restaurant">
+                <span itemprop="name">Dan Brickley's Data Restaurant</span>
+              </div>
+              <div itemprop-reverse="containedIn" itemscope itemtype="http://schema.org/Bakery">
+                <span itemprop="name">Ramanathan Guha's Meta Content Framework Bakery</span>
+              </div>
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/ns/md#item> (_:a _:b _:c) .
+            _:a a <http://schema.org/ShoppingCenter>;
+                <http://schema.org/name> "The ACME Shopping Mall on Structured Data Avenue";
+                <http://schema.org/description> "The ACME Shopping Mall is your one-stop paradise for all data-related shopping needs, from schemas to instance data" .
+            _:b a <http://schema.org/Restaurant>;
+                <http://schema.org/name> "Dan Brickley's Data Restaurant";
+                <http://schema.org/containedIn> _:a .
+            _:c a <http://schema.org/Bakery>;
+                <http://schema.org/name> "Ramanathan Guha's Meta Content Framework Bakery";
+                <http://schema.org/containedIn> _:a .
+          )
+        ],
+        "literal" => [
+          %q(
+            <div itemscope itemtype="http://schema.org/Person">
+              <span itemprop="name">William Shakespeare</span>
+              <meta itemprop-reverse="creator" content="foo">
+            </div>
+          ),
+          %q(
+            <> <http://www.w3.org/ns/md#item> (_:a) .
+            _:a a <http://schema.org/Person>;
+                <http://schema.org/name> "William Shakespeare" .
+          )
+        ],
+        "itemprop and itemprop-reverse" => [
+          %q(
+            <div itemscope itemtype="http://schema.org/Organization">
+              <span itemprop="name">Cryptography Users</span>
+              <div itemprop-reverse="memberOf" itemprop="member" itemscope
+                    itemtype="http://schema.org/OrganizationRole">
+                <div itemprop-reverse="memberOf" itemprop="member" itemscope
+                        itemtype="http://schema.org/Person">
+                  <span itemprop="name">Alice</span>
+                </div>
+                <span itemprop="startDate">1977</span>
+              </div>
+            </div>
+          ),
+          %q(
+            @prefix schema: <http://schema.org/> .
+            @prefix md: <http://www.w3.org/ns/md#> .
+            <> md:item (_:a) .
+            _:a a schema:Organization;
+                schema:name "Cryptography Users";
+                schema:member _:b .
+            _:b a schema:OrganizationRole;
+                schema:startDate "1977";
+                schema:member _:c;
+                schema:memberOf _:a .
+            _:c a schema:Person;
+                schema:name "Alice";
+                schema:memberOf _:b .
+          )
+        ],
+      }.each do |name, (md, nt)|
+        it "expands #{name}" do
+          expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
+        end
+      end
+    end
+
     context "vocabulary expansion" do
       it "expands if vocab_expansion is true" do
         md = %q(
