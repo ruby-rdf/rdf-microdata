@@ -7,13 +7,18 @@ require 'rdf/isomorphic'
 require 'rdf/microdata'
 require 'rdf/turtle'
 require 'rdf/spec/matchers'
+require 'restclient/components'
+require 'rack/cache'
 require 'matchers'
-require 'open-uri/cached'
 
 # Create and maintain a cache of downloaded URIs
 URI_CACHE = File.expand_path(File.join(File.dirname(__FILE__), "uri-cache"))
 Dir.mkdir(URI_CACHE) unless File.directory?(URI_CACHE)
-OpenURI::Cache.class_eval { @cache_path = URI_CACHE }
+# Cache client requests
+RestClient.enable Rack::Cache,
+  verbose:      false, 
+  metastore:   "file:" + ::File.expand_path("../uri-cache/meta", __FILE__),
+  entitystore: "file:" + ::File.expand_path("../uri-cache/body", __FILE__)
 
 ::RSpec.configure do |c|
   c.filter_run :focus => true

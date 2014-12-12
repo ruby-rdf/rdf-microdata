@@ -3,18 +3,17 @@
 @prefix schema: <http://schema.org/> .
 @prefix rdfa: <http://www.w3.org/ns/rdfa#> .
 
-<> md:item ([ a schema:MusicPlaylist;
+[ a schema:MusicPlaylist;
   schema:name "Classic Rock Playlist";
-  schema:byArtist ("Lynard Skynard" "AC/DC");
+  schema:byArtist "Lynard Skynard", "AC/DC";
   schema:numTracks "2";
-  schema:tracks (
+  schema:tracks 
     [ a schema:MusicRecording;
-      schema:byArtist ("Lynard Skynard");;
+      schema:byArtist "Lynard Skynard";
       schema:name "Sweet Home Alabama";
-      schema:url <sweet-home-alabama>]
+      schema:url <sweet-home-alabama>],
     [ a schema:MusicRecording;
-      schema:byArtist ("AC/DC");;
+      schema:byArtist "AC/DC";
       schema:name "Shook you all Night Long";
       schema:url <shook-you-all-night-long>]
-  )]);
-  rdfa:usesVocabulary <http://schema.org/> .
+] .

@@ -36,11 +36,14 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'nokogiri' ,       '~> 1.6'
 
   gem.add_development_dependency 'equivalent-xml' , '~> 0.3'
-  gem.add_development_dependency 'open-uri-cached', '~> 0.0', '>= 0.0.5'
   gem.add_development_dependency 'yard' ,           '~> 0.8'
   gem.add_development_dependency 'spira',           '= 0.0.12'
+  gem.add_development_dependency "rack-cache",      '~> 1.2'
+  gem.add_development_dependency "rest-client",     '~> 1.7'
+  gem.add_development_dependency "rest-client-components", '~> 1.3'
   gem.add_development_dependency 'rspec',           '~> 3.0'
   gem.add_development_dependency 'rspec-its',       '~> 1.0'
+  
   gem.add_development_dependency 'rdf-spec',        '~> 1.1'
   gem.add_development_dependency 'rdf-rdfa',        '~> 1.1'
   gem.add_development_dependency 'rdf-turtle',      '~> 1.1'

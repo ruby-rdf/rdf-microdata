@@ -5,27 +5,28 @@ describe RDF::Microdata::Reader do
   # W3C Microdata Test suite from FIXME
   describe "w3c microdata tests" do
     require 'suite_helper'
-    MANIFEST = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/manifest.jsonld"
+    MANIFEST = Fixtures::SuiteTest::BASE + "manifest.jsonld"
 
     Fixtures::SuiteTest::Manifest.open(MANIFEST).each do |m|
       describe m.comment do
         m.entries.each do |t|
-          specify "#{t.name}: #{t.comment}", :pending => ("Minor whitespace difference" if t.name == "Test 0041") do
+          specify "#{t.name}: #{t.comment}" do
             t.debug = []
-            reader = RDF::Microdata::Reader.open(t.data,
-              :base_uri => t.data,
-              :strict => true,
-              :validate => false,
-              :registry_uri => t.registry,
-              #:library => :nokogiri,
-              :debug => t.debug)
+            reader = RDF::Microdata::Reader.open(t.action,
+              base_uri:        t.action,
+              strict:          true,
+              validate:        false,
+              registry:        t.registry,
+              vocab_expansion: t.vocab_expansion,
+              debug:           t.debug,
+            )
             expect(reader).to be_a RDF::Reader
 
-            graph = RDF::Repository.new << reader
+            graph = RDF::Graph.new << reader
 
             #puts "parse #{t.query} as #{RDF::Reader.for(t.query)}"
-            output_graph = RDF::Repository.load(t.result, :base_uri => t.data)
-            puts "result: #{CGI.escapeHTML(graph.dump(:ttl))}" if ::RDF::Microdata::debug?
+            output_graph = RDF::Graph.load(t.result, :base_uri => t.action)
+            puts "result: #{CGI.escapeHTML(graph.dump(:ttl, standard_prefixes: true))}" if ::RDF::Microdata::debug?
             if t.positiveTest
               expect(graph).to be_equivalent_graph(output_graph, t)
             else

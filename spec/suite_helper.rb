@@ -7,8 +7,8 @@ require 'open-uri'
 # For now, override RDF::Utils::File.open_file to look for the file locally before attempting to retrieve it
 module RDF::Util
   module File
-    REMOTE_PATH = "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/"
-    LOCAL_PATH = ::File.expand_path("../htmldata/microdata-rdf/tests", __FILE__) + '/'
+    REMOTE_PATH = "http://w3c.github.io/microdata-rdf/tests/"
+    LOCAL_PATH = ::File.expand_path("../spec-tests", __FILE__) + '/'
 
     ##
     # Override to use Patron for http and https, Kernel.open otherwise.
@@ -113,7 +113,7 @@ end
 
 module Fixtures
   module SuiteTest
-    BASE = RDF::URI("http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/")
+    BASE = RDF::URI("http://w3c.github.io/microdata-rdf/tests/")
     class Manifest < JSON::LD::Resource
       def self.open(file)
         #puts "open: #{file}"
@@ -126,7 +126,9 @@ module Fixtures
       # @param [Hash] json framed JSON-LD
       # @return [Array<Manifest>]
       def self.from_jsonld(json)
-        json['@graph'].map {|e| Manifest.new(e)}
+        json['@graph'].
+          select {|m| m['@type'] == 'mf:Manifest'}.
+          map {|e| Manifest.new(e)}
       end
 
       def entries
@@ -139,13 +141,13 @@ module Fixtures
       attr_accessor :debug
 
       # Alias data and query
-      def data
-        BASE.join(self.action['data'])
+      def action
+        BASE.join(property('action'))
       end
 
       def registry
         reg = property('registry') ||
-          "http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/tests/test-registry.json"
+          BASE + "test-registry.json"
         BASE.join(reg)
       end
 
@@ -154,9 +156,20 @@ module Fixtures
       end
 
       def positiveTest
-        property('positiveTest') == 'true'
+        !Array(attributes['@type']).join(" ").match(/Negative/)
+      end
+     
+      def negative_test?
+        !positive_test?
       end
       
+      def inspect
+        super.sub('>', "\n" +
+        "  positive?: #{positive_test?.inspect}\n" +
+        ">"
+      )
+      end
+
       def trace; @debug.join("\n"); end
     end
   end

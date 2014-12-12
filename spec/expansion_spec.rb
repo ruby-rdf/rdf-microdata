@@ -6,7 +6,7 @@ class ExpansionTester
   include RDF::Microdata::Expansion
   include RDF::Enumerable
 
-  attr_reader :about, :information, :repo, :inputDocument, :outputDocument, :options
+  attr_reader :about, :information, :repo, :action, :result, :options
 
   def initialize(name)
     @about = @information = name
@@ -37,10 +37,10 @@ class ExpansionTester
     elements.each do |context, ttl|
       case context
       when :default
-        @inputDocument = ttl
+        @action = ttl
         @repo << parse(ttl)
       when :result
-        @outputDocument = ttl
+        result = ttl
         result = parse(ttl)
       end
     end
