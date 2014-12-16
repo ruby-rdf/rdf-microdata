@@ -1,8 +1,7 @@
 @prefix dc: <http://purl.org/dc/terms/> .
 @prefix md: <http://www.w3.org/ns/md#> .
 @prefix frbr: <http://purl.org/vocab/frbr/core#> .
-
-<> md:item (<http://books.example.com/works/45U8QJGZSQKDH8N>) .
+@prefix rdfa: <http://www.w3.org/ns/rdfa#> .
 
 <http://books.example.com/works/45U8QJGZSQKDH8N> a frbr:Work ;
   dc:creator "Wil Wheaton"@en ;

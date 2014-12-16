@@ -29,8 +29,14 @@ The parser uses a build-in version of the [Microdata RDF][] registry.
 
 ### Reading RDF data in the Microdata format
 
-    graph = RDF::Graph.load("etc/foaf.html", :format => :microdata)
+    require 'rdf/microdata'
+    graph = RDF::Graph.load("etc/doap.html", :format => :microdata)
 
+### Reading using content-negotation
+
+    require 'rdf/microdata'
+    graph = RDF::Graph.load("etc/doap.html", :content_type => "text/html")
+    
 ## Note
 This spec is based on the W3C HTML Data Task Force specification and does not support
 GRDDL-type triple generation, such as for html>head>title anchor tags.

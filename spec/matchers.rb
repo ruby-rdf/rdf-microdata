@@ -50,11 +50,11 @@ def normalize(graph)
   end
 end
 
-Info = Struct.new(:about, :information, :trace, :compare, :inputDocument, :outputDocument, :format)
+Info = Struct.new(:about, :information, :trace, :compare, :action, :result, :format)
 
 RSpec::Matchers.define :be_equivalent_graph do |expected, info|
   match do |actual|
-    @info = if info.respond_to?(:data)
+    @info = if info.respond_to?(:action)
       info
     elsif info.is_a?(Hash)
       identifier = info[:identifier] || expected.is_a?(RDF::Enumerable) ? expected.context : info[:about]
@@ -66,7 +66,6 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
     else
       Info.new(expected.is_a?(RDF::Enumerable) ? expected.context : info, info.to_s)
     end
-    @info.format ||= :ttl
     @expected = normalize(expected)
     @actual = normalize(actual)
     @actual.isomorphic_with?(@expected) rescue false
@@ -82,10 +81,10 @@ RSpec::Matchers.define :be_equivalent_graph do |expected, info|
       "Graph differs"
     end +
     "\n#{info + "\n" unless info.empty?}" +
-    (@info.inputDocument ? "Input file: #{@info.inputDocument}\n" : "") +
-    (@info.outputDocument ? "Output file: #{@info.outputDocument}\n" : "") +
-    "Expected:\n#{@expected.dump(@info.format, standard_prefixes: true)}" +
-    "Results:\n#{@actual.dump(@info.format, standard_prefixes: true)}" +
+    (@info.action ? "Action: #{@info.action}\n" : "") +
+    (@info.result ? "Result: #{@info.result}\n" : "") +
+    "Expected:\n#{@expected.dump((@info.format || :ttl), standard_prefixes: true)}" +
+    "Results:\n#{@actual.dump((@info.format || :ttl), standard_prefixes: true)}" +
     (@info.trace ? "\nDebug:\n#{@info.trace}" : "")
   end  
 end

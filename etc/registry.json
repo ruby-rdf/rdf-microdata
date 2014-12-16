@@ -1,46 +1,8 @@
 {
   "http://schema.org/": {
-    "propertyURI":    "vocabulary",
-    "multipleValues": "unordered",
     "properties": {
-      "additionalType": {"subPropertyOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-      "blogPosts": {"multipleValues": "list"},
-      "blogPosts": {"multipleValues": "list"},
-      "breadcrumb": {"multipleValues": "list"},
-      "byArtist": {"multipleValues": "list"},
-      "creator": {"multipleValues": "list"},
-      "episode": {"multipleValues": "list"},
-      "episodes": {"multipleValues": "list"},
-      "event": {"multipleValues": "list"},
-      "events": {"multipleValues": "list"},
-      "founder": {"multipleValues": "list"},
-      "founders": {"multipleValues": "list"},
-      "itemListElement": {"multipleValues": "list"},
-      "musicGroupMember": {"multipleValues": "list"},
-      "performerIn": {"multipleValues": "list"},
-      "actor": {"multipleValues": "list"},
-      "actors": {"multipleValues": "list"},
-      "performer": {"multipleValues": "list"},
-      "performers": {"multipleValues": "list"},
-      "producer": {"multipleValues": "list"},
-      "recipeInstructions": {"multipleValues": "list"},
-      "season": {"multipleValues": "list"},
-      "seasons": {"multipleValues": "list"},
-      "subEvent": {"multipleValues": "list"},
-      "subEvents": {"multipleValues": "list"},
-      "track": {"multipleValues": "list"},
-      "tracks": {"multipleValues": "list"}
+      "additionalType": {"subPropertyOf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"}
     }
   },
-  "http://microformats.org/profile/hcard": {
-    "propertyURI":    "vocabulary",
-    "multipleValues": "unordered"
-  },
-  "http://microformats.org/profile/hcalendar#": {
-    "propertyURI":    "vocabulary",
-    "multipleValues": "unordered",
-    "properties": {
-      "categories": {"multipleValues": "list"}
-    }
-  }
+  "http://microformats.org/profile/hcard": {}
 }

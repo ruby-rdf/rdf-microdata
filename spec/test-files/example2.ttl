@@ -2,17 +2,15 @@
 @prefix hcard: <http://microformats.org/profile/hcard#> .
 @prefix rdfa: <http://www.w3.org/ns/rdfa#> .
 
-<> md:item (
-  [ a <http://microformats.org/profile/hcard>;
-    hcard:fn "Princeton";
-    hcard:n [ hcard:given-name "Princeton" ];
-    hcard:adr _:a
-  ]
-  [ a <http://microformats.org/profile/hcard>;
-    hcard:fn "Trekkie";
-    hcard:n [ hcard:given-name "Trekkie" ];
-    hcard:adr _:a
-  ]);
-  rdfa:usesVocabulary <http://microformats.org/profile/hcard> .
+[ a <http://microformats.org/profile/hcard>;
+  hcard:fn "Princeton";
+  hcard:n [ hcard:given-name "Princeton" ];
+  hcard:adr _:a
+] .
+[ a <http://microformats.org/profile/hcard>;
+  hcard:fn "Trekkie";
+  hcard:n [ hcard:given-name "Trekkie" ];
+  hcard:adr _:a
+] .
 
 _:a hcard:street-address "Avenue Q" .
