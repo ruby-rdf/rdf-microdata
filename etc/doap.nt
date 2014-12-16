@@ -2,7 +2,6 @@
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#shortdesc> "Microdata reader for Ruby."@en .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#description> "\n      RDF::Microdata is an Microdata reader for Ruby using the RDF.rb library suite.\n    "@en .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#name> "RDF::Microdata" .
-<http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#category> "\n        Resource Description Framework\n        for\n        Ruby\n      " .
 <http://rubygems.org/gems/rdf-microdata> <http://purl.org/dc/terms/creator> <http://greggkellogg.net/foaf#me> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#developer> <http://greggkellogg.net/foaf#me> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#documenter> <http://greggkellogg.net/foaf#me> .
@@ -11,8 +10,13 @@
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#created> "2011-08-29"^^<http://www.w3.org/2001/XMLSchema#date> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#blog> <http://greggkellogg.net/> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#bug-database> <http://github.com/ruby-rdf/rdf-microdata/issues> .
+<http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#category> <http://dbpedia.org/resource/Resource_Description_Framework> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#programming-language> <http://dbpedia.org/resource/Ruby_(programming_language)> .
+<http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#implements> <http://www.w3.org/TR/microdata-rdf/> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#download-page> <http://rubygems.org/gems/rdf-microdata> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#homepage> <http://github.com/ruby-rdf/rdf-microdata> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#license> <http://creativecommons.org/licenses/publicdomain/> .
 <http://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#mailing-list> <http://lists.w3.org/Archives/Public/public-rdf-ruby/> .
+<http://rubygems.org/gems/rdf-microdata> <http://www.w3.org/ns/md#item> _:g70108515816680 .
+_:g70108515816680 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rubygems.org/gems/rdf-microdata> .
+_:g70108515816680 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
