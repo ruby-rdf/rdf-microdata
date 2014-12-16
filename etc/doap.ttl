@@ -1,7 +1,6 @@
 @prefix dc: <http://purl.org/dc/terms/> .
 @prefix doap: <http://usefulinc.com/ns/doap#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix md: <http://www.w3.org/ns/md#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -25,5 +24,4 @@
    doap:name "RDF::Microdata";
    doap:programming-language <http://dbpedia.org/resource/Ruby_(programming_language)>;
    doap:shortdesc "Microdata reader for Ruby."@en;
-   md:item (<http://rubygems.org/gems/rdf-microdata>);
    foaf:creator <http://greggkellogg.net/foaf#me> .
