@@ -49,7 +49,7 @@ module RDF::Microdata
       # @param [String] registry_uri
       def self.load_registry(registry_uri)
         return if @registry_uri == registry_uri
-        
+
         json = RDF::Util::File.open_file(registry_uri) { |f| JSON.load(f) }
 
         @prefixes = {}
@@ -187,7 +187,7 @@ module RDF::Microdata
 
         # Load registry
         begin
-          registry_uri = options.fetch(:registry, DEFAULT_REGISTRY)
+          registry_uri = options[:registry] || DEFAULT_REGISTRY
           add_debug(@doc, "registry = #{registry_uri.inspect}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
@@ -391,6 +391,7 @@ module RDF::Microdata
 
           # 9.1.5) If an entry exists in the registry for name in the vocabulary associated with vocab having the key subPropertyOf or equivalentProperty
           vocab.expand(predicate) do |equiv|
+            add_debug(item) {"gentrips(9.1.5): equiv=#{equiv.inspect}"}
             # for each such value equiv, generate the following triple
             add_triple(item, subject, equiv, value)
           end 
