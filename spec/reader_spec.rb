@@ -648,7 +648,7 @@ describe "RDF::Microdata::Reader" do
             <div itemprop="name">friend1</div>
             <div itemprop="friend" itemscope>
               <div itemprop="name">friend2</div>
-              <div itemprop="friend" itemscope itemref="ref"></div>
+              <div itemprop="friend" itemref="ref" itemscope></div>
             </div>
           </div>
         </div>
