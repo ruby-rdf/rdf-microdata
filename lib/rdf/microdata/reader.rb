@@ -532,8 +532,7 @@ module RDF::Microdata
         {}
       when element.name == 'meta'
         RDF::Literal.new(element.attribute('content').to_s, :language => element.language)
-      when %w(data meter).include?(element.name)
-        RDF::Literal.new(element.attribute('value').to_s, :language => element.language)
+      when %w(data meter).include?(element.name) && element.attribute('value')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('value').to_s
         datatype = %w(Integer Float Double).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
