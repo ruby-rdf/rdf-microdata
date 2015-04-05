@@ -640,6 +640,21 @@ describe "RDF::Microdata::Reader" do
           expect(parse(md)).to be_equivalent_graph(nt, :trace => @debug, :format => :ttl)
         end
       end
+
+      it "catches infinite recursion" do
+        md = %(
+        <div itemscope>
+          <div id="ref">
+            <div itemprop="name">friend1</div>
+            <div itemprop="friend" itemscope>
+              <div itemprop="name">friend2</div>
+              <div itemprop="friend" itemref="ref" itemscope></div>
+            </div>
+          </div>
+        </div>
+        )
+        expect {parse(md, validate: true)}.to raise_error(RDF::ReaderError, /itemref recursion/)
+      end
     end
 
     context "propertyURI" do

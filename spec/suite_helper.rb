@@ -152,17 +152,25 @@ module Fixtures
       end
 
       def result
-        BASE.join(property('result'))
+        BASE.join(property('result')) if property('result')
       end
 
-      def positiveTest
+      def positive_test?
         !Array(attributes['@type']).join(" ").match(/Negative/)
       end
      
       def negative_test?
         !positive_test?
       end
-      
+
+      def evaluate?
+        Array(attributes['@type']).join(" ").include?("Eval")
+      end
+
+      def syntax?
+        Array(attributes['@type']).join(" ").include?("Syntax")
+      end
+
       def inspect
         super.sub('>', "\n" +
         "  positive?: #{positive_test?.inspect}\n" +

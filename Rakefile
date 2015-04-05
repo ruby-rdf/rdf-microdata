@@ -36,3 +36,13 @@ end
 
 task :default => :spec
 task :specs => :spec
+
+desc "Generate etc/doap.{nt,ttl} from etc/doap.html."
+task :doap do
+  require 'rdf/microdata'
+  require 'rdf/turtle'
+  require 'rdf/ntriples'
+  g = RDF::Graph.load("etc/doap.html")
+  RDF::NTriples::Writer.open("etc/doap.nt") {|w| w <<g }
+  RDF::Turtle::Writer.open("etc/doap.ttl", standard_prefixes: true) {|w| w <<g }
+end

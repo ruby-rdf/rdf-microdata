@@ -49,7 +49,7 @@ module RDF::Microdata
       # @param [String] registry_uri
       def self.load_registry(registry_uri)
         return if @registry_uri == registry_uri
-        
+
         json = RDF::Util::File.open_file(registry_uri) { |f| JSON.load(f) }
 
         @prefixes = {}
@@ -187,7 +187,7 @@ module RDF::Microdata
 
         # Load registry
         begin
-          registry_uri = options.fetch(:registry, DEFAULT_REGISTRY)
+          registry_uri = options[:registry] || DEFAULT_REGISTRY
           add_debug(@doc, "registry = #{registry_uri.inspect}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
@@ -391,6 +391,7 @@ module RDF::Microdata
 
           # 9.1.5) If an entry exists in the registry for name in the vocabulary associated with vocab having the key subPropertyOf or equivalentProperty
           vocab.expand(predicate) do |equiv|
+            add_debug(item) {"gentrips(9.1.5): equiv=#{equiv.inspect}"}
             # for each such value equiv, generate the following triple
             add_triple(item, subject, equiv, value)
           end 
@@ -441,11 +442,9 @@ module RDF::Microdata
     #   List of property elements for an item
     def item_properties(item, reverse = false)
       add_debug(item, "item_properties (#{reverse.inspect})")
-      results, errors = crawl_properties(item, [], reverse)
-      raise CrawlFailure, "item_props: errors=#{errors}" if errors > 0
-      results
+      crawl_properties(item, [], reverse)
     rescue CrawlFailure => e
-      add_error(element, e.message)
+      add_error(item, e.message)
       return []
     end
     
@@ -455,48 +454,42 @@ module RDF::Microdata
     # @param [Nokogiri::XML::Element] root
     # @param [Array<Nokokogiri::XML::Element>] memory
     # @param [Boolean] reverse crawl reverse properties
-    # @return [Array<Array<Nokogiri::XML::Element>, Integer>]
-    #   Resultant elements and error count
+    # @return [Array<Nokogiri::XML::Element>]
+    #   Resultant elements
     def crawl_properties(root, memory, reverse)
-      
       # 1. If root is in memory, then the algorithm fails; abort these steps.
       raise CrawlFailure, "crawl_props mem already has #{root.inspect}" if memory.include?(root)
       
       # 2. Collect all the elements in the item root; let results be the resulting list of elements, and errors be the resulting count of errors.
-      results, errors = elements_in_item(root)
-      add_debug(root) {"crawl_properties reverse=#{reverse.inspect} results=#{results.map {|e| node_path(e)}.inspect}, errors=#{errors}"}
+      results = elements_in_item(root)
+      add_debug(root) {"crawl_properties reverse=#{reverse.inspect} results=#{results.map {|e| node_path(e)}.inspect}"}
 
       # 3. Remove any elements from results that do not have an @itemprop (@itemprop-reverse) attribute specified.
       results = results.select {|e| e.has_attribute?(reverse ? 'itemprop-reverse' : 'itemprop')}
       
       # 4. Let new memory be a new list consisting of the old list memory with the addition of root.
+      raise CrawlFailure, "itemref recursion" if memory.detect {|n| root.node.object_id == n.node.object_id}
       new_memory = memory + [root]
       
       # 5. For each element in results that has an @itemscope attribute specified, crawl the properties of the element, with new memory as the memory.
       results.select {|e| e.has_attribute?('itemscope')}.each do |element|
-        begin
-          crawl_properties(element, new_memory, reverse)
-        rescue CrawlFailure => e
-          # If this fails, then remove the element from results and increment errors. (If it succeeds, the return value is discarded.)
-          memory -= element
-          add_error(element, e.message)
-          errors += 1
-        end
+        crawl_properties(element, new_memory, reverse)
       end
       
-      [results, errors]
+      results
     end
 
     ##
-    # To collect all the elements in the item root, the user agent must run these steps. They return a list of elements and a count of errors.
+    # To collect all the elements in the item root, the user agent must run these steps. They return a list of elements.
     #
     # @param [Nokogiri::XML::Element] root
-    # @return [Array<Array<Nokogiri::XML::Element>, Integer>]
+    # @return Array<Nokogiri::XML::Element>]
     #   Resultant elements and error count
+    # @raise CrawlFailure on element recursion
     def elements_in_item(root)
       # Let results and pending be empty lists of elements.
       # Let errors be zero.
-      results, errors = [], 0
+      results, memory, errors = [], [], 0
       
       # Add all the children elements of root to pending.
       pending = root.elements
@@ -514,20 +507,19 @@ module RDF::Microdata
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
-        if results.include?(current)
-          # If current is already in results, increment errors.
-          add_error(current, "elements_in_item: results already includes #{current.inspect}")
-          errors += 1
+        if memory.include?(current)
+          raise CrawlFailure, "elements_in_item: results already includes #{current.inspect}"
         elsif !current.has_attribute?('itemscope')
           # If current is not already in results and current does not have an itemscope attribute, then: add all the child elements of current to pending.
           pending += current.elements
         end
+        memory << current
         
         # If current is not already in results, then: add current to results.
         results << current unless results.include?(current)
       end
 
-      [results, errors]
+      results
     end
 
     ##
@@ -540,8 +532,7 @@ module RDF::Microdata
         {}
       when element.name == 'meta'
         RDF::Literal.new(element.attribute('content').to_s, :language => element.language)
-      when %w(data meter).include?(element.name)
-        RDF::Literal.new(element.attribute('value').to_s, :language => element.language)
+      when %w(data meter).include?(element.name) && element.attribute('value')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('value').to_s
         datatype = %w(Integer Float Double).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
