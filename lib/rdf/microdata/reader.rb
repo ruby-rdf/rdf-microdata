@@ -24,6 +24,11 @@ module RDF::Microdata
     attr_reader :implementation
 
     ##
+    # Accumulated errors found during processing
+    # @return [Array<String>]
+    attr_reader :errors
+
+    ##
     # Returns the base URI determined by this reader.
     #
     # @example
@@ -158,6 +163,8 @@ module RDF::Microdata
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
     # @option options [#to_s]    :registry
+    # @option options [Array] :errors
+    #   array for placing errors found when parsing
     # @option options [Array] :debug
     #   Array to place debug messages
     # @return [reader]
@@ -167,6 +174,8 @@ module RDF::Microdata
     # @raise [Error] Raises `RDF::ReaderError` when validating
     def initialize(input = $stdin, options = {}, &block)
       super do
+        @errors = @options[:errors]
+        @warnings = @options[:warnings]
         @debug = options[:debug]
 
         @library = :nokogiri
@@ -266,6 +275,7 @@ module RDF::Microdata
     end
 
     def add_error(node, message)
+      @errors << "#{node_path(node)}: #{message}" if @errors
       add_debug(node, message)
       raise RDF::ReaderError, message if validate?
     end
