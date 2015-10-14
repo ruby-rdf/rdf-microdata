@@ -2,7 +2,11 @@
 require 'rubygems'
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
 require 'rdf/microdata'
-require 'linkeddata' rescue nil
+begin
+  require 'linkeddata'
+rescue LoadError
+  require 'rdf/turtle'
+end
 require 'getoptlong'
 require 'open-uri'
 
@@ -31,7 +35,7 @@ def run(input, options)
     r = reader_class.new(input, options)
     g = RDF::Graph.new << r
     num = g.count
-    options[:output].puts g.dump(options[:output_format], options.merge(:prefixes => r.prefixes))
+    options[:output].puts g.dump(options[:output_format], options.merge(prefixes: r.prefixes))
   end
   STDERR.puts
   secs = Time.new - start
@@ -43,14 +47,14 @@ rescue
 end
 
 options = {
-  :verbose => false,
-  :validate => false,
-  :strict => true,
-  :output => STDOUT,
-  :output_format => :turtle,
-  :input_format => :microdata,
-  :standard_prefixes => true,
-  :base_uri => "http://example.com",
+  verbose: false,
+  validate: false,
+  strict: true,
+  output: STDOUT,
+  output_format: :turtle,
+  input_format: :microdata,
+  standard_prefixes: true,
+  base_uri: "http://example.com",
 }
 input = nil
 

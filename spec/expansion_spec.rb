@@ -16,9 +16,7 @@ class ExpansionTester
   end
 
   def graph
-    g = RDF::Graph.new
-    @repo.each {|st| g << st if st.context.nil? }
-    g
+    @repo
   end
 
   def each_statement(&block); @repo.each_statement(&block); end
@@ -49,14 +47,14 @@ class ExpansionTester
   end
   
   def parse(ttl)
-    RDF::Graph.new << RDF::Turtle::Reader.new(ttl, :prefixes => {
-      :foaf => RDF::FOAF.to_uri,
-      :owl  => RDF::OWL.to_uri,
-      :rdf  => RDF.to_uri,
-      :rdfa => RDF::RDFA.to_uri,
-      :rdfs => RDF::RDFS.to_uri,
-      :xsd  => RDF::XSD.to_uri,
-      :ex   => RDF::URI("http://example.org/vocab#"),
+    RDF::Graph.new << RDF::Turtle::Reader.new(ttl, prefixes: {
+      foaf: RDF::URI("http://xmlns.com/foaf/0.1/"),
+      owl:  RDF::OWL.to_uri,
+      rdf:  RDF.to_uri,
+      rdfa: RDF::RDFA.to_uri,
+      rdfs: RDF::RDFS.to_uri,
+      xsd:  RDF::XSD.to_uri,
+      ex:   RDF::URI("http://example.org/vocab#"),
       nil   => "http://example.org/",
     })
   end
@@ -67,39 +65,39 @@ describe RDF::Microdata::Expansion do
   describe :owl_entailment do
     {
       "empty"   => {
-        :default => %q(),
-        :result => %q()
+        default: %q(),
+        result: %q()
       },
       "simple"   => {
-        :default => %q(:a a rdfs:Class .),
-        :result => %q(:a a rdfs:Class .)
+        default: %q(:a a rdfs:Class .),
+        result: %q(:a a rdfs:Class .)
       },
       "prp-spo1"   => {
-        :default => %q(
+        default: %q(
           <#me> :name "Gregg Kellogg" .
           :name rdfs:subPropertyOf foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <#me> :name "Gregg Kellogg"; foaf:name "Gregg Kellogg" .
           :name rdfs:subPropertyOf foaf:name .
         )
       },
       "prp-eqp1"   => {
-        :default => %q(
+        default: %q(
           <#me> :name "Gregg Kellogg" .
           :name owl:equivalentProperty foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <#me> :name "Gregg Kellogg"; foaf:name "Gregg Kellogg" .
           :name owl:equivalentProperty foaf:name .
         )
       },
       "prp-eqp2"   => {
-        :default => %q(
+        default: %q(
           <#me> foaf:name "Gregg Kellogg" .
           :name owl:equivalentProperty foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <#me> :name "Gregg Kellogg"; foaf:name "Gregg Kellogg" .
           :name owl:equivalentProperty foaf:name .
         )
@@ -117,16 +115,16 @@ describe RDF::Microdata::Expansion do
   describe :expand do
     {
       "simple"   => {
-        :default => %q(<document> rdfa:usesVocabulary ex: .),
-        :result => %q(<document> rdfa:usesVocabulary ex: .)
+        default: %q(<document> rdfa:usesVocabulary ex: .),
+        result: %q(<document> rdfa:usesVocabulary ex: .)
       },
       "prp-spo1"   => {
-        :default => %q(
+        default: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> ex:name "Gregg Kellogg" .
           ex:name rdfs:subPropertyOf foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> ex:name "Gregg Kellogg";
             foaf:name "Gregg Kellogg" .
@@ -134,12 +132,12 @@ describe RDF::Microdata::Expansion do
         )
       },
       "prp-eqp1"   => {
-        :default => %q(
+        default: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> ex:name "Gregg Kellogg" .
           ex:name owl:equivalentProperty foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> ex:name "Gregg Kellogg";
             foaf:name "Gregg Kellogg" .
@@ -147,12 +145,12 @@ describe RDF::Microdata::Expansion do
         )
       },
       "prp-eqp2"   => {
-        :default => %q(
+        default: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> foaf:name "Gregg Kellogg" .
           ex:name owl:equivalentProperty foaf:name .
         ),
-        :result => %q(
+        result: %q(
           <document> rdfa:usesVocabulary ex: .
           <#me> ex:name "Gregg Kellogg";
             foaf:name "Gregg Kellogg" .
@@ -175,7 +173,7 @@ describe RDF::Microdata::Expansion do
   context "with empty graph" do
     it "returns an empty graph" do
       rdfa = %q(<http></http>)
-      expect(parse(rdfa)).to be_equivalent_graph("", :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph("", trace: @debug)
     end
   end
   
@@ -204,7 +202,7 @@ describe RDF::Microdata::Expansion do
           doap:name "RDF::RDFa";
           dc:creator <http://greggkellogg.net/foaf#me> .
       )
-      expect(parse(rdfa)).to be_equivalent_graph(ttl, :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph(ttl, trace: @debug)
     end
   end
   
@@ -239,14 +237,14 @@ describe RDF::Microdata::Expansion do
           rdfs:label "RDF::RDFa";
           dc:creator <http://greggkellogg.net/foaf#me> .
       )
-      expect(parse(rdfa)).to be_equivalent_graph(ttl, :trace => @debug)
+      expect(parse(rdfa)).to be_equivalent_graph(ttl, trace: @debug)
     end
   end
   
   def parse(input, options = {})
     @debug = options[:debug] || []
     RDF::Graph.new << RDF::RDFa::Reader.new(input, options.merge(
-      :debug => @debug, :vocab_expansion => true, :vocab_repository => nil
+      debug: @debug, vocab_expansion: true, vocab_repository: nil
     ))
   end
 end

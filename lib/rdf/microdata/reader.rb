@@ -313,7 +313,7 @@ module RDF::Microdata
       ec = {
         :memory             => {},
         :current_type       => nil,
-        :current_vocabulary => nil,
+        current_vocabulary: nil,
         :document_base      => base,
       }
       # 1) For each element that is also a top-level item, Generate the triples for that item using the evaluation context.
@@ -381,7 +381,7 @@ module RDF::Microdata
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
           add_debug(item) {"gentrips(9.1): name=#{name.inspect}, type=#{type}"}
           # 9.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
-          ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
+          ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
           
           # 9.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
           predicate = vocab.predicateURI(name, ec_new)
@@ -415,7 +415,7 @@ module RDF::Microdata
         element.attribute('itemprop-reverse').to_s.split(' ').compact.each do |name|
           add_debug(item) {"gentrips(10.1): name=#{name.inspect}"}
           # 10.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
-          ec_new = ec.merge({:current_type => type, :current_vocabulary => vocab})
+          ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
           
           # 10.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
           predicate = vocab.predicateURI(name, ec_new)
@@ -541,7 +541,7 @@ module RDF::Microdata
       when element.has_attribute?('itemscope')
         {}
       when element.name == 'meta'
-        RDF::Literal.new(element.attribute('content').to_s, :language => element.language)
+        RDF::Literal.new(element.attribute('content').to_s, language: element.language)
       when %w(data meter).include?(element.name) && element.attribute('value')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
         v = element.attribute('value').to_s
@@ -562,9 +562,9 @@ module RDF::Microdata
         datatype = %w(Date Time DateTime Duration).map {|t| RDF::Literal.const_get(t)}.detect do |dt|
           v.match(dt::GRAMMAR)
         end || RDF::Literal
-        datatype.new(v, :language => element.language)
+        datatype.new(v, language: element.language)
       else
-        RDF::Literal.new(element.inner_text, :language => element.language)
+        RDF::Literal.new(element.inner_text, language: element.language)
       end
       add_debug(element) {"  #{value.inspect}"}
       value

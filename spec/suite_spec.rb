@@ -32,7 +32,7 @@ describe RDF::Microdata::Reader do
                 expect(e.message).to produce("Not exception #{e.inspect}\n#{e.backtrace.join("\n")}", t.debug)
               end
               if t.evaluate?
-                output_graph = RDF::Graph.load(t.result, :base_uri => t.action)
+                output_graph = RDF::Graph.load(t.result, base_uri: t.action)
                 expect(graph).to be_equivalent_graph(output_graph, t)
               else
                 expect(graph).to be_a(RDF::Enumerable)

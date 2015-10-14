@@ -31,9 +31,9 @@ module RDF::Microdata
       
       repo = owl_entailment(repo)
 
-      # Return graph with default context
+      # Return graph with default graph
       graph = RDF::Graph.new
-      repo.statements.each {|st| graph << st if st.context.nil?}
+      repo.statements.each {|st| graph << st}
       graph
     end
 
@@ -83,12 +83,12 @@ module RDF::Microdata
         end
       end
 
-      def antecedent(subject, prediate, object, context = nil)
-        antecedents << RDF::Query::Pattern.new(subject, prediate, object, :context => context)
+      def antecedent(subject, prediate, object)
+        antecedents << RDF::Query::Pattern.new(subject, prediate, object)
       end
 
-      def consequent(subject, prediate, object, context = nil)
-        consequents << RDF::Query::Pattern.new(subject, prediate, object, :context => context)
+      def consequent(subject, prediate, object)
+        consequents << RDF::Query::Pattern.new(subject, prediate, object)
       end
       
       ##
@@ -102,7 +102,7 @@ module RDF::Microdata
           nodes = {}
           consequents.each do |consequent|
             terms = {}
-            [:subject, :predicate, :object, :context].each do |r|
+            [:subject, :predicate, :object].each do |r|
               terms[r] = case o = consequent.send(r)
               when RDF::Node            then nodes[o] ||= RDF::Node.new
               when RDF::Query::Variable then solution[o]

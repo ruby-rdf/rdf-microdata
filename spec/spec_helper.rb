@@ -21,7 +21,7 @@ RestClient.enable Rack::Cache,
   entitystore: "file:" + ::File.expand_path("../uri-cache/body", __FILE__)
 
 ::RSpec.configure do |c|
-  c.filter_run :focus => true
+  c.filter_run focus: true
   c.run_all_when_everything_filtered = true
   c.exclusion_filter = {
   }

@@ -34,8 +34,8 @@ namespace :doc do
   end
 end
 
-task :default => :spec
-task :specs => :spec
+task default: :spec
+task specs: :spec
 
 desc "Generate etc/doap.{nt,ttl} from etc/doap.html."
 task :doap do

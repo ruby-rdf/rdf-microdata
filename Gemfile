@@ -5,7 +5,6 @@ gemspec
 gem 'rdf',      git: "git://github.com/ruby-rdf/rdf.git", branch: "develop"
 gem "rdf-xsd",  git: "git://github.com/ruby-rdf/rdf-xsd.git", branch: "develop"
 gem "rdf-rdfa", git: "git://github.com/ruby-rdf/rdf-rdfa.git", branch: "develop"
-#gem "rdf-rdfa", path: "../rdf-rdfa"
 
 group :development do
   gem 'rdf-spec',       git: "git://github.com/ruby-rdf/rdf-spec.git", branch: "develop"
