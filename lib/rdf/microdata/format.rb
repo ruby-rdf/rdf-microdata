@@ -13,7 +13,7 @@ module RDF::Microdata
   #   RDF::Format.for(:microdata)         #=> RDF::Microdata::Format
   #   RDF::Format.for("etc/foaf.html")
   #   RDF::Format.for(:file_name      => "etc/foaf.html")
-  #   RDF::Format.for(:file_extension => "html")
+  #   RDF::Format.for(file_extension: "html")
   #   RDF::Format.for(:content_type   => "text/html")
   #
   # @example Obtaining serialization format MIME types
@@ -26,7 +26,7 @@ module RDF::Microdata
     # Only define content type if RDFa is not available.
     # The Microdata processor will be launched from there
     # otherwise.
-    content_type     'text/html', :extension => :html unless RDF::Format.for(:rdfa)
+    content_type     'text/html', extension: :html unless RDF::Format.for(:rdfa)
     reader { RDF::Microdata::Reader }
   
     ##

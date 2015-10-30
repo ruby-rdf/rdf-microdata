@@ -30,12 +30,12 @@ The parser uses a build-in version of the [Microdata RDF][] registry.
 ### Reading RDF data in the Microdata format
 
     require 'rdf/microdata'
-    graph = RDF::Graph.load("etc/doap.html", :format => :microdata)
+    graph = RDF::Graph.load("etc/doap.html", format: :microdata)
 
 ### Reading using content-negotation
 
     require 'rdf/microdata'
-    graph = RDF::Graph.load("etc/doap.html", :content_type => "text/html")
+    graph = RDF::Graph.load("etc/doap.html", content_type: "text/html")
     
 ## Note
 This spec is based on the W3C HTML Data Task Force specification and does not support
@@ -97,7 +97,7 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 * <http://github.com/ruby-rdf/rdf-microdata>
 * <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
-[RDF.rb]:           http://rdf.rubyforge.org/
+[RDF.rb]:           https://github.com/ruby-rdf/rdf
 [YARD]:             http://yardoc.org/
 [YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
 [PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
