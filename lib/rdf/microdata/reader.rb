@@ -493,9 +493,9 @@ module RDF::Microdata
     # To collect all the elements in the item root, the user agent must run these steps. They return a list of elements.
     #
     # @param [Nokogiri::XML::Element] root
-    # @return Array<Nokogiri::XML::Element>]
+    # @return [Array<Nokogiri::XML::Element>]
     #   Resultant elements and error count
-    # @raise CrawlFailure on element recursion
+    # @raise [CrawlFailure] on element recursion
     def elements_in_item(root)
       # Let results and pending be empty lists of elements.
       # Let errors be zero.
