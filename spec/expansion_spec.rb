@@ -206,41 +206,6 @@ describe RDF::Microdata::Expansion do
     end
   end
   
-  context "with @vocab" do
-    it "returns unexpanded input" do
-      rdfa = %(
-        <html vocab="http://usefulinc.com/ns/doap#">
-          <body about="" typeof="Project">
-            <p>Project description for <span property="name">RDF::RDFa</span>.</p>
-            <dl>
-              <dt>Creator</dt><dd>
-                <a href="http://greggkellogg.net/foaf#me"
-                   rel="dc:creator">
-                   Gregg Kellogg
-                </a>
-              </dd>
-            </dl>
-          </body>
-        </html>
-      )
-      ttl = %(
-        @prefix doap: <http://usefulinc.com/ns/doap#> .
-        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        @prefix wn:   <http://xmlns.com/wordnet/1.6/> .
-        @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-        @prefix rdfa: <http://www.w3.org/ns/rdfa#> .
-        @prefix dc:   <http://purl.org/dc/terms/> .
-
-        <> a doap:Project, wn:Project, foaf:Project;
-          rdfa:usesVocabulary <http://usefulinc.com/ns/doap#>;
-          doap:name "RDF::RDFa";
-          rdfs:label "RDF::RDFa";
-          dc:creator <http://greggkellogg.net/foaf#me> .
-      )
-      expect(parse(rdfa)).to be_equivalent_graph(ttl, trace: @debug)
-    end
-  end
-  
   def parse(input, options = {})
     @debug = options[:debug] || []
     RDF::Graph.new << RDF::RDFa::Reader.new(input, options.merge(
