@@ -28,8 +28,5 @@ module RDF
     autoload :Profile,    'rdf/microdata/profile'
     autoload :Reader,     'rdf/microdata/reader'
     autoload :VERSION,    'rdf/microdata/version'
-    
-    def self.debug?; @debug; end
-    def self.debug=(value); @debug = value; end
   end
 end

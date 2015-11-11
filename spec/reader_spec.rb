@@ -83,7 +83,7 @@ describe "RDF::Microdata::Reader" do
     it "parses a simple graph" do
       md = %q(<p>My name is <span itemprop="name">Gregg Kellogg</span>.</p>)
       nt = %q(_:a <http://schema.org/name> "Gregg Kellogg" .)
-      expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, trace: @debug)
+      expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, logger: @logger)
     end
 
     context "values" do
@@ -224,7 +224,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, trace: @debug)
+          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, logger: @logger)
         end
       end
     end
@@ -284,7 +284,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          expect(parse(@md_ctx % md, base_uri: 'http://example.com/')).to be_equivalent_graph(@nt_ctx % nt, trace: @debug, format: :ttl)
+          expect(parse(@md_ctx % md, base_uri: 'http://example.com/')).to be_equivalent_graph(@nt_ctx % nt, logger: @logger)
         end
       end
     end
@@ -365,7 +365,7 @@ describe "RDF::Microdata::Reader" do
         ],
       ].each do |(md, nt)|
         it "parses #{md}" do
-          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, trace: @debug)
+          expect(parse(@md_ctx % md)).to be_equivalent_graph(@nt_ctx % nt, logger: @logger)
         end
       end
     end
@@ -520,7 +520,7 @@ describe "RDF::Microdata::Reader" do
         ]
       }.each do |name, (md, nt)|
         it "#{name}" do
-          expect(parse(md)).to be_equivalent_graph(nt, trace: @debug, format: :ttl)
+          expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
         end
       end
     end
@@ -635,7 +635,7 @@ describe "RDF::Microdata::Reader" do
         ],
       }.each do |name, (md, nt)|
         it "parses #{name}" do
-          expect(parse(md)).to be_equivalent_graph(nt, trace: @debug, format: :ttl)
+          expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
         end
       end
 
@@ -651,7 +651,8 @@ describe "RDF::Microdata::Reader" do
           </div>
         </div>
         )
-        expect {parse(md, validate: true)}.to raise_error(RDF::ReaderError, /itemref recursion/)
+        expect {parse(md, validate: true)}.to raise_error(RDF::ReaderError)
+        expect(@logger.to_s).to include("itemref recursion")
       end
     end
 
@@ -694,7 +695,7 @@ describe "RDF::Microdata::Reader" do
           ],
         }.each do |name, (md, nt)|
           it "expands #{name}" do
-            expect(parse(md)).to be_equivalent_graph(nt, trace: @debug, format: :ttl)
+            expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
           end
         end
       end
@@ -737,7 +738,7 @@ describe "RDF::Microdata::Reader" do
           ],
         }.each do |name, (md, nt)|
           it "expands #{name}" do
-            expect(parse(md)).to be_equivalent_graph(nt, trace: @debug, format: :ttl)
+            expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
           end
         end
       end
@@ -829,7 +830,7 @@ describe "RDF::Microdata::Reader" do
         ],
       }.each do |name, (md, nt)|
         it "expands #{name}" do
-          expect(parse(md)).to be_equivalent_graph(nt, trace: @debug, format: :ttl)
+          expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
         end
       end
     end
@@ -847,7 +848,7 @@ describe "RDF::Microdata::Reader" do
           ] .
         )
 
-        expect(parse(md, vocab_expansion: true)).to be_equivalent_graph(ttl, trace: @debug)
+        expect(parse(md, vocab_expansion: true)).to be_equivalent_graph(ttl, logger: @logger)
       end
     end
 
@@ -861,10 +862,10 @@ describe "RDF::Microdata::Reader" do
   end
   
   def parse(input, options = {})
-    @debug = options[:debug] || []
+    @logger = RDF::Spec.logger
     graph = options[:graph] || RDF::Graph.new
     RDF::Microdata::Reader.new(input, {
-        debug: @debug,
+        logger: @logger,
         validate: false,
         registry: registry_path,
         canonicalize: false}.merge(options)).each do |statement|
@@ -877,6 +878,6 @@ describe "RDF::Microdata::Reader" do
     graph = parse(File.open(filepath), options)
 
     ttl_string = File.read(filepath.sub('.html', '.ttl'))
-    expect(graph).to be_equivalent_graph(ttl_string, trace: @debug, format: :ttl)
+    expect(graph).to be_equivalent_graph(ttl_string, logger: @logger)
   end
 end

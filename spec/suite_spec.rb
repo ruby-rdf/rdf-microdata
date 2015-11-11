@@ -11,25 +11,26 @@ describe RDF::Microdata::Reader do
       describe m.comment do
         m.entries.each do |t|
           specify "#{t.name}: #{t.comment}" do
-            t.debug = []
+            t.logger = ::RDF::Spec.logger
+            t.logger.info t.inspect
+            t.logger.info "source:\n#{t.input}"
+
             reader = RDF::Microdata::Reader.open(t.action,
               base_uri:        t.action,
               strict:          true,
               validate:        t.negative_test?,
               registry:        t.registry,
               vocab_expansion: t.vocab_expansion,
-              debug:           t.debug,
+              logger:          t.logger,
             )
             expect(reader).to be_a RDF::Reader
             graph = RDF::Repository.new
 
-            #puts "parse #{t.query} as #{RDF::Reader.for(t.query)}"
-            puts "result: #{CGI.escapeHTML(graph.dump(:ttl, standard_prefixes: true))}" if ::RDF::Microdata::debug?
             if t.positive_test?
               begin
                 graph << reader
               rescue Exception => e
-                expect(e.message).to produce("Not exception #{e.inspect}\n#{e.backtrace.join("\n")}", t.debug)
+                expect(e.message).to produce("Not exception #{e.inspect}\n#{e.backtrace.join("\n")}", t.logger)
               end
               if t.evaluate?
                 output_graph = RDF::Graph.load(t.result, base_uri: t.action)

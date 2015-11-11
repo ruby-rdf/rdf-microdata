@@ -13,6 +13,7 @@ module RDF::Microdata
   class Reader < RDF::Reader
     format Format
     include Expansion
+    include RDF::Util::Logger
     URL_PROPERTY_ELEMENTS = %w(a area audio embed iframe img link object source track video)
     DEFAULT_REGISTRY = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "etc", "registry.json"))
 
@@ -22,11 +23,6 @@ module RDF::Microdata
     # @!attribute [r] implementation
     # @return [Module] Returns the HTML implementation module for this reader instance.
     attr_reader :implementation
-
-    ##
-    # Accumulated errors found during processing
-    # @return [Array<String>]
-    attr_reader :errors
 
     ##
     # Returns the base URI determined by this reader.
@@ -163,10 +159,6 @@ module RDF::Microdata
     # @option options [#to_s]    :base_uri     (nil)
     #   the base URI to use when resolving relative URIs
     # @option options [#to_s]    :registry
-    # @option options [Array] :errors
-    #   array for placing errors found when parsing
-    # @option options [Array] :debug
-    #   Array to place debug messages
     # @return [reader]
     # @yield  [reader] `self`
     # @yieldparam  [RDF::Reader] reader
@@ -174,10 +166,6 @@ module RDF::Microdata
     # @raise [Error] Raises `RDF::ReaderError` when validating
     def initialize(input = $stdin, options = {}, &block)
       super do
-        @errors = @options[:errors]
-        @warnings = @options[:warnings]
-        @debug = options[:debug]
-
         @library = :nokogiri
 
         require "rdf/microdata/reader/#{@library}"
@@ -192,12 +180,12 @@ module RDF::Microdata
         errors = doc_errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
         raise RDF::ReaderError, "Syntax errors:\n#{errors}" if !errors.empty? && validate?
 
-        add_debug(@doc, "library = #{@library}")
+        log_debug(@doc, "library = #{@library}")
 
         # Load registry
         begin
           registry_uri = options[:registry] || DEFAULT_REGISTRY
-          add_debug(@doc, "registry = #{registry_uri.inspect}")
+          log_debug(@doc, "registry = #{registry_uri.inspect}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
           raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
@@ -226,6 +214,10 @@ module RDF::Microdata
 
         # parse
         parse_whole_document(@doc, base_uri)
+
+        if validate? && log_statistics[:error]
+          raise RDF::ReaderError, "Errors found during processing"
+        end
       end
       enum_for(:each_statement)
     end
@@ -261,26 +253,6 @@ module RDF::Microdata
     end
 
     ##
-    # Add debug event to debug array, if specified
-    #
-    # @param [Nokogiri::XML::Node, #to_s] node XML Node or string for showing context
-    #
-    # @param [String] message
-    # @yieldreturn [String] appended to message, to allow for lazy-evaulation of message
-    def add_debug(node, message = "")
-      return unless ::RDF::Microdata.debug? || @debug
-      message = message + yield if block_given?
-      puts "#{node_path(node)}: #{message}" if ::RDF::Microdata::debug?
-      @debug << "#{node_path(node)}: #{message}" if @debug.is_a?(Array)
-    end
-
-    def add_error(node, message)
-      @errors << "#{node_path(node)}: #{message}" if @errors
-      add_debug(node, message)
-      raise RDF::ReaderError, message if validate?
-    end
-    
-    ##
     # add a statement, object can be literal or URI or bnode
     #
     # @param [Nokogiri::XML::Node, any] node XML Node or string for showing context
@@ -293,7 +265,7 @@ module RDF::Microdata
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
       raise RDF::ReaderError, "#{statement.inspect} is invalid" if validate? && statement.invalid?
-      add_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
+      log_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
       @callback.call(statement)
     end
 
@@ -308,7 +280,7 @@ module RDF::Microdata
         base = RDF::URI("")
       end
       
-      add_debug(nil) {"parse_whole_doc: base='#{base}'"}
+      log_info(nil) {"parse_whole_doc: base='#{base}'"}
 
       ec = {
         :memory             => {},
@@ -318,10 +290,10 @@ module RDF::Microdata
       }
       # 1) For each element that is also a top-level item, Generate the triples for that item using the evaluation context.
       getItems.each do |el|
-        generate_triples(el, ec)
+        log_depth {generate_triples(el, ec)}
       end
 
-      add_debug(doc, "parse_whole_doc: traversal complete")
+      log_info(doc, "parse_whole_doc: traversal complete")
     end
 
     ##
@@ -342,7 +314,7 @@ module RDF::Microdata
       end || RDF::Node.new
       memory[item.node] ||= {}
 
-      add_debug(item) {"gentrips(2): subject=#{subject.inspect}, current_type: #{ec[:current_type]}"}
+      log_debug(item) {"gentrips(2): subject=#{subject.inspect}, current_type: #{ec[:current_type]}"}
 
       # 2) Add a mapping from item to subject in memory, if there isn't one already.
       memory[item.node][:subject] ||= subject
@@ -359,7 +331,7 @@ module RDF::Microdata
 
       # 5) Otherwise, set type to current type from the Evaluation Context if not empty.
       type ||= ec[:current_type]
-      add_debug(item)  {"gentrips(5): type=#{type.inspect}"}
+      log_debug(item)  {"gentrips(5): type=#{type.inspect}"}
 
       # 6) If the registry contains a URI prefix that is a character for character match of type up to the length of the URI prefix, set vocab as that URI prefix.
       vocab = Registry.find(type)
@@ -367,7 +339,7 @@ module RDF::Microdata
       # 7) Otherwise, if type is not empty, construct vocab by removing everything following the last SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.
       vocab ||= begin
         type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
-        add_debug(item)  {"gentrips(7): type_vocab=#{type_vocab.inspect}"}
+        log_debug(item)  {"gentrips(7): type_vocab=#{type_vocab.inspect}"}
         Registry.new(type_vocab)
       end
 
@@ -379,7 +351,7 @@ module RDF::Microdata
       # 9.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          add_debug(item) {"gentrips(9.1): name=#{name.inspect}, type=#{type}"}
+          log_debug(item) {"gentrips(9.1): name=#{name.inspect}, type=#{type}"}
           # 9.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
           ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
           
@@ -388,12 +360,12 @@ module RDF::Microdata
 
           # 9.1.3) Let value be the property value of element.
           value = property_value(element)
-          add_debug(item) {"gentrips(9.1.3) value=#{value.inspect}"}
+          log_debug(item) {"gentrips(9.1.3) value=#{value.inspect}"}
           
           # 9.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec_new) 
-            add_debug(item) {"gentrips(9.1.4): value=#{value.inspect}"}
+            log_debug(item) {"gentrips(9.1.4): value=#{value.inspect}"}
           end
 
           # 9.1.4) Generate the following triple:
@@ -401,7 +373,7 @@ module RDF::Microdata
 
           # 9.1.5) If an entry exists in the registry for name in the vocabulary associated with vocab having the key subPropertyOf or equivalentProperty
           vocab.expand(predicate) do |equiv|
-            add_debug(item) {"gentrips(9.1.5): equiv=#{equiv.inspect}"}
+            log_debug(item) {"gentrips(9.1.5): equiv=#{equiv.inspect}"}
             # for each such value equiv, generate the following triple
             add_triple(item, subject, equiv, value)
           end 
@@ -413,7 +385,7 @@ module RDF::Microdata
       # 10.1. For each name name in element's reverse property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop-reverse').to_s.split(' ').compact.each do |name|
-          add_debug(item) {"gentrips(10.1): name=#{name.inspect}"}
+          log_debug(item) {"gentrips(10.1): name=#{name.inspect}"}
           # 10.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
           ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
           
@@ -422,15 +394,15 @@ module RDF::Microdata
           
           # 10.1.3) Let value be the property value of element.
           value = property_value(element)
-          add_debug(item) {"gentrips(10.1.3) value=#{value.inspect}"}
+          log_debug(item) {"gentrips(10.1.3) value=#{value.inspect}"}
 
           # 10.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
             value = generate_triples(element, ec_new) 
-            add_debug(item) {"gentrips(10.1.4): value=#{value.inspect}"}
+            log_debug(item) {"gentrips(10.1.4): value=#{value.inspect}"}
           elsif value.is_a?(RDF::Literal)
             # 10.1.5) Otherwise, if value is a literal, ignore the value and continue to the next name; it is an error for the value of @itemprop-reverse to be a literal
-            add_error(element, "Value of @itemprop-reverse may not be a literal: #{value.inspect}")
+            log_error(element, "Value of @itemprop-reverse may not be a literal: #{value.inspect}")
             next
           end
 
@@ -451,10 +423,10 @@ module RDF::Microdata
     # @return [Array<Nokogiri::XML::Element>]
     #   List of property elements for an item
     def item_properties(item, reverse = false)
-      add_debug(item, "item_properties (#{reverse.inspect})")
+      log_debug(item, "item_properties (#{reverse.inspect})")
       crawl_properties(item, [], reverse)
     rescue CrawlFailure => e
-      add_error(item, e.message)
+      log_error(item, e.message)
       return []
     end
     
@@ -472,7 +444,7 @@ module RDF::Microdata
       
       # 2. Collect all the elements in the item root; let results be the resulting list of elements, and errors be the resulting count of errors.
       results = elements_in_item(root)
-      add_debug(root) {"crawl_properties reverse=#{reverse.inspect} results=#{results.map {|e| node_path(e)}.inspect}"}
+      log_debug(root) {"crawl_properties reverse=#{reverse.inspect} results=#{results.map {|e| node_path(e)}.inspect}"}
 
       # 3. Remove any elements from results that do not have an @itemprop (@itemprop-reverse) attribute specified.
       results = results.select {|e| e.has_attribute?(reverse ? 'itemprop-reverse' : 'itemprop')}
@@ -483,7 +455,7 @@ module RDF::Microdata
       
       # 5. For each element in results that has an @itemscope attribute specified, crawl the properties of the element, with new memory as the memory.
       results.select {|e| e.has_attribute?('itemscope')}.each do |element|
-        crawl_properties(element, new_memory, reverse)
+        log_depth {crawl_properties(element, new_memory, reverse)}
       end
       
       results
@@ -507,13 +479,13 @@ module RDF::Microdata
       # If root has an itemref attribute, split the value of that itemref attribute on spaces.
       # For each resulting token ID, 
       root.attribute('itemref').to_s.split(' ').each do |id|
-        add_debug(root) {"elements_in_item itemref id #{id}"}
+        log_debug(root) {"elements_in_item itemref id #{id}"}
         # if there is an element in the home subtree of root with the ID ID,
         # then add the first such element to pending.
         id_elem = find_element_by_id(id)
         pending << id_elem if id_elem
       end
-      add_debug(root) {"elements_in_item pending #{pending.inspect}"}
+      log_debug(root) {"elements_in_item pending #{pending.inspect}"}
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
@@ -536,7 +508,7 @@ module RDF::Microdata
     #
     def property_value(element)
       base = element.base || base_uri
-      add_debug(element) {"property_value(#{element.name}): base #{base.inspect}"}
+      log_debug(element) {"property_value(#{element.name}): base #{base.inspect}"}
       value = case
       when element.has_attribute?('itemscope')
         {}
@@ -566,7 +538,7 @@ module RDF::Microdata
       else
         RDF::Literal.new(element.inner_text, language: element.language)
       end
-      add_debug(element) {"  #{value.inspect}"}
+      log_debug(element) {"  #{value.inspect}"}
       value
     end
 

@@ -138,7 +138,7 @@ module Fixtures
     end
 
     class Entry < JSON::LD::Resource
-      attr_accessor :debug
+      attr_accessor :logger
 
       # Alias data and query
       def action
