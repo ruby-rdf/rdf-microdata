@@ -13,6 +13,7 @@ describe "RDF::Microdata::Reader" do
     let(:reader_input) {File.read(doap)}
     let(:reader) {RDF::Microdata::Reader.new(reader_input)}
     let(:reader_count) {File.open(doap_nt).each_line.to_a.length}
+    let(:reader_invalid_input) {""}
   end
 
   describe ".for" do
@@ -32,7 +33,7 @@ describe "RDF::Microdata::Reader" do
   describe :interface do
     before(:each) do
       @sampledoc = %(
-        <div itemscope=''>
+        <div itemscope='' itemtype="http://schema.org/">
          <p>My name is <span itemprop="name">Elizabeth</span>.</p>
         </div>
       )

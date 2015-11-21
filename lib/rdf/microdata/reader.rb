@@ -172,13 +172,11 @@ module RDF::Microdata
         @implementation = Nokogiri
         self.extend(@implementation)
 
-        initialize_html(input, options) rescue raise RDF::ReaderError.new($!.message)
+        input.rewind if input.respond_to?(:rewind)
+        initialize_html(input, options) rescue log_fatal($!.message, exception: RDF::ReaderError)
 
-        if (root.nil? && validate?)
-          raise RDF::ReaderError, "Empty Document"
-        end
-        errors = doc_errors.reject {|e| e.to_s =~ /Tag (audio|source|track|video|time) invalid/}
-        raise RDF::ReaderError, "Syntax errors:\n#{errors}" if !errors.empty? && validate?
+        log_error("Empty document") if root.nil?
+        log_error(doc_errors.map(&:message).uniq.join("\n")) if !doc_errors.empty?
 
         log_debug(@doc, "library = #{@library}")
 
@@ -188,7 +186,7 @@ module RDF::Microdata
           log_debug(@doc, "registry = #{registry_uri.inspect}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
-          raise RDF::ReaderError, "Failed to parse registry: #{e.message}"
+          log_fatal("Failed to parse registry: #{e.message}", exception: RDF::ReaderError) if (root.nil? && validate?)
         end
         
         if block_given?
@@ -264,7 +262,7 @@ module RDF::Microdata
     # @raise [ReaderError] Checks parameter types and raises if they are incorrect if parsing mode is _validate_.
     def add_triple(node, subject, predicate, object)
       statement = RDF::Statement.new(subject, predicate, object)
-      raise RDF::ReaderError, "#{statement.inspect} is invalid" if validate? && statement.invalid?
+      log_error "#{statement.inspect} is invalid" if statement.invalid?
       log_debug(node) {"statement: #{RDF::NTriples.serialize(statement)}"}
       @callback.call(statement)
     end

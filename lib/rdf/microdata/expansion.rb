@@ -27,7 +27,7 @@ module RDF::Microdata
       repo << self  # Add default graph
       
       count = repo.count
-      add_debug("expand") {"Loaded #{repo.size} triples into default graph"}
+      log_debug("expand") {"Loaded #{repo.size} triples into default graph"}
       
       repo = owl_entailment(repo)
 
@@ -38,7 +38,7 @@ module RDF::Microdata
     end
 
     def rule(name, &block)
-      Rule.new(name, block)
+      Rule.new(name, @options, block)
     end
 
     ##
@@ -47,6 +47,8 @@ module RDF::Microdata
     # Takes a list of antecedent patterns used to find solutions against a queryable
     # object. Yields each consequent with bindings from the solution
     class Rule
+      include RDF::Util::Logger
+
       # @!attribute [r]
       # @return [Array<RDF::Query::Pattern>] patterns necessary to invoke this rule
       attr_reader :antecedents
@@ -70,9 +72,10 @@ module RDF::Microdata
       #   r.execute(queryable) {|statement| puts statement.inspect}
       #
       # @param [String] name
-      def initialize(name, &block)
+      def initialize(name, options = {}, &block)
         @antecedents = []
         @consequents = []
+        @options = options.dup
         @name = name
 
         if block_given?
@@ -144,18 +147,18 @@ module RDF::Microdata
       old_count = 0
 
       while old_count < (count = repo.count)
-        add_debug("entailment", "old: #{old_count} count: #{count}")
+        log_debug("entailment", "old: #{old_count} count: #{count}")
         old_count = count
 
         RULES.each do |rule|
           rule.execute(repo) do |statement|
-            add_debug("entailment(#{rule.name})") {statement.inspect}
+            log_debug("entailment(#{rule.name})") {statement.inspect}
             repo << statement
           end
         end
       end
       
-      add_debug("entailment", "final count: #{count}")
+      log_debug("entailment", "final count: #{count}")
       repo
     end
   end
