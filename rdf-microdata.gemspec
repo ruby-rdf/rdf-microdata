@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby -rubygems
 # -*- encoding: utf-8 -*-
 
-begin
-  RUBY_ENGINE
-rescue NameError
-  RUBY_ENGINE = "ruby"  # Not defined in Ruby 1.8.7
-end
-
 Gem::Specification.new do |gem|
   gem.version               = File.read('VERSION').chomp
   gem.date                  = File.mtime('VERSION').strftime('%Y-%m-%d')
@@ -28,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.test_files            = %w()
   gem.has_rdoc              = false
 
-  gem.required_ruby_version = '>= 1.9.2'
+  gem.required_ruby_version = '>= 2.0'
   gem.requirements          = []
   gem.add_runtime_dependency     'rdf',             '~> 1.99'
   gem.add_runtime_dependency     'rdf-xsd',         '~> 1.99'
