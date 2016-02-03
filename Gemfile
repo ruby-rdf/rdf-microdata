@@ -2,15 +2,17 @@ source "http://rubygems.org"
 
 gemspec
 
-gem 'rdf',      git: "git://github.com/ruby-rdf/rdf.git", branch: "develop"
-gem "rdf-xsd",  git: "git://github.com/ruby-rdf/rdf-xsd.git", branch: "develop"
-gem "rdf-rdfa", git: "git://github.com/ruby-rdf/rdf-rdfa.git", branch: "develop"
+gem "rdf",            github: "ruby-rdf/rdf",      branch: "develop"
+gem "rdf-rdfa",       github: "ruby-rdf/rdf-rdfa", branch: "develop"
+gem "rdf-xsd",        github: "ruby-rdf/rdf-xsd",  branch: "develop"
 
 group :development do
-  gem 'rdf-spec',           git: "git://github.com/ruby-rdf/rdf-spec.git", branch: "develop"
-  gem "rdf-isomorphic",     git: "git://github.com/ruby-rdf/rdf-isomorphic.git"
-  gem "rdf-turtle",         git: "git://github.com/ruby-rdf/rdf-turtle.git", branch: "develop"
-  gem "rdf-aggregate-repo", git: "git://github.com/ruby-rdf/rdf-aggregate-repo.git", branch: "develop"
+  gem 'ebnf',               github: "gkellogg/ebnf",                branch: "develop"
+  gem 'rdf-aggregate-repo', github: "ruby-rdf/rdf-aggregate-repo",  branch: "develop"
+  gem 'rdf-isomorphic',     github: "ruby-rdf/rdf-isomorphic",      branch: "develop"
+  gem "rdf-spec",           github: "ruby-rdf/rdf-spec",            branch: "develop"
+  gem 'rdf-turtle',         github: "ruby-rdf/rdf-turtle",          branch: "develop"
+  gem 'sxp',                github: "gkellogg/sxp-ruby"
 end
 
 group :debug do
