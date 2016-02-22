@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", 'lib')))
+require "bundler/setup"
+require 'logger'
 require 'rdf/microdata'
 begin
   require 'linkeddata'
@@ -46,10 +48,14 @@ rescue
   raise
 end
 
+logger = Logger.new(STDERR)
+logger.level = Logger::WARN
+logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity}: #{msg}\n"}
+
 options = {
   verbose: false,
   validate: false,
-  strict: true,
+  logger: logger,
   output: STDOUT,
   output_format: :turtle,
   input_format: :microdata,
@@ -73,11 +79,13 @@ opts = GetoptLong.new(
 )
 opts.each do |opt, arg|
   case opt
-  when '--debug'        then ::RDF::Microdata::debug = true
+  when '--debug'        then logger.level = Logger::DEBUG
   when '--execute'      then input = arg
   when '--format'       then options[:output_format] = arg.to_sym
   when '--input-format' then options[:input_format] = arg.to_sym
-  when '--quiet'        then options[:quiet] = true
+  when '--quiet'
+    options[:quiet] = options[:quiet].to_i + 1
+    logger.level = Logger::FATAL
   when '--output'       then options[:output] = File.open(arg, "w")
   when '--registry'     then options[:registry_uri] = arg
   when '--template'     then options[:haml] = arg.to_sym

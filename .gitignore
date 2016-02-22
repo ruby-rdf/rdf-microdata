@@ -3,3 +3,4 @@
 /pkg/
 /.rbx/
 Gemfile.lock
+/.byebug_history

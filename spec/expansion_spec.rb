@@ -5,12 +5,14 @@ require 'spec_helper'
 class ExpansionTester
   include RDF::Microdata::Expansion
   include RDF::Enumerable
+  include RDF::Util::Logger
 
-  attr_reader :about, :information, :repo, :action, :result, :options
+  attr_reader :id, :repo, :action, :result, :options
 
   def initialize(name)
-    @about = @information = name
+    @id = name
     @repo = RDF::Repository.new
+    @options = {logger: RDF::Spec.logger}
 
     super()
   end
@@ -20,15 +22,6 @@ class ExpansionTester
   end
 
   def each_statement(&block); @repo.each_statement(&block); end
-
-  def add_debug(node, message = "")
-    message = message + yield if block_given?
-    @trace ||= []
-    @trace << "#{node}: #{message}"
-    #STDERR.puts "#{node}: #{message}"
-  end
-  
-  def trace; @trace.join("\n"); end
   
   def load(elements)
     result = nil
@@ -47,20 +40,23 @@ class ExpansionTester
   end
   
   def parse(ttl)
-    RDF::Graph.new << RDF::Turtle::Reader.new(ttl, prefixes: {
-      foaf: RDF::URI("http://xmlns.com/foaf/0.1/"),
-      owl:  RDF::OWL.to_uri,
-      rdf:  RDF.to_uri,
-      rdfa: RDF::RDFA.to_uri,
-      rdfs: RDF::RDFS.to_uri,
-      xsd:  RDF::XSD.to_uri,
-      ex:   RDF::URI("http://example.org/vocab#"),
-      nil   => "http://example.org/",
-    })
+    RDF::Graph.new << RDF::Turtle::Reader.new(ttl,
+      logger: false,
+      prefixes: {
+        foaf: RDF::URI("http://xmlns.com/foaf/0.1/"),
+        owl:  RDF::OWL.to_uri,
+        rdf:  RDF.to_uri,
+        rdfa: RDF::RDFA.to_uri,
+        rdfs: RDF::RDFS.to_uri,
+        xsd:  RDF::XSD.to_uri,
+        ex:   RDF::URI("http://example.org/vocab#"),
+        nil   => "http://example.org/",
+      })
   end
 end
 
 describe RDF::Microdata::Expansion do
+  let(:logger) {RDF::Spec.logger}
 
   describe :owl_entailment do
     {
@@ -168,83 +164,5 @@ describe RDF::Microdata::Expansion do
         expect(graph).to be_equivalent_graph(result, mt)
       end
     end
-  end
-  
-  context "with empty graph" do
-    it "returns an empty graph" do
-      rdfa = %q(<http></http>)
-      expect(parse(rdfa)).to be_equivalent_graph("", trace: @debug)
-    end
-  end
-  
-  context "with graph not referencing vocabularies" do
-    it "returns unexpanded input" do
-      rdfa = %(
-        <html prefix="doap: http://usefulinc.com/ns/doap#">
-          <body about="" typeof="doap:Project">
-            <p>Project description for <span property="doap:name">RDF::RDFa</span>.</p>
-            <dl>
-              <dt>Creator</dt><dd>
-                <a href="http://greggkellogg.net/foaf#me"
-                   rel="dc:creator">
-                   Gregg Kellogg
-                </a>
-              </dd>
-            </dl>
-          </body>
-        </html>
-      )
-      ttl = %(
-        @prefix doap: <http://usefulinc.com/ns/doap#> .
-        @prefix dc:   <http://purl.org/dc/terms/> .
-
-        <> a doap:Project;
-          doap:name "RDF::RDFa";
-          dc:creator <http://greggkellogg.net/foaf#me> .
-      )
-      expect(parse(rdfa)).to be_equivalent_graph(ttl, trace: @debug)
-    end
-  end
-  
-  context "with @vocab" do
-    it "returns unexpanded input" do
-      rdfa = %(
-        <html vocab="http://usefulinc.com/ns/doap#">
-          <body about="" typeof="Project">
-            <p>Project description for <span property="name">RDF::RDFa</span>.</p>
-            <dl>
-              <dt>Creator</dt><dd>
-                <a href="http://greggkellogg.net/foaf#me"
-                   rel="dc:creator">
-                   Gregg Kellogg
-                </a>
-              </dd>
-            </dl>
-          </body>
-        </html>
-      )
-      ttl = %(
-        @prefix doap: <http://usefulinc.com/ns/doap#> .
-        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        @prefix wn:   <http://xmlns.com/wordnet/1.6/> .
-        @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-        @prefix rdfa: <http://www.w3.org/ns/rdfa#> .
-        @prefix dc:   <http://purl.org/dc/terms/> .
-
-        <> a doap:Project, wn:Project, foaf:Project;
-          rdfa:usesVocabulary <http://usefulinc.com/ns/doap#>;
-          doap:name "RDF::RDFa";
-          rdfs:label "RDF::RDFa";
-          dc:creator <http://greggkellogg.net/foaf#me> .
-      )
-      expect(parse(rdfa)).to be_equivalent_graph(ttl, trace: @debug)
-    end
-  end
-  
-  def parse(input, options = {})
-    @debug = options[:debug] || []
-    RDF::Graph.new << RDF::RDFa::Reader.new(input, options.merge(
-      debug: @debug, vocab_expansion: true, vocab_repository: nil
-    ))
   end
 end
