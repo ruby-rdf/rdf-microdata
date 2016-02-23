@@ -7,16 +7,16 @@ Gem::Specification.new do |gem|
 
   gem.name                  = "rdf-microdata"
   gem.homepage              = "http://ruby-rdf.github.com/rdf-microdata"
-  gem.license               = 'Public Domain' if gem.respond_to?(:license=)
+  gem.license               = 'Unlicense'
   gem.summary               = "Microdata reader for Ruby."
-  gem.description           = gem.summary
+  gem.description           = 'Reads HTML Microdata as RDF.'
   gem.rubyforge_project     = 'rdf-microdata'
 
   gem.authors               = %w(Gregg Kellogg)
   gem.email                 = 'public-rdf-ruby@w3.org'
 
   gem.platform              = Gem::Platform::RUBY
-  gem.files                 = %w(AUTHORS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb') + Dir.glob('etc/*')
+  gem.files                 = %w(AUTHORS README.md UNLICENSE VERSION) + Dir.glob('lib/**/*.rb') + Dir.glob('etc/*')
   gem.require_paths         = %w(lib)
   gem.extensions            = %w()
   gem.test_files            = %w()
@@ -25,18 +25,18 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.0'
   gem.requirements          = []
   gem.add_runtime_dependency     'rdf',             '>= 2.0.0.beta', '< 3'
-  gem.add_runtime_dependency     'rdf-xsd',         '>= 1.99', '< 3'
+  gem.add_runtime_dependency     'rdf-xsd',         '>= 2.0.0.beta', '< 3'
   gem.add_runtime_dependency     'htmlentities',    '~> 4.3'
   gem.add_runtime_dependency     'nokogiri' ,       '~> 1.6'
 
-  gem.add_development_dependency 'equivalent-xml' , '~> 0.3'
+  gem.add_development_dependency 'equivalent-xml' , '~> 0.6'
   gem.add_development_dependency 'yard' ,           '~> 0.8'
   gem.add_development_dependency 'spira',           '= 0.0.12'
-  gem.add_development_dependency "rack-cache",      '~> 1.2'
-  gem.add_development_dependency "rest-client",     '~> 1.7'
-  gem.add_development_dependency "rest-client-components", '~> 1.3'
-  gem.add_development_dependency 'rspec',           '~> 3.0'
-  gem.add_development_dependency 'rspec-its',       '~> 1.0'
+  gem.add_development_dependency "rack-cache",      '~> 1.6'
+  gem.add_development_dependency "rest-client",     '~> 1.8'
+  gem.add_development_dependency "rest-client-components", '~> 1.4'
+  gem.add_development_dependency 'rspec',           '~> 3.4'
+  gem.add_development_dependency 'rspec-its',       '~> 1.2'
   
   gem.add_development_dependency 'rdf-spec',        '>= 2.0.0.beta', '< 3'
   gem.add_development_dependency 'rdf-rdfa',        '>= 2.0.0.beta', '< 3'
