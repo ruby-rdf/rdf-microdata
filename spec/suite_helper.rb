@@ -1,6 +1,5 @@
 $:.unshift "."
 require 'spec_helper'
-require 'spira'
 require 'rdf/turtle'
 require 'open-uri'
 

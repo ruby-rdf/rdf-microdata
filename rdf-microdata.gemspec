@@ -31,7 +31,6 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'equivalent-xml' , '~> 0.6'
   gem.add_development_dependency 'yard' ,           '~> 0.8'
-  gem.add_development_dependency 'spira',           '= 0.0.12'
   gem.add_development_dependency "rack-cache",      '~> 1.6'
   gem.add_development_dependency "rest-client",     '~> 1.8'
   gem.add_development_dependency "rest-client-components", '~> 1.4'
