@@ -12,12 +12,12 @@ group :development do
   gem 'rdf-isomorphic',     github: "ruby-rdf/rdf-isomorphic",      branch: "develop"
   gem "rdf-spec",           github: "ruby-rdf/rdf-spec",            branch: "develop"
   gem 'rdf-turtle',         github: "ruby-rdf/rdf-turtle",          branch: "develop"
-  gem 'sxp',                github: "gkellogg/sxp-ruby"
+  gem 'sxp',                github: "gkellogg/sxp-ruby",            branch: "develop"
 end
 
 group :debug do
   gem "wirble"
-  gem "byebug", platform: :mri_21
+  gem "byebug", platform: :mri
 end
 
 platforms :rbx do
