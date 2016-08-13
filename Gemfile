@@ -16,7 +16,6 @@ group :development do
 end
 
 group :debug do
-  gem "wirble"
   gem "byebug", platform: :mri
 end
 
