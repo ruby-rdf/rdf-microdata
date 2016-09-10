@@ -26,7 +26,7 @@ module RDF::Microdata
     # Only define content type if RDFa is not available.
     # The Microdata processor will be launched from there
     # otherwise.
-    content_type     'text/html', extension: :html unless RDF::Format.for(:rdfa)
+    content_type     'text/html;q=0.5', extension: :html unless RDF::Format.for(:rdfa)
     reader { RDF::Microdata::Reader }
   
     ##
