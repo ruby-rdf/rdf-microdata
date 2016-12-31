@@ -642,6 +642,7 @@ describe "RDF::Microdata::Reader" do
 
       it "catches infinite recursion" do
         md = %(
+        <html><body>
         <div itemscope>
           <div id="ref">
             <div itemprop="name">friend1</div>
@@ -651,6 +652,7 @@ describe "RDF::Microdata::Reader" do
             </div>
           </div>
         </div>
+        </body></html>
         )
         expect {parse(md, validate: true)}.to raise_error(RDF::ReaderError)
         expect(@logger.to_s).to include("itemref recursion")

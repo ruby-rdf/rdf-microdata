@@ -281,10 +281,10 @@ module RDF::Microdata
       log_info(nil) {"parse_whole_doc: base='#{base}'"}
 
       ec = {
-        :memory             => {},
-        :current_type       => nil,
+        memory:             {},
+        current_type:       nil,
         current_vocabulary: nil,
-        :document_base      => base,
+        document_base:      base,
       }
       # 1) For each element that is also a top-level item, Generate the triples for that item using the evaluation context.
       getItems.each do |el|
