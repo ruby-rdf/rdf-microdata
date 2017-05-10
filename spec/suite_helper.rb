@@ -19,6 +19,7 @@ module RDF::Util
     # @return [IO] File stream
     # @yield [IO] File stream
     def self.open_file(filename_or_url, options = {}, &block)
+      options = options[:headers] || {} if filename_or_url.start_with?('http')
       case filename_or_url.to_s
       when /^file:/
         path = filename_or_url[5..-1]
@@ -53,14 +54,14 @@ module RDF::Util
               response
             end
           else
-            Kernel.open(filename_or_url.to_s, &block)
+            Kernel.open(filename_or_url.to_s, options, &block)
           end
         rescue Errno::ENOENT
           # Not there, don't run tests
           StringIO.new("")
         end
       else
-        Kernel.open(filename_or_url.to_s, &block)
+        Kernel.open(filename_or_url.to_s, options, &block)
       end
     end
   end

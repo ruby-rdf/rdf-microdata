@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" itemscope itemtype="https://schema.org/CreativeWork">
+ <title itemprop="name">A microdata in SVG test</title>
+ <desc itemprop="description">This is a test case for an svg file to see whether microdata processing tools actually process the attributes defined in microdata the same way in SVG as they do in HTML</desc>
+</svg>

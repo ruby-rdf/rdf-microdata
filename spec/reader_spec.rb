@@ -13,7 +13,7 @@ describe "RDF::Microdata::Reader" do
     let(:reader_input) {File.read(doap)}
     let(:reader) {RDF::Microdata::Reader.new(reader_input)}
     let(:reader_count) {File.open(doap_nt).each_line.to_a.length}
-    let(:reader_invalid_input) {""}
+    let(:reader_invalid_input) {"<html </html>"}
   end
 
   describe ".for" do
@@ -642,6 +642,7 @@ describe "RDF::Microdata::Reader" do
 
       it "catches infinite recursion" do
         md = %(
+        <!DOCTYPE html>
         <html><body>
         <div itemscope>
           <div id="ref">
