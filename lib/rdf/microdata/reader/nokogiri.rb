@@ -185,7 +185,13 @@ module RDF::Microdata
           options[:encoding] ||= 'utf-8'
           options[:encoding] = options[:encoding].to_s if options[:encoding]
 
-          ::Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
+          begin
+            require 'nokogumbo' unless defined?(::Nokogumbo)
+            input = input.read if input.respond_to?(:read)
+            ::Nokogiri::HTML5(input.force_encoding(options[:encoding]))
+          rescue LoadError
+            ::Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
+          end
         end
       end
 
@@ -200,8 +206,7 @@ module RDF::Microdata
       ##
       # Document errors
       def doc_errors
-        # FIXME: Nokogiri version 1.5.5 thinks many HTML5 elements are invalid
-        @doc.errors.reject {|e| e.to_s =~ /(Tag (?:article|aside|audio|canvas|command|datalist|details|embed|figcaption|figure|footer|header|hgroup|keygen|main|mark|meter|nav|output|progress|ruby|section|time|video|wbr) invalid|Missing attribute name)/}
+        @doc.errors.reject {|e| e.to_s =~ /The doctype must be the first token in the document/}
       end
       
       ##

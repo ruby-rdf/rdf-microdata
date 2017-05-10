@@ -5,6 +5,7 @@ gemspec
 gem "rdf",            github: "ruby-rdf/rdf",      branch: "develop"
 gem "rdf-rdfa",       github: "ruby-rdf/rdf-rdfa", branch: "develop"
 gem "rdf-xsd",        github: "ruby-rdf/rdf-xsd",  branch: "develop"
+gem "nokogumbo",      '~> 1.4'
 
 group :development do
   gem 'ebnf',               github: "gkellogg/ebnf",                branch: "develop"
