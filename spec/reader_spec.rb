@@ -116,6 +116,10 @@ describe "RDF::Microdata::Reader" do
           %q(_:a <http://schema.org/meta> "foo" .)
         ],
         [
+          %q(<span itemprop="span" content="foo">Bar</span>),
+          %q(_:a <http://schema.org/span> "foo" .)
+        ],
+        [
           %q(<audio itemprop="audio" src="foo"></audio>),
           %q(_:a <http://schema.org/audio> <foo> .)
         ],
