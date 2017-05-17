@@ -510,7 +510,7 @@ module RDF::Microdata
       value = case
       when element.has_attribute?('itemscope')
         {}
-      when element.name == 'meta'
+      when element.has_attribute?('content')
         RDF::Literal.new(element.attribute('content').to_s, language: element.language)
       when %w(data meter).include?(element.name) && element.attribute('value')
         # Lexically scan value and assign appropriate type, otherwise, leave untyped
