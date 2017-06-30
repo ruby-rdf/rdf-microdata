@@ -104,6 +104,12 @@ module RDF::Microdata
         end
 
         ##
+        # Rational debug output
+        def to_str
+          @node.path
+        end
+
+        ##
         # Proxy for everything else to @node
         def method_missing(method, *args)
           @node.send(method, *args)

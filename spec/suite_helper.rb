@@ -145,6 +145,10 @@ module Fixtures
         BASE.join(property('action'))
       end
 
+      def input
+        RDF::Util::File.open_file(action).read
+      end
+
       def registry
         reg = property('registry') ||
           BASE + "test-registry.json"

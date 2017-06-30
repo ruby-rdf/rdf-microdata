@@ -20,9 +20,11 @@ module RDF::Microdata
     # @private
     class CrawlFailure < StandardError; end
 
-    # @!attribute [r] implementation
     # @return [Module] Returns the HTML implementation module for this reader instance.
     attr_reader :implementation
+
+    # @return [Hash{Object => RDF::Resource}] maps RDF elements (items) to resources
+    attr_reader :memory
 
     ##
     # Returns the base URI determined by this reader.
@@ -92,16 +94,16 @@ module RDF::Microdata
       # @param [#to_s] name
       # @param [Hash{}] ec Evaluation Context
       # @return [RDF::URI]
-      def predicateURI(name, ec)
+      def predicateURI(name, base_uri)
         u = RDF::URI(name)
         # 1) If _name_ is an _absolute URL_, return _name_ as a _URI reference_
         return u if u.absolute?
         
         n = frag_escape(name)
-        if ec[:current_type].nil?
-          # 2) If current type from context is null, there can be no current vocabulary.
+        if uri.nil?
+          # 2) If current vocabulary from context is null, there can be no current vocabulary.
           #    Return the URI reference that is the document base with its fragment set to the fragment-escaped value of name
-          u = RDF::URI(ec[:document_base].to_s)
+          u = RDF::URI(base_uri.to_s)
           u.fragment = frag_escape(name)
           u
         else
@@ -178,12 +180,12 @@ module RDF::Microdata
         log_error("Empty document") if root.nil?
         log_error(doc_errors.map(&:message).uniq.join("\n")) if !doc_errors.empty?
 
-        log_debug(@doc, "library = #{@library}")
+        log_debug('', "library = #{@library}")
 
         # Load registry
         begin
           registry_uri = options[:registry] || DEFAULT_REGISTRY
-          log_debug(@doc, "registry = #{registry_uri.inspect}")
+          log_debug('', "registry = #{registry_uri.inspect}")
           Registry.load_registry(registry_uri)
         rescue JSON::ParserError => e
           log_fatal("Failed to parse registry: #{e.message}", exception: RDF::ReaderError) if (root.nil? && validate?)
@@ -270,6 +272,7 @@ module RDF::Microdata
     # Parsing a Microdata document (this is *not* the recursive method)
     def parse_whole_document(doc, base)
       base = doc_base(base)
+      @memory = {}
       options[:base_uri] = if (base)
         # Strip any fragment from base
         base = base.to_s.split('#').first
@@ -280,15 +283,9 @@ module RDF::Microdata
       
       log_info(nil) {"parse_whole_doc: base='#{base}'"}
 
-      ec = {
-        memory:             {},
-        current_type:       nil,
-        current_vocabulary: nil,
-        document_base:      base,
-      }
       # 1) For each element that is also a top-level item, Generate the triples for that item using the evaluation context.
       getItems.each do |el|
-        log_depth {generate_triples(el, ec)}
+        log_depth {generate_triples(el, Registry.new(nil))}
       end
 
       log_info(doc, "parse_whole_doc: traversal complete")
@@ -298,12 +295,11 @@ module RDF::Microdata
     # Generate triples for an item
     #
     # @param [RDF::Resource] item
-    # @param [Hash{Symbol => Object}] ec
+    # @param [Registry] vocab
     # @option ec [Hash{Nokogiri::XML::Element} => RDF::Resource] memory
-    # @option ec [RDF::Resource] :current_type
+    # @option ec [RDF::Resource] :current_vocabulary
     # @return [RDF::Resource]
-    def generate_triples(item, ec = {})
-      memory = ec[:memory]
+    def generate_triples(item, vocab)
       # 1) If there is an entry for item in memory, then let subject be the subject of that entry. Otherwise, if item has a global identifier and that global identifier is an absolute URL, let subject be that global identifier. Otherwise, let subject be a new blank node.
       subject = if memory.include?(item.node)
         memory[item.node][:subject]
@@ -312,12 +308,13 @@ module RDF::Microdata
       end || RDF::Node.new
       memory[item.node] ||= {}
 
-      log_debug(item) {"gentrips(2): subject=#{subject.inspect}, current_type: #{ec[:current_type]}"}
+      log_debug(item) {"gentrips(2): subject=#{subject.inspect}, vocab: #{vocab.inspect}"}
 
       # 2) Add a mapping from item to subject in memory, if there isn't one already.
       memory[item.node][:subject] ||= subject
       
       # 3) For each type returned from element.itemType of the element defining the item.
+      # 4) Set vocab to the first value returned from element.itemType of the element defining the item.
       type = nil
       item.attribute('itemtype').to_s.split(' ').map{|n| uri(n)}.select(&:absolute?).each do |t|
         #   3.1. If type is an absolute URL, generate the following triple:
@@ -325,36 +322,26 @@ module RDF::Microdata
         add_triple(item, subject, RDF.type, t)
       end
 
-      # 4) Set type to the first value returned from element.itemType of the element defining the item.
-
-      # 5) Otherwise, set type to current type from the Evaluation Context if not empty.
-      type ||= ec[:current_type]
-      log_debug(item)  {"gentrips(5): type=#{type.inspect}"}
-
-      # 6) If the registry contains a URI prefix that is a character for character match of type up to the length of the URI prefix, set vocab as that URI prefix.
-      vocab = Registry.find(type)
-
-      # 7) Otherwise, if type is not empty, construct vocab by removing everything following the last SOLIDUS U+002F ("/") or NUMBER SIGN U+0023 ("#") from the path component of type.
-      vocab ||= begin
-        type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
-        log_debug(item)  {"gentrips(7): type_vocab=#{type_vocab.inspect}"}
-        Registry.new(type_vocab)
+      # 6) If the registry contains a URI prefix that is a character for character match of vocab up to the length of the URI prefix, set vocab as that URI prefix.
+      if type || vocab.nil?
+        vocab = Registry.find(type) || begin
+          type_vocab = type.to_s.sub(/([\/\#])[^\/\#]*$/, '\1') unless type.nil?
+          log_debug(item)  {"gentrips(7): type_vocab=#{type_vocab.inspect}"}
+          Registry.new(type_vocab)
+        end
       end
 
-      # 8) Update evaluation context setting current vocabulary to vocab.
-      ec[:current_vocabulary] = vocab
+      # Otherwise, use vocab from evaluation context
+      log_debug(item) {"gentrips(8): vocab: #{vocab.inspect}"}
 
       # 9. For each element _element_ that has one or more property names and is one of the properties of the item _item_, run the following substep:
       props = item_properties(item)
       # 9.1. For each name name in element's property names, run the following substeps:
       props.each do |element|
         element.attribute('itemprop').to_s.split(' ').compact.each do |name|
-          log_debug(item) {"gentrips(9.1): name=#{name.inspect}, type=#{type}"}
-          # 9.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
-          ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
-          
+          log_debug(item) {"gentrips(9.1): name=#{name.inspect}, vocab=#{vocab.inspect}"}
           # 9.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
-          predicate = vocab.predicateURI(name, ec_new)
+          predicate = vocab.predicateURI(name, base_uri)
 
           # 9.1.3) Let value be the property value of element.
           value = property_value(element)
@@ -362,7 +349,7 @@ module RDF::Microdata
           
           # 9.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
-            value = generate_triples(element, ec_new) 
+            value = generate_triples(element, vocab) 
             log_debug(item) {"gentrips(9.1.4): value=#{value.inspect}"}
           end
 
@@ -384,11 +371,9 @@ module RDF::Microdata
       props.each do |element|
         element.attribute('itemprop-reverse').to_s.split(' ').compact.each do |name|
           log_debug(item) {"gentrips(10.1): name=#{name.inspect}"}
-          # 10.1.1) Let context be a copy of evaluation context with current type set to type and current vocabulary set to vocab.
-          ec_new = ec.merge({current_type: type, current_vocabulary: vocab})
           
           # 10.1.2) Let predicate be the result of generate predicate URI using context and name. Update context by setting current name to predicate.
-          predicate = vocab.predicateURI(name, ec_new)
+          predicate = vocab.predicateURI(name, base_uri)
           
           # 10.1.3) Let value be the property value of element.
           value = property_value(element)
@@ -396,7 +381,7 @@ module RDF::Microdata
 
           # 10.1.4) If value is an item, then generate the triples for value context. Replace value by the subject returned from those steps.
           if value.is_a?(Hash)
-            value = generate_triples(element, ec_new) 
+            value = generate_triples(element, vocab) 
             log_debug(item) {"gentrips(10.1.4): value=#{value.inspect}"}
           elsif value.is_a?(RDF::Literal)
             # 10.1.5) Otherwise, if value is a literal, ignore the value and continue to the next name; it is an error for the value of @itemprop-reverse to be a literal
@@ -432,13 +417,13 @@ module RDF::Microdata
     # To crawl the properties of an element root with a list memory, the user agent must run the following steps. These steps either fail or return a list with a count of errors. The count of errors is used as part of the authoring conformance criteria below.
     #
     # @param [Nokogiri::XML::Element] root
-    # @param [Array<Nokokogiri::XML::Element>] memory
+    # @param [Array<Nokokogiri::XML::Element>] memo
     # @param [Boolean] reverse crawl reverse properties
     # @return [Array<Nokogiri::XML::Element>]
     #   Resultant elements
-    def crawl_properties(root, memory, reverse)
-      # 1. If root is in memory, then the algorithm fails; abort these steps.
-      raise CrawlFailure, "crawl_props mem already has #{root.inspect}" if memory.include?(root)
+    def crawl_properties(root, memo, reverse)
+      # 1. If root is in memo, then the algorithm fails; abort these steps.
+      raise CrawlFailure, "crawl_props mem already has #{root.inspect}" if memo.include?(root)
       
       # 2. Collect all the elements in the item root; let results be the resulting list of elements, and errors be the resulting count of errors.
       results = elements_in_item(root)
@@ -447,13 +432,13 @@ module RDF::Microdata
       # 3. Remove any elements from results that do not have an @itemprop (@itemprop-reverse) attribute specified.
       results = results.select {|e| e.has_attribute?(reverse ? 'itemprop-reverse' : 'itemprop')}
       
-      # 4. Let new memory be a new list consisting of the old list memory with the addition of root.
-      raise CrawlFailure, "itemref recursion" if memory.detect {|n| root.node.object_id == n.node.object_id}
-      new_memory = memory + [root]
+      # 4. Let new memo be a new list consisting of the old list memo with the addition of root.
+      raise CrawlFailure, "itemref recursion" if memo.detect {|n| root.node.object_id == n.node.object_id}
+      new_memo = memo + [root]
       
-      # 5. For each element in results that has an @itemscope attribute specified, crawl the properties of the element, with new memory as the memory.
+      # 5. For each element in results that has an @itemscope attribute specified, crawl the properties of the element, with new memo as the memo.
       results.select {|e| e.has_attribute?('itemscope')}.each do |element|
-        log_depth {crawl_properties(element, new_memory, reverse)}
+        log_depth {crawl_properties(element, new_memo, reverse)}
       end
       
       results
@@ -469,7 +454,7 @@ module RDF::Microdata
     def elements_in_item(root)
       # Let results and pending be empty lists of elements.
       # Let errors be zero.
-      results, memory, errors = [], [], 0
+      results, memo, errors = [], [], 0
       
       # Add all the children elements of root to pending.
       pending = root.elements
@@ -487,13 +472,13 @@ module RDF::Microdata
 
       # Loop: Remove an element from pending and let current be that element.
       while current = pending.shift
-        if memory.include?(current)
+        if memo.include?(current)
           raise CrawlFailure, "elements_in_item: results already includes #{current.inspect}"
         elsif !current.has_attribute?('itemscope')
           # If current is not already in results and current does not have an itemscope attribute, then: add all the child elements of current to pending.
           pending += current.elements
         end
-        memory << current
+        memo << current
         
         # If current is not already in results, then: add current to results.
         results << current unless results.include?(current)
