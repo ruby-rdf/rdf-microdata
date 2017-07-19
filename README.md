@@ -60,7 +60,11 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 * {RDF::Microdata::Reader}
   * {RDF::Microdata::Reader::Nokogiri}
 
-### Additional vocabularies
+
+### RDFa-based Reader
+There is an experimental reader based on transforming Microdata to RDFa within the DOM. To invoke
+this, add the `rdfa: true` option to the {RDF::Microdata::Reader.new}, or
+use {RDF::Microdata::RdfaReader} directly.
 
 ## Resources
 * [RDF.rb][RDF.rb]

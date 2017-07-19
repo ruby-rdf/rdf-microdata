@@ -38,6 +38,21 @@ module RDF::Microdata
     end
 
     ##
+    # Redirect for RDFa Reader given `:rdfa` option
+    #
+    # @private
+    def self.new(input = nil, options = {}, &block)
+      klass = if options[:rdfa]
+        RdfaReader
+      else
+        self
+      end
+      reader = klass.allocate
+      reader.send(:initialize, input, options, &block)
+      reader
+    end
+
+    ##
     # Initializes the Microdata reader instance.
     #
     # @param  [Nokogiri::HTML::Document, Nokogiri::XML::Document, IO, File, String] input

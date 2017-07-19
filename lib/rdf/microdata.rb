@@ -28,6 +28,7 @@ module RDF
     autoload :Expansion,  'rdf/microdata/expansion'
     autoload :Profile,    'rdf/microdata/profile'
     autoload :Reader,     'rdf/microdata/reader'
+    autoload :RdfaReader, 'rdf/microdata/rdfa_reader'
     autoload :Registry,   'rdf/microdata/registry'
     autoload :VERSION,    'rdf/microdata/version'
   end
