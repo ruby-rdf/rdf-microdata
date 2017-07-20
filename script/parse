@@ -82,6 +82,10 @@ def run(input, options)
       end
       options[:output].puts xsl.apply_to(reader.rdfa).to_s
     end
+  when :jsonld
+    reader_class.new(input, options.merge(jsonld: true)) do |reader|
+      options[:output].puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
+    end
   when :inspect
     reader_class.new(input, options).each do |statement|
       num += 1
@@ -127,7 +131,6 @@ opts = GetoptLong.new(
   ["--output", "-o", GetoptLong::REQUIRED_ARGUMENT],
   ["--quiet", GetoptLong::NO_ARGUMENT],
   ["--registry", GetoptLong::REQUIRED_ARGUMENT],
-  ["--rdfa", GetoptLong::NO_ARGUMENT],
   ["--template", GetoptLong::REQUIRED_ARGUMENT],
   ["--uri", GetoptLong::REQUIRED_ARGUMENT],
   ["--validate", GetoptLong::NO_ARGUMENT],
@@ -138,7 +141,6 @@ opts.each do |opt, arg|
   when '--debug'        then logger.level = Logger::DEBUG
   when '--execute'      then input = arg
   when '--format'       then options[:output_format] = arg.to_sym
-  when '--rdfa'         then options[:rdfa] = true
   when '--input-format' then options[:input_format] = arg.to_sym
   when '--quiet'
     options[:quiet] = options[:quiet].to_i + 1

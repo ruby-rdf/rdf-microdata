@@ -25,11 +25,12 @@ module RDF
 
     require 'rdf/microdata/format'
     require 'rdf/microdata/vocab'
-    autoload :Expansion,  'rdf/microdata/expansion'
-    autoload :Profile,    'rdf/microdata/profile'
-    autoload :Reader,     'rdf/microdata/reader'
-    autoload :RdfaReader, 'rdf/microdata/rdfa_reader'
-    autoload :Registry,   'rdf/microdata/registry'
-    autoload :VERSION,    'rdf/microdata/version'
+    autoload :Expansion,    'rdf/microdata/expansion'
+    autoload :JsonLdReader, 'rdf/microdata/jsonld_reader'
+    autoload :Profile,      'rdf/microdata/profile'
+    autoload :RdfaReader,   'rdf/microdata/rdfa_reader'
+    autoload :Reader,       'rdf/microdata/reader'
+    autoload :Registry,     'rdf/microdata/registry'
+    autoload :VERSION,      'rdf/microdata/version'
   end
 end

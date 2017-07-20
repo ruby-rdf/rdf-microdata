@@ -56,7 +56,21 @@ module RDF::Microdata
     # @private
     def self.new(input = nil, options = {}, &block)
       klass = if options[:rdfa]
+        # Requires rdf-rdfa gem to be loaded
+        begin
+          require 'rdf/rdfa'
+        rescue LoadError
+          raise ReaderError, "Use of RDFa-based reader requires rdf-rdfa gem"
+        end
         RdfaReader
+      elsif options[:jsonld]
+        # Requires rdf-rdfa gem to be loaded
+        begin
+          require 'json/ld'
+        rescue LoadError
+          raise ReaderError, "Use of JSON-LD-based reader requires json-ld gem"
+        end
+        JsonLdReader
       else
         self
       end
