@@ -5,6 +5,9 @@ module RDF::Microdata
   ##
   # Update DOM to turn Microdata into RDFa and parse using the RDFa Reader
   class RdfaReader < RDF::RDFa::Reader
+    # The transformed DOM using RDFa
+    # @return [RDF::HTML::Document]
+    attr_reader :rdfa
 
     def self.format(klass = nil)
       if klass.nil?
@@ -27,6 +30,8 @@ module RDF::Microdata
     # @yieldreturn [void] ignored
     # @raise [RDF::ReaderError] if _validate_
     def initialize(input = $stdin, options = {}, &block)
+      @options = options
+      log_debug('', "using RDFa transformation reader")
 
       input = case input
       when ::Nokogiri::XML::Document, ::Nokogiri::HTML::Document then input
@@ -40,7 +45,6 @@ module RDF::Microdata
         input = input.read if input.respond_to?(:read)
         ::Nokogiri::HTML5(input.force_encoding(options[:encoding]))
       end
-
 
       # Load registry
       begin
@@ -111,6 +115,9 @@ module RDF::Microdata
           end
         end
       end
+
+      @rdfa = input
+      log_debug('', "Transformed document: #{input.to_html}")
 
       options = options.merge(
         library: :nokogiri,

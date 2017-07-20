@@ -38,6 +38,19 @@ module RDF::Microdata
     end
 
     ##
+    # Reader options
+    # @see http://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Reader#options-class_method
+    def self.options
+      super + [
+        RDF::CLI::Option.new(
+          symbol: :rdfa,
+          datatype: TrueClass,
+          on: ["--rdfa"],
+          description: "Transform and parse as RDFa.") {true},
+      ]
+    end
+
+    ##
     # Redirect for RDFa Reader given `:rdfa` option
     #
     # @private

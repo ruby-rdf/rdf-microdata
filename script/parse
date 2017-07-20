@@ -19,7 +19,8 @@ def run(input, options)
   start = Time.new
   num = 0
 
-  if options[:output_format] == :ntriples || options[:quiet]
+  case options[:output_format]
+  when :ntriples, :quiet
     reader_class.new(input, options).each do |statement|
       num += 1
       if options[:quiet]
@@ -28,7 +29,60 @@ def run(input, options)
         options[:output].puts statement.to_ntriples
       end
     end
-  elsif options[:output_format] == :inspect
+  when :rdfa
+    xsl = Nokogiri::XSLT(%(<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:param name="indent-increment" select="'  '"/>
+      <xsl:output method="html" doctype-system="about:legacy-compat"/>
+ 
+      <xsl:template name="newline">
+        <xsl:text disable-output-escaping="yes">
+    </xsl:text>
+      </xsl:template>
+ 
+      <xsl:template match="comment() | processing-instruction()">
+        <xsl:param name="indent" select="''"/>
+        <xsl:call-template name="newline"/>
+        <xsl:value-of select="$indent"/>
+        <xsl:copy />
+      </xsl:template>
+ 
+      <xsl:template match="text()">
+        <xsl:param name="indent" select="''"/>
+        <xsl:call-template name="newline"/>
+        <xsl:value-of select="$indent"/>
+        <xsl:value-of select="normalize-space(.)"/>
+      </xsl:template>
+ 
+      <xsl:template match="text()[normalize-space(.)='']"/>
+ 
+      <xsl:template match="*">
+        <xsl:param name="indent" select="''"/>
+        <xsl:call-template name="newline"/>
+        <xsl:value-of select="$indent"/>
+          <xsl:choose>
+           <xsl:when test="count(child::*) > 0">
+            <xsl:copy>
+             <xsl:copy-of select="@*"/>
+             <xsl:apply-templates select="*|text()">
+               <xsl:with-param name="indent" select="concat ($indent, $indent-increment)"/>
+             </xsl:apply-templates>
+             <xsl:call-template name="newline"/>
+             <xsl:value-of select="$indent"/>
+            </xsl:copy>
+           </xsl:when>
+           <xsl:otherwise>
+            <xsl:copy-of select="."/>
+           </xsl:otherwise>
+         </xsl:choose>
+      </xsl:template>
+    </xsl:stylesheet>).gsub(/^    /, ''))
+    reader_class.new(input, options.merge(rdfa: true)) do |reader|
+      reader.rdfa.xpath("//text()").each do |txt|
+        txt.content = txt.content.to_s.strip
+      end
+      options[:output].puts xsl.apply_to(reader.rdfa).to_s
+    end
+  when :inspect
     reader_class.new(input, options).each do |statement|
       num += 1
       options[:output].puts statement.inspect
@@ -55,6 +109,7 @@ logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity}: #{m
 options = {
   verbose: false,
   validate: false,
+  rdfa: false,
   logger: logger,
   output: STDOUT,
   output_format: :turtle,
@@ -72,6 +127,7 @@ opts = GetoptLong.new(
   ["--output", "-o", GetoptLong::REQUIRED_ARGUMENT],
   ["--quiet", GetoptLong::NO_ARGUMENT],
   ["--registry", GetoptLong::REQUIRED_ARGUMENT],
+  ["--rdfa", GetoptLong::NO_ARGUMENT],
   ["--template", GetoptLong::REQUIRED_ARGUMENT],
   ["--uri", GetoptLong::REQUIRED_ARGUMENT],
   ["--validate", GetoptLong::NO_ARGUMENT],
@@ -82,6 +138,7 @@ opts.each do |opt, arg|
   when '--debug'        then logger.level = Logger::DEBUG
   when '--execute'      then input = arg
   when '--format'       then options[:output_format] = arg.to_sym
+  when '--rdfa'         then options[:rdfa] = true
   when '--input-format' then options[:input_format] = arg.to_sym
   when '--quiet'
     options[:quiet] = options[:quiet].to_i + 1

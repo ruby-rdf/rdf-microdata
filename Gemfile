@@ -8,6 +8,7 @@ gem "rdf-xsd",        github: "ruby-rdf/rdf-xsd",  branch: "develop"
 gem "nokogumbo",      '~> 1.4'
 
 group :development do
+  gem 'linkeddata'
   gem 'ebnf',               github: "gkellogg/ebnf",                branch: "develop"
   gem 'rdf-aggregate-repo', github: "ruby-rdf/rdf-aggregate-repo",  branch: "develop"
   gem 'rdf-isomorphic',     github: "ruby-rdf/rdf-isomorphic",      branch: "develop"

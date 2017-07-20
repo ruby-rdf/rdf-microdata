@@ -41,5 +41,87 @@ module RDF::Microdata
     def self.detect(sample)
       !!sample.match(/<[^>]*(itemprop|itemtype|itemref|itemscope|itemid)[^>]*>/m)
     end
+
+    ##
+    # Hash of CLI commands appropriate for this format
+    # @return [Hash{Symbol => Hash}]
+    def self.cli_commands
+      {
+        "to-rdfa": {
+          description: "Transform HTML+Microdata into HTML+RDFa",
+          parse: false,
+          help: "to-rdfa files ...",
+          lambda: ->(files, options) do
+            out = options[:output] || $stdout
+            xsl = Nokogiri::XSLT(%(<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <xsl:param name="indent-increment" select="'  '"/>
+              <xsl:output method="html" doctype-system="about:legacy-compat"/>
+ 
+              <xsl:template name="newline">
+                <xsl:text disable-output-escaping="yes">
+            </xsl:text>
+              </xsl:template>
+ 
+              <xsl:template match="comment() | processing-instruction()">
+                <xsl:param name="indent" select="''"/>
+                <xsl:call-template name="newline"/>
+                <xsl:value-of select="$indent"/>
+                <xsl:copy />
+              </xsl:template>
+ 
+              <xsl:template match="text()">
+                <xsl:param name="indent" select="''"/>
+                <xsl:call-template name="newline"/>
+                <xsl:value-of select="$indent"/>
+                <xsl:value-of select="normalize-space(.)"/>
+              </xsl:template>
+ 
+              <xsl:template match="text()[normalize-space(.)='']"/>
+ 
+              <xsl:template match="*">
+                <xsl:param name="indent" select="''"/>
+                <xsl:call-template name="newline"/>
+                <xsl:value-of select="$indent"/>
+                  <xsl:choose>
+                   <xsl:when test="count(child::*) > 0">
+                    <xsl:copy>
+                     <xsl:copy-of select="@*"/>
+                     <xsl:apply-templates select="*|text()">
+                       <xsl:with-param name="indent" select="concat ($indent, $indent-increment)"/>
+                     </xsl:apply-templates>
+                     <xsl:call-template name="newline"/>
+                     <xsl:value-of select="$indent"/>
+                    </xsl:copy>
+                   </xsl:when>
+                   <xsl:otherwise>
+                    <xsl:copy-of select="."/>
+                   </xsl:otherwise>
+                 </xsl:choose>
+              </xsl:template>
+            </xsl:stylesheet>).gsub(/^            /, ''))
+            if files.empty?
+              # If files are empty, either use options[::evaluate]
+              input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
+              input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
+              RDF::Microdata::Reader.new(input, options(rdfa: true)) do |reader|
+                reader.rdfa.xpath("//text()").each do |txt|
+                  txt.content = txt.content.to_s.strip
+                end
+                out.puts xsl.apply_to(reader.rdfa).to_s
+              end
+            else
+              files.each do |file|
+                RDF::Microdata::Reader.open(file, options.merge(rdfa: true)) do |reader|
+                  reader.rdfa.xpath("//text()").each do |txt|
+                    txt.content = txt.content.to_s.strip
+                  end
+                  out.puts xsl.apply_to(reader.rdfa).to_s
+                end
+              end
+            end
+          end
+        },
+      }
+    end
   end
 end
