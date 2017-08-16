@@ -51,6 +51,11 @@ module RDF::Microdata
           description: "Transform HTML+Microdata into HTML+RDFa",
           parse: false,
           help: "to-rdfa files ...\nTransform HTML+Microdata into HTML+RDFa",
+          filter: {
+            format: :microdata,
+            output_format: :jsonld
+          },
+          option_use: {output_format: :disabled},
           lambda: ->(files, options) do
             out = options[:output] || $stdout
             xsl = Nokogiri::XSLT(%(<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -125,6 +130,11 @@ module RDF::Microdata
           description: "Transform HTML+Microdata into JSON-LD",
           parse: false,
           help: "to-jsonld files ...\nTransform HTML+Microdata into JSON-LD",
+          filter: {
+            format: :microdata,
+            output_format: :rdfa
+          },
+          option_use: {output_format: :disabled},
           lambda: ->(files, options) do
             out = options[:output] || $stdout
             if files.empty?
