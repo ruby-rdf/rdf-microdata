@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 2.2.2'
   gem.requirements          = []
-  gem.add_runtime_dependency     'rdf',             '~> 2.2'
+  gem.add_runtime_dependency     'rdf',             '~> 2.2', '>= 2.2.8'
   gem.add_runtime_dependency     'rdf-xsd',         '~> 2.1'
   gem.add_runtime_dependency     'htmlentities',    '~> 4.3'
   gem.add_runtime_dependency     'nokogiri' ,       '~> 1.7'
