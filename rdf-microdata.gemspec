@@ -10,7 +10,6 @@ Gem::Specification.new do |gem|
   gem.license               = 'Unlicense'
   gem.summary               = "Microdata reader for Ruby."
   gem.description           = 'Reads HTML Microdata as RDF.'
-  gem.rubyforge_project     = 'rdf-microdata'
 
   gem.authors               = %w(Gregg Kellogg)
   gem.email                 = 'public-rdf-ruby@w3.org'
