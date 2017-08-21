@@ -77,7 +77,7 @@ The reader exposes a `#json` method, which can be used to retrieve the generated
 
 ## Resources
 * [RDF.rb][RDF.rb]
-* [Documentation](http://rdf.rubyforge.org/microdata)
+* [Documentation](http://www.rubydoc.info/github/ruby-rdf/rdf-microdata/)
 * [History](file:History.md)
 * [Microdata][]
 * [Microdata RDF][]
