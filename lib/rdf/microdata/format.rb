@@ -52,8 +52,7 @@ module RDF::Microdata
           parse: false,
           help: "to-rdfa files ...\nTransform HTML+Microdata into HTML+RDFa",
           filter: {
-            format: :microdata,
-            output_format: :jsonld
+            format: :microdata
           },
           option_use: {output_format: :disabled},
           lambda: ->(files, options) do
@@ -131,8 +130,7 @@ module RDF::Microdata
           parse: false,
           help: "to-jsonld files ...\nTransform HTML+Microdata into JSON-LD",
           filter: {
-            format: :microdata,
-            output_format: :rdfa
+            format: :microdata
           },
           option_use: {output_format: :disabled},
           lambda: ->(files, options) do
