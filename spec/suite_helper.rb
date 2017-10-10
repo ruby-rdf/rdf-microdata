@@ -25,7 +25,7 @@ module RDF::Util
         path = filename_or_url[5..-1]
         Kernel.open(path.to_s, &block)
       when 'http://www.w3.org/ns/md'
-        Kernel.open(RDF::Microdata::Reader::DEFAULT_REGISTRY, &block)
+        Kernel.open(RDF::Microdata::DEFAULT_REGISTRY, &block)
       when /^#{REMOTE_PATH}/
         begin
           #puts "attempt to open #{filename_or_url} locally"
@@ -143,6 +143,10 @@ module Fixtures
       # Alias data and query
       def action
         BASE.join(property('action'))
+      end
+
+      def input
+        RDF::Util::File.open_file(action).read
       end
 
       def registry

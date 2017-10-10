@@ -60,11 +60,24 @@ Full documentation available on [Rubydoc.info][Microdata doc]
 * {RDF::Microdata::Reader}
   * {RDF::Microdata::Reader::Nokogiri}
 
-### Additional vocabularies
+
+### RDFa-based Reader
+There is an experimental reader based on transforming Microdata to RDFa within the DOM. To invoke
+this, add the `rdfa: true` option to the {RDF::Microdata::Reader.new}, or
+use {RDF::Microdata::RdfaReader} directly.
+
+The reader exposes a `#rdfa` method, which can be used to retrieve the transformed HTML+RDFa
+
+### JSON-lD-based Reader
+There is an experimental reader based on transforming Microdata to JSON-LD. To invoke
+this, add the `jsonld: true` option to the {RDF::Microdata::Reader.new}, or
+use {RDF::Microdata::JsonLdReader} directly.
+
+The reader exposes a `#json` method, which can be used to retrieve the generated JSON-LD
 
 ## Resources
 * [RDF.rb][RDF.rb]
-* [Documentation](http://rdf.rubyforge.org/microdata)
+* [Documentation](http://www.rubydoc.info/github/ruby-rdf/rdf-microdata/)
 * [History](file:History.md)
 * [Microdata][]
 * [Microdata RDF][]
