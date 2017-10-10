@@ -107,7 +107,7 @@ module RDF::Microdata
               # If files are empty, either use options[::evaluate]
               input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
               input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
-              RDF::Microdata::Reader.new(input, options(rdfa: true)) do |reader|
+              RDF::Microdata::Reader.new(input, options.merge(rdfa: true)) do |reader|
                 reader.rdfa.xpath("//text()").each do |txt|
                   txt.content = txt.content.to_s.strip
                 end
@@ -139,7 +139,7 @@ module RDF::Microdata
               # If files are empty, either use options[::evaluate]
               input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
               input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
-              RDF::Microdata::Reader.new(input, options(jsonld: true)) do |reader|
+              RDF::Microdata::Reader.new(input, options.merge(jsonld: true)) do |reader|
                 out.puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
               end
             else
