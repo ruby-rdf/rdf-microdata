@@ -31,7 +31,7 @@ module RDF::Microdata
     # @raise [RDF::ReaderError] if _validate_
     def initialize(input = $stdin, options = {}, &block)
       @options = options
-      log_debug('', "using JSON-LD transformation reader")
+      log_info('', "using JSON-LD transformation reader")
 
       input = case input
       when ::Nokogiri::XML::Document, ::Nokogiri::HTML::Document then input

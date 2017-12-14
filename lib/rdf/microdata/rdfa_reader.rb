@@ -76,14 +76,12 @@ module RDF::Microdata
             item['vocab'] = vocab.uri.to_s if vocab
           end
         end
+        item['typeof'] ||= ''
 
         # Change each itemid attribute to an resource attribute with the same value
         if item['itemid']
           id = item.attribute('itemid').remove
-          item[item['itemprop'] ? 'resource' : 'about'] = id
-        else
-          # Otherwise, ensure that @typeof has at least an empty value
-          item['typeof'] ||= ''
+          item['resource'] = id
         end
       end
 

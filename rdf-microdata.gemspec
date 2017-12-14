@@ -23,8 +23,10 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 2.2.2'
   gem.requirements          = []
-  gem.add_runtime_dependency     'rdf',             '~> 2.2', '>= 2.2.8'
-  gem.add_runtime_dependency     'rdf-xsd',         '~> 2.2'
+  #gem.add_runtime_dependency     'rdf',             '~> 2.2', '>= 2.2.8'
+  #gem.add_runtime_dependency     'rdf-xsd',         '~> 2.2'
+  gem.add_runtime_dependency     'rdf',             '>= 2.2.8', '< 4.0'
+  gem.add_runtime_dependency     'rdf-xsd',         '>= 2.2', '< 4.0'
   gem.add_runtime_dependency     'htmlentities',    '~> 4.3'
   gem.add_runtime_dependency     'nokogiri' ,       '~> 1.8'
 
@@ -33,11 +35,16 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec',           '~> 3.6'
   gem.add_development_dependency 'rspec-its',       '~> 1.2'
   
-  gem.add_development_dependency 'json-ld',         '~> 2.1'
-  gem.add_development_dependency 'rdf-spec',        '~> 2.2'
-  gem.add_development_dependency 'rdf-rdfa',        '~> 2.2'
-  gem.add_development_dependency 'rdf-turtle',      '~> 2.2'
-  gem.add_development_dependency 'rdf-isomorphic',  '~> 2.2'
+  #gem.add_development_dependency 'json-ld',         '~> 2.1'
+  #gem.add_development_dependency 'rdf-spec',        '~> 2.2'
+  #gem.add_development_dependency 'rdf-rdfa',        '~> 2.2'
+  #gem.add_development_dependency 'rdf-turtle',      '~> 2.2'
+  #gem.add_development_dependency 'rdf-isomorphic',  '~> 2.2'
+  gem.add_development_dependency 'json-ld',         '>= 2.1', '< 4.0'
+  gem.add_development_dependency 'rdf-spec',        '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rdf-rdfa',        '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rdf-turtle',      '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rdf-isomorphic',  '>= 2.2', '< 4.0'
 
   # Rubinius has it's own dependencies
   if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
