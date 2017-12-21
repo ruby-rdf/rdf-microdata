@@ -125,32 +125,6 @@ module RDF::Microdata
             end
           end
         },
-        "to-jsonld": {
-          description: "Transform HTML+Microdata into JSON-LD",
-          parse: false,
-          help: "to-jsonld files ...\nTransform HTML+Microdata into JSON-LD",
-          filter: {
-            format: :microdata
-          },
-          option_use: {output_format: :disabled},
-          lambda: ->(files, options) do
-            out = options[:output] || $stdout
-            if files.empty?
-              # If files are empty, either use options[::evaluate]
-              input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
-              input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
-              RDF::Microdata::Reader.new(input, options.merge(jsonld: true)) do |reader|
-                out.puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
-              end
-            else
-              files.each do |file|
-                RDF::Microdata::Reader.open(file, options.merge(jsonld: true)) do |reader|
-                  out.puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
-                end
-              end
-            end
-          end
-        },
       }
     end
   end
