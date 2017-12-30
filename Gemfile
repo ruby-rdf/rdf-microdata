@@ -9,7 +9,7 @@ gem "nokogumbo",      '~> 1.4'
 
 group :development do
   gem 'linkeddata'
-  gem 'ebnf',               git: "https://github.com/gkellogg/ebnf",                branch: "develop"
+  gem 'ebnf',               git: "https://github.com/dryruby/ebnf",                 branch: "develop"
   gem 'rdf-aggregate-repo', git: "https://github.com/ruby-rdf/rdf-aggregate-repo",  branch: "develop"
   gem 'rdf-isomorphic',     git: "https://github.com/ruby-rdf/rdf-isomorphic",      branch: "develop"
   gem "rdf-spec",           git: "https://github.com/ruby-rdf/rdf-spec",            branch: "develop"
