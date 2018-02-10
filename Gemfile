@@ -5,7 +5,7 @@ gemspec
 gem "rdf",            git: "https://github.com/ruby-rdf/rdf",      branch: "develop"
 gem "rdf-rdfa",       git: "https://github.com/ruby-rdf/rdf-rdfa", branch: "develop"
 gem "rdf-xsd",        git: "https://github.com/ruby-rdf/rdf-xsd",  branch: "develop"
-gem "nokogumbo",      '~> 1.4.13' # 1.5 not catching errors
+gem "nokogumbo",      '~> 1.5'
 
 group :development do
   gem 'linkeddata'
