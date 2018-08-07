@@ -17,9 +17,6 @@ Gem::Specification.new do |gem|
   gem.platform              = Gem::Platform::RUBY
   gem.files                 = %w(AUTHORS README.md UNLICENSE VERSION) + Dir.glob('lib/**/*.rb') + Dir.glob('etc/*')
   gem.require_paths         = %w(lib)
-  gem.extensions            = %w()
-  gem.test_files            = %w()
-  gem.has_rdoc              = false
 
   gem.required_ruby_version = '>= 2.2.2'
   gem.requirements          = []
@@ -37,9 +34,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rdf-turtle',      '>= 3.0'
   gem.add_development_dependency 'rdf-isomorphic',  '~> 3.0'
   #gem.add_development_dependency 'json-ld',         '~> 2.1'
-  #gem.add_development_dependency 'rdf-rdfa',        '~> 2.2'
+  gem.add_development_dependency 'rdf-rdfa',        '~> 3.0'
   gem.add_development_dependency 'json-ld',         '>= 2.2', '< 4.0'
-  gem.add_development_dependency 'rdf-rdfa',        '>= 2.2', '< 4.0'
 
   gem.post_install_message  = nil
 end
