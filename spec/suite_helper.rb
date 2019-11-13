@@ -126,9 +126,7 @@ module Fixtures
       # @param [Hash] json framed JSON-LD
       # @return [Array<Manifest>]
       def self.from_jsonld(json)
-        json['@graph'].
-          select {|m| m['@type'] == 'mf:Manifest'}.
-          map {|e| Manifest.new(e)}
+        Manifest.new(json)
       end
 
       def entries
