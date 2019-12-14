@@ -29,7 +29,7 @@ module RDF::Microdata
     # @yieldparam  [RDF::Reader] reader
     # @yieldreturn [void] ignored
     # @raise [RDF::ReaderError] if _validate_
-    def initialize(input = $stdin, options = {}, &block)
+    def initialize(input = $stdin, **options, &block)
       @options = options
       log_debug('', "using RDFa transformation reader")
 
@@ -115,7 +115,7 @@ module RDF::Microdata
         version: :"rdfa1.1")
 
       # Rely on RDFa reader
-      super(input, options, &block)
+      super(input, **options, &block)
     end
   end
 end

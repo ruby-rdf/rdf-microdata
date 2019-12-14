@@ -178,7 +178,7 @@ module RDF::Microdata
       #
       # @param  [Hash{Symbol => Object}] options
       # @return [void]
-      def initialize_html(input, options = {})
+      def initialize_html(input, **options)
         require 'nokogiri' unless defined?(::Nokogiri)
         @doc = case input
         when ::Nokogiri::XML::Document
