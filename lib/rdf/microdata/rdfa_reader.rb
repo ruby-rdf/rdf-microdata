@@ -29,7 +29,7 @@ module RDF::Microdata
     # @yieldparam  [RDF::Reader] reader
     # @yieldreturn [void] ignored
     # @raise [RDF::ReaderError] if _validate_
-    def initialize(input = $stdin, options = {}, &block)
+    def initialize(input = $stdin, **options, &block)
       @options = options
       log_debug('', "using RDFa transformation reader")
 
@@ -46,15 +46,6 @@ module RDF::Microdata
         ::Nokogiri::HTML5(input.force_encoding(options[:encoding]))
       end
 
-      # Load registry
-      begin
-        registry_uri = options[:registry] || RDF::Microdata::DEFAULT_REGISTRY
-        log_debug('', "registry = #{registry_uri.inspect}")
-        Registry.load_registry(registry_uri)
-      rescue JSON::ParserError => e
-        log_fatal("Failed to parse registry: #{e.message}", exception: RDF::ReaderError) if (root.nil? && validate?)
-      end
-
       # For all members having @itemscope
       input.css("[itemscope]").each do |item|
         # Get @itemtypes to create @type and @vocab
@@ -69,8 +60,8 @@ module RDF::Microdata
 
           item['typeof'] = types.join(' ') unless types.empty?
           if vocab = types.first
-            vocab = Registry.find(vocab) || begin
-              type_vocab = vocab.to_s.sub(/([\/\#])[^\/\#]*$/, '\1') unless vocab.nil?
+            vocab = begin
+              type_vocab = vocab.to_s.sub(/([\/\#])[^\/\#]*$/, '\1')
               Registry.new(type_vocab) if type_vocab
             end
             item['vocab'] = vocab.uri.to_s if vocab
@@ -124,7 +115,7 @@ module RDF::Microdata
         version: :"rdfa1.1")
 
       # Rely on RDFa reader
-      super(input, options, &block)
+      super(input, **options, &block)
     end
   end
 end

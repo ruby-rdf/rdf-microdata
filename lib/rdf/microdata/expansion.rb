@@ -26,7 +26,6 @@ module RDF::Microdata
       repo = RDF::Repository.new
       repo << self  # Add default graph
       
-      count = repo.count
       log_debug("expand") {"Loaded #{repo.size} triples into default graph"}
       
       repo = owl_entailment(repo)
@@ -38,7 +37,7 @@ module RDF::Microdata
     end
 
     def rule(name, &block)
-      Rule.new(name, @options, block)
+      Rule.new(name, **@options, &block)
     end
 
     ##
@@ -72,7 +71,7 @@ module RDF::Microdata
       #   r.execute(queryable) {|statement| puts statement.inspect}
       #
       # @param [String] name
-      def initialize(name, options = {}, &block)
+      def initialize(name, **options, &block)
         @antecedents = []
         @consequents = []
         @options = options.dup

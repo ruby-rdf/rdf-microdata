@@ -8,6 +8,7 @@ class ExpansionTester
   include RDF::Util::Logger
 
   attr_reader :id, :repo, :action, :result, :options
+  attr_accessor :format
 
   def initialize(name)
     @id = name

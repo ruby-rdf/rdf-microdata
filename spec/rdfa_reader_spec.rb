@@ -862,25 +862,27 @@ describe RDF::Microdata::RdfaReader do
   def parse(input, options = {})
     @logger = RDF::Spec.logger
     graph = options[:graph] || RDF::Graph.new
-    RDF::Microdata::Reader.new(input, {
-        logger: @logger,
-        rdfa: true,
-        validate: false,
-        base_uri: "http://example/",
-        registry: registry_path,
-        canonicalize: false}.merge(options)).each do |statement|
+    RDF::Microdata::Reader.new(input,
+      logger: @logger,
+      rdfa: true,
+      validate: false,
+      base_uri: "http://example/",
+      registry: registry_path,
+      canonicalize: false,
+      **options
+    ).each do |statement|
       graph << statement
     end
 
     # Remove any rdfa:usesVocabulary statements
-    graph.query(predicate: RDF::RDFA.usesVocabulary).each do |stmt|
+    graph.query({predicate: RDF::RDFA.usesVocabulary}).each do |stmt|
       graph.delete(stmt)
     end
     graph
   end
 
-  def test_file(filepath, options = {})
-    graph = parse(File.open(filepath), options)
+  def test_file(filepath, **options)
+    graph = parse(File.open(filepath), **options)
 
     ttl_string = File.read(filepath.sub('.html', '.ttl'))
     expect(graph).to be_equivalent_graph(ttl_string, logger: @logger)

@@ -7,7 +7,7 @@ describe RDF::Microdata::Reader do
     require 'suite_helper'
     MANIFEST = Fixtures::SuiteTest::BASE + "manifest.jsonld"
 
-    {native: :native, RDFa: :rdfa, "JSON-LD": :jsonld}.each do |w, sym|
+    {native: :native, RDFa: :rdfa}.each do |w, sym|
       describe w do
         Fixtures::SuiteTest::Manifest.open(MANIFEST).each do |m|
           describe m.comment do
@@ -16,6 +16,15 @@ describe RDF::Microdata::Reader do
                 t.logger = ::RDF::Spec.logger
                 t.logger.info t.inspect
                 t.logger.info "source:\n#{t.input}"
+
+                if sym == :rdfa
+                  %w(0002 0003 0052 0053 0054 0067).include?(t.name.split.last) && skip("Not valid test for RDFa")
+                  %w(0026 0044).include?(t.name.split.last) && skip("Difference in subject for head/body elements")
+                  %w(0071 0073 0074).include?(t.name.split.last) && skip("No vocabulary expansion")
+                  %w(0075 0078).include?(t.name.split.last) && skip("Differences in number parsing")
+                  %w(0081 0082 0084).include?(t.name.split.last) && skip("No @itemprop-reverse")
+                  %w(0064).include?(t.name.split.last) && pending("Double use of itemref with different vocabularies")
+                end
 
                 reader = RDF::Microdata::Reader.open(t.action,
                   base_uri:        t.action,

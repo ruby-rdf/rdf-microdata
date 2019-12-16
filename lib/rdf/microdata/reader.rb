@@ -54,7 +54,7 @@ module RDF::Microdata
     # Redirect for RDFa Reader given `:rdfa` option
     #
     # @private
-    def self.new(input = nil, options = {}, &block)
+    def self.new(input = nil, **options, &block)
       klass = if options[:rdfa]
         # Requires rdf-rdfa gem to be loaded
         begin
@@ -63,19 +63,11 @@ module RDF::Microdata
           raise ReaderError, "Use of RDFa-based reader requires rdf-rdfa gem"
         end
         RdfaReader
-      elsif options[:jsonld]
-        # Requires rdf-rdfa gem to be loaded
-        begin
-          require 'json/ld'
-        rescue LoadError
-          raise ReaderError, "Use of JSON-LD-based reader requires json-ld gem"
-        end
-        JsonLdReader
       else
         self
       end
       reader = klass.allocate
-      reader.send(:initialize, input, options, &block)
+      reader.send(:initialize, input, **options, &block)
       reader
     end
 
@@ -102,7 +94,7 @@ module RDF::Microdata
     # @yieldparam  [RDF::Reader] reader
     # @yieldreturn [void] ignored
     # @raise [Error] Raises `RDF::ReaderError` when validating
-    def initialize(input = $stdin, options = {}, &block)
+    def initialize(input = $stdin, **options, &block)
       super do
         @library = :nokogiri
 
@@ -111,7 +103,7 @@ module RDF::Microdata
         self.extend(@implementation)
 
         input.rewind if input.respond_to?(:rewind)
-        initialize_html(input, options) rescue log_fatal($!.message, exception: RDF::ReaderError)
+        initialize_html(input, **options) rescue log_fatal($!.message, exception: RDF::ReaderError)
 
         log_error("Empty document") if root.nil?
         log_error(doc_errors.map(&:message).uniq.join("\n")) if !doc_errors.empty?

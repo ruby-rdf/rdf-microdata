@@ -82,10 +82,6 @@ def run(input, options)
       end
       options[:output].puts xsl.apply_to(reader.rdfa).to_s
     end
-  when :jsonld
-    reader_class.new(input, options.merge(jsonld: true)) do |reader|
-      options[:output].puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
-    end
   when :inspect
     reader_class.new(input, options).each do |statement|
       num += 1

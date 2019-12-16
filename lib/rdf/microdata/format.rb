@@ -55,7 +55,7 @@ module RDF::Microdata
             format: :microdata
           },
           option_use: {output_format: :disabled},
-          lambda: ->(files, options) do
+          lambda: ->(files, **options) do
             out = options[:output] || $stdout
             xsl = Nokogiri::XSLT(%(<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
               <xsl:param name="indent-increment" select="'  '"/>
@@ -107,7 +107,7 @@ module RDF::Microdata
               # If files are empty, either use options[::evaluate]
               input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
               input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
-              RDF::Microdata::Reader.new(input, options.merge(rdfa: true)) do |reader|
+              RDF::Microdata::Reader.new(input, **options.merge(rdfa: true)) do |reader|
                 reader.rdfa.xpath("//text()").each do |txt|
                   txt.content = txt.content.to_s.strip
                 end
@@ -115,37 +115,11 @@ module RDF::Microdata
               end
             else
               files.each do |file|
-                RDF::Microdata::Reader.open(file, options.merge(rdfa: true)) do |reader|
+                RDF::Microdata::Reader.open(file, **options.merge(rdfa: true)) do |reader|
                   reader.rdfa.xpath("//text()").each do |txt|
                     txt.content = txt.content.to_s.strip
                   end
                   out.puts xsl.apply_to(reader.rdfa).to_s
-                end
-              end
-            end
-          end
-        },
-        "to-jsonld": {
-          description: "Transform HTML+Microdata into JSON-LD",
-          parse: false,
-          help: "to-jsonld files ...\nTransform HTML+Microdata into JSON-LD",
-          filter: {
-            format: :microdata
-          },
-          option_use: {output_format: :disabled},
-          lambda: ->(files, options) do
-            out = options[:output] || $stdout
-            if files.empty?
-              # If files are empty, either use options[::evaluate]
-              input = options[:evaluate] ? StringIO.new(options[:evaluate]) : STDIN
-              input.set_encoding(options.fetch(:encoding, Encoding::UTF_8))
-              RDF::Microdata::Reader.new(input, options.merge(jsonld: true)) do |reader|
-                out.puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
-              end
-            else
-              files.each do |file|
-                RDF::Microdata::Reader.open(file, options.merge(jsonld: true)) do |reader|
-                  out.puts reader.jsonld.to_json(::JSON::LD::JSON_STATE)
                 end
               end
             end
