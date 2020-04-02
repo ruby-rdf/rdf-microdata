@@ -9,8 +9,8 @@ describe RDF::Microdata::Reader do
 
     {native: :native, RDFa: :rdfa}.each do |w, sym|
       describe w do
-        Fixtures::SuiteTest::Manifest.open(MANIFEST).each do |m|
-          describe m.comment do
+        Fixtures::SuiteTest::Manifest.open(MANIFEST) do |m|
+          describe m.label do
             m.entries.each do |t|
               specify "#{t.name}: #{t.comment}" do
                 t.logger = ::RDF::Spec.logger
@@ -33,7 +33,7 @@ describe RDF::Microdata::Reader do
                   registry:        t.registry,
                   vocab_expansion: t.vocab_expansion,
                   logger:          t.logger,
-                  sym           => true # Invoke appropriat writer
+                  sym           => true # Invoke appropriate writer
                 )
                 expect(reader).to be_a RDF::Reader
                 graph = RDF::Repository.new

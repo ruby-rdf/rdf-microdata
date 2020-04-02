@@ -1,0 +1,136 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+$:.unshift(File.expand_path("../../lib", __FILE__))
+require "bundler/setup"
+require 'logger'
+require 'rdf/microdata'
+require 'rdf/isomorphic'
+require 'rdf/vocab'
+require  File.expand_path("../../spec/spec_helper", __FILE__)
+require  File.expand_path("../../spec/suite_helper", __FILE__)
+require 'getoptlong'
+
+def run_tc(tc, **options)
+  input_uri = tc.action
+
+  STDOUT.write "run #{tc.attributes['@id']}"
+
+  if options[:verbose]
+    puts("\nTestCase: #{tc.inspect}") 
+    puts("\nInput:\n" + tc.input)
+    puts("\nExpected:\n" + tc.expected) if tc.result
+  end
+
+  begin
+    puts "open #{input_uri}" if options[:verbose]
+    options = {
+      base_uri: input_uri,
+      registry: tc.registry
+    }.merge(options)
+    options[:validate] = !tc.positive_test?
+
+    reader = RDF::Microdata::Reader.open(input_uri, **options)
+    result = nil
+    graph = RDF::Graph.new
+
+    #require 'byebug'; byebug
+    if tc.positive_test?
+      begin
+        graph << reader
+        puts("\nTurtle:\n" + graph.dump(:ttl, standard_prefixes: true)) if options[:verbose]
+      rescue Exception => e
+        STDERR.puts "Unexpected exception: #{e.inspect}" if options[:verbose]
+        result = "failed"
+      end
+    else
+      begin
+        graph << reader
+        STDERR.puts "Expected exception" if options[:verbose]
+        require 'byebug'; byebug
+        result = "failed"
+      rescue RDF::ReaderError
+        result = "passed"
+      end
+    end
+
+    if tc.evaluate? && result.nil?
+      # Remove any rdfa:usesVocabulary property
+      graph.query({predicate: RDF::RDFA.usesVocabulary}) do |st|
+        graph.delete!(st)
+      end
+      output_graph = RDF::Graph.load(tc.result, base_uri: tc.action)
+      result = graph.isomorphic_with?(output_graph) ? "passed" : "failed"
+    else
+      result ||= "passed"
+    end
+
+  rescue Exception => e
+    STDERR.puts "#{"exception:" unless options[:quiet]}: #{e}"
+    if options[:quiet]
+      return
+    else
+      raise
+    end
+  end
+
+  options[:result_count][result] ||= 0
+  options[:result_count][result] += 1
+
+  puts " #{result}"
+end
+
+logger = Logger.new(STDERR)
+logger.level = Logger::WARN
+logger.formatter = lambda {|severity, datetime, progname, msg| "#{severity}: #{msg}\n"}
+
+options = {
+  output:  STDOUT,
+  logger: logger
+}
+
+opts = GetoptLong.new(
+  ["--help", "-?", GetoptLong::NO_ARGUMENT],
+  ["--debug", GetoptLong::NO_ARGUMENT],
+  ["--quiet", GetoptLong::NO_ARGUMENT],
+  ["--validate", GetoptLong::NO_ARGUMENT],
+  ["--verbose", GetoptLong::NO_ARGUMENT]
+)
+
+def help(**options)
+  puts "Usage: #{$0} [options] [test-number ...]"
+  puts "Options:"
+  puts "      --dump:               Dump raw output, otherwise serialize to Ruby"
+  puts "      --debug               Display detailed debug output"
+  puts "      --expand              Expand graph with vocab_expansion option"
+  puts "      --quiet:              Minimal output"
+  puts "      --validate:           Validate input"
+  puts "      --verbose:            Verbose processing"
+  puts "      --help,-?:            This message"
+  exit(0)
+end
+
+opts.each do |opt, arg|
+  case opt
+  when '--help'             then help(**options)
+  when '--debug'            then logger.level = Logger::DEBUG
+  when '--format'           then options[:format] = arg.to_sym
+  when '--quiet'
+    options[:quiet] = true
+    logger.level = Logger::FATAL
+  when '--validate'         then options[:validate] = true
+  when '--verbose'          then options[:verbose] = true
+  end
+end
+
+result_count = {}
+
+Fixtures::SuiteTest::Manifest.open(Fixtures::SuiteTest::BASE + "manifest.jsonld") do |m|
+  m.entries.each do |tc|
+    next unless ARGV.empty? || ARGV.any? {|n| tc.id.match(/#{n}/)}
+    run_tc(tc, result_count: result_count, **options)
+  end
+end
+
+result_count.each do |result, count|
+  puts "#{result}: #{count}"
+end

@@ -8,7 +8,6 @@ require 'rdf/microdata'
 require 'rdf/turtle'
 require 'rdf/spec'
 require 'rdf/spec/matchers'
-require 'matchers'
 
 ::RSpec.configure do |c|
   c.filter_run focus: true
