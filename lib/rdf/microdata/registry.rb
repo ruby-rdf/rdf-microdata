@@ -55,7 +55,7 @@ module RDF::Microdata
     # Generate a predicateURI given a `name`
     #
     # @param [#to_s] name
-    # @param [Hash{}] ec Evaluation Context
+    # @param [RDF::URI] base_uri base URI for resolving `name`.
     # @return [RDF::URI]
     def predicateURI(name, base_uri)
       u = RDF::URI(name)
