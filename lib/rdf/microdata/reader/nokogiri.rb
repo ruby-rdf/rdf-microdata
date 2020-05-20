@@ -3,7 +3,7 @@ module RDF::Microdata
     ##
     # Nokogiri implementation of an HTML parser.
     #
-    # @see http://nokogiri.org/
+    # @see https://nokogiri.org/
     module Nokogiri
       ##
       # Returns the name of the underlying XML library.
@@ -230,7 +230,7 @@ module RDF::Microdata
       ##
       # Based on Microdata element.getItems
       #
-      # @see http://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
+      # @see https://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
       def getItems
         @doc.css('[itemscope]').select {|el| !el.has_attribute?('itemprop')}.map {|n| NodeProxy.new(n)}
       end

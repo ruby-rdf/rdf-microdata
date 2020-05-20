@@ -19,7 +19,7 @@ module RDF::Microdata
   # @example Obtaining serialization format MIME types
   #   RDF::Format.content_types      #=> {"text/html" => [RDF::Microdata::Format]}
   #
-  # @see http://www.w3.org/TR/rdf-testcases/#ntriples
+  # @see https://www.w3.org/TR/rdf-testcases/#ntriples
   class Format < RDF::Format
     content_encoding 'utf-8'
 

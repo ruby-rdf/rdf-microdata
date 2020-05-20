@@ -15,10 +15,10 @@ module RDF
   #     end
   #   end
   #
-  # @see http://www.rubydoc.info/github/ruby-rdf/rdf/
-  # @see http://www.w3.org/TR/2011/WD-microdata-20110525/
+  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/
+  # @see https://www.w3.org/TR/2011/WD-microdata-20110525/
   #
-  # @author [Gregg Kellogg](http://greggkellogg.net/)
+  # @author [Gregg Kellogg](https://greggkellogg.net/)
   module Microdata
     USES_VOCAB = RDF::URI("http://www.w3.org/ns/rdfa#usesVocabulary")
     DEFAULT_REGISTRY = File.expand_path("../../../etc/registry.json", __FILE__)
