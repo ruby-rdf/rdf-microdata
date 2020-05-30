@@ -15,5 +15,5 @@
 <https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#implements> <http://www.w3.org/TR/microdata-rdf/> .
 <https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#download-page> <https://rubygems.org/gems/rdf-microdata> .
 <https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#homepage> <https://github.com/ruby-rdf/rdf-microdata> .
-<https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#license> <https://unlicense.org/> .
+<https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#license> <https://unlicense.org/1.0/> .
 <https://rubygems.org/gems/rdf-microdata> <http://usefulinc.com/ns/doap#mailing-list> <http://lists.w3.org/Archives/Public/public-rdf-ruby/> .
