@@ -3,7 +3,7 @@ module RDF::Microdata
     ##
     # Nokogiri implementation of an HTML parser.
     #
-    # @see http://nokogiri.org/
+    # @see https://nokogiri.org/
     module Nokogiri
       ##
       # Returns the name of the underlying XML library.
@@ -212,7 +212,9 @@ module RDF::Microdata
       ##
       # Document errors
       def doc_errors
-        @doc.errors.reject {|e| e.to_s =~ /The doctype must be the first token in the document/}
+        @doc.errors.reject do |e|
+          e.to_s =~ %r{(The doctype must be the first token in the document)|(Expected a doctype token)|(Unexpected '\?' where start tag name is expected)}
+        end
       end
       
       ##
@@ -230,7 +232,7 @@ module RDF::Microdata
       ##
       # Based on Microdata element.getItems
       #
-      # @see http://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
+      # @see https://www.w3.org/TR/2011/WD-microdata-20110525/#top-level-microdata-items
       def getItems
         @doc.css('[itemscope]').select {|el| !el.has_attribute?('itemprop')}.map {|n| NodeProxy.new(n)}
       end

@@ -8,8 +8,8 @@ module RDF::Microdata
   #
   # Based on processing rules, amended with the following:
   #
-  # @see http://dvcs.w3.org/hg/htmldata/raw-file/0d6b89f5befb/microdata-rdf/index.html
-  # @author [Gregg Kellogg](http://greggkellogg.net/)
+  # @see https://dvcs.w3.org/hg/htmldata/raw-file/0d6b89f5befb/microdata-rdf/index.html
+  # @author [Gregg Kellogg](https://greggkellogg.net/)
   class Reader < RDF::Reader
     format Format
     include Expansion
@@ -39,7 +39,7 @@ module RDF::Microdata
 
     ##
     # Reader options
-    # @see http://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Reader#options-class_method
+    # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Reader#options-class_method
     def self.options
       super + [
         RDF::CLI::Option.new(

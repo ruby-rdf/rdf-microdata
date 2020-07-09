@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 
 gemspec
 
@@ -15,6 +15,7 @@ group :development do
   gem 'rdf-isomorphic',     git: "https://github.com/ruby-rdf/rdf-isomorphic",      branch: "develop"
   gem "rdf-spec",           git: "https://github.com/ruby-rdf/rdf-spec",            branch: "develop"
   gem 'rdf-turtle',         git: "https://github.com/ruby-rdf/rdf-turtle",          branch: "develop"
+  gem 'rdf-vocab',          git: "https://github.com/ruby-rdf/rdf-vocab",           branch: "develop"
   gem 'sxp',                git: "https://github.com/dryruby/sxp.rb",               branch: "develop"
 end
 

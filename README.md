@@ -2,8 +2,8 @@
 
 [Microdata][] parser for RDF.rb.
 
-[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)](http://badge.fury.io/rb/rdf-microdata)
-[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](http://travis-ci.org/ruby-rdf/rdf-microdata)
+[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)](https://badge.fury.io/rb/rdf-microdata)
+[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](https://travis-ci.org/ruby-rdf/rdf-microdata)
 
 ## DESCRIPTION
 RDF::Microdata is a Microdata reader for Ruby using the [RDF.rb][RDF.rb] library suite.
@@ -45,10 +45,10 @@ GRDDL-type triple generation, such as for html>head>title anchor tags.
 If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert content type `text/html` or file extension `.html`, as this is also asserted by RDFa. Instead, the RDFa reader will invoke the microdata reader if an `@itemscope` attribute is detected.
   
 ## Dependencies
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 3.1)
-* [RDF::XSD](http://rubygems.org/gems/rdf-xsd) (>= 3.1)
+* [RDF.rb](https://rubygems.org/gems/rdf) (>= 3.1)
+* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (>= 3.1)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
-* [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.10)
+* [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.10)
 * Soft dependency on [Nokogumbo](https://github.com/rubys/nokogumbo) (~> 2.0)
 
 ## Documentation
@@ -70,13 +70,13 @@ The reader exposes a `#rdfa` method, which can be used to retrieve the transform
 
 ## Resources
 * [RDF.rb][RDF.rb]
-* [Documentation](http://www.rubydoc.info/github/ruby-rdf/rdf-microdata/)
+* [Documentation](https://www.rubydoc.info/github/ruby-rdf/rdf-microdata/)
 * [History](file:History.md)
 * [Microdata][]
 * [Microdata RDF][]
 
 ## Author
-* [Gregg Kellogg](http://github.com/gkellogg) - <http://greggkellogg.net/>
+* [Gregg Kellogg](https://github.com/gkellogg) - <https://greggkellogg.net/>
 
 ## Contributing
 
@@ -95,20 +95,20 @@ The reader exposes a `#rdfa` method, which can be used to retrieve the transform
 ## License
 
 This is free and unencumbered public domain software. For more information,
-see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
+see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 
 ## FEEDBACK
 
 * gregg@greggkellogg.net
-* <http://rubygems.org/rdf-microdata>
-* <http://github.com/ruby-rdf/rdf-microdata>
-* <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
+* <https://rubygems.org/rdf-microdata>
+* <https://github.com/ruby-rdf/rdf-microdata>
+* <https://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
 [RDF.rb]:           https://github.com/ruby-rdf/rdf
-[YARD]:             http://yardoc.org/
-[YARD-GS]:          http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
-[PDD]:              http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
-[Microdata]:        http://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
-[Microdata RDF]:    http://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
-[Microdata doc]:    http://rubydoc.info/github/ruby-rdf/rdf-microdata/frames
+[YARD]:             https://yardoc.org/
+[YARD-GS]:          https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
+[PDD]:              https://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
+[Microdata]:        https://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
+[Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
+[Microdata doc]:    https://rubydoc.info/github/ruby-rdf/rdf-microdata/frames
 [Nokogumbo]:        https://github.com/rubys/nokogumbo/#readme

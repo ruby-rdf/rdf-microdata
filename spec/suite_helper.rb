@@ -119,11 +119,11 @@ module Fixtures
   module SuiteTest
     BASE = RDF::URI("http://w3c.github.io/microdata-rdf/tests/")
     class Manifest < JSON::LD::Resource
-      def self.open(file)
+      def self.open(file, &block)
         #puts "open: #{file}"
         RDF::Util::File.open_file(file) do |f|
           json = JSON.parse(f.read)
-          self.from_jsonld(json)
+          block.call(self.from_jsonld(json['@graph'].first))
         end
       end
 
@@ -159,6 +159,10 @@ module Fixtures
 
       def result
         BASE.join(property('result')) if property('result')
+      end
+
+      def expected
+        RDF::Util::File.open_file(result).read
       end
 
       def positive_test?
