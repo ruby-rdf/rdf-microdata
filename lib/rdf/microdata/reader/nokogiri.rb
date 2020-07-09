@@ -212,7 +212,9 @@ module RDF::Microdata
       ##
       # Document errors
       def doc_errors
-        @doc.errors.reject {|e| e.to_s =~ /The doctype must be the first token in the document/}
+        @doc.errors.reject do |e|
+          e.to_s =~ %r{(The doctype must be the first token in the document)|(Expected a doctype token)|(Unexpected '\?' where start tag name is expected)}
+        end
       end
       
       ##
