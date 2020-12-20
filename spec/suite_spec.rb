@@ -47,7 +47,7 @@ describe RDF::Microdata::Reader do
                   if t.evaluate?
 
                     # Remove any rdfa:usesVocabulary property
-                    graph.query(predicate: RDF::RDFA.usesVocabulary) do |st|
+                    graph.query({predicate: RDF::RDFA.usesVocabulary}) do |st|
                       graph.delete!(st)
                     end
                     output_graph = RDF::Graph.load(t.result, base_uri: t.action)
