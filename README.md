@@ -51,7 +51,7 @@ If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert cont
 * [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
 * [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
-* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.11)
+* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.10)
 * Soft dependency on [Nokogumbo](https://github.com/rubys/nokogumbo) (~> 2.0)
 
 ## Documentation
