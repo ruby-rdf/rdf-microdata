@@ -47,10 +47,11 @@ GRDDL-type triple generation, such as for html>head>title anchor tags.
 If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert content type `text/html` or file extension `.html`, as this is also asserted by RDFa. Instead, the RDFa reader will invoke the microdata reader if an `@itemscope` attribute is detected.
   
 ## Dependencies
-* [RDF.rb](https://rubygems.org/gems/rdf) (>= 3.1)
-* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (>= 3.1)
-* [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
-* [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.10)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
+* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
+* [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
+* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.11)
 * Soft dependency on [Nokogumbo](https://github.com/rubys/nokogumbo) (~> 2.0)
 
 ## Documentation
