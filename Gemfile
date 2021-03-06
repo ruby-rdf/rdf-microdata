@@ -9,7 +9,6 @@ gem "nokogumbo",      '~> 2.0'
 
 group :development do
   gem "json-ld",            git: "https://github.com/ruby-rdf/json-ld",      branch: "develop"
-  #gem 'linkeddata'
   gem 'ebnf',               git: "https://github.com/dryruby/ebnf",                 branch: "develop"
   gem 'rdf-aggregate-repo', git: "https://github.com/ruby-rdf/rdf-aggregate-repo",  branch: "develop"
   gem 'rdf-isomorphic',     git: "https://github.com/ruby-rdf/rdf-isomorphic",      branch: "develop"
@@ -24,6 +23,6 @@ group :debug do
 end
 
 group :test do
-  gem 'simplecov',  platforms: :mri
+  gem 'simplecov',  '~> 0.16', platforms: :mri
   gem 'coveralls',  '~> 0.8', platforms: :mri
 end
