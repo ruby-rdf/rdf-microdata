@@ -17,7 +17,20 @@ require 'rdf/spec/matchers'
   c.include(RDF::Spec::Matchers)
 end
 
-TMP_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "tmp")
+begin
+  require 'simplecov'
+  require 'coveralls'
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    Coveralls::SimpleCov::Formatter
+  ])
+  SimpleCov.start do
+    add_filter "/spec/"
+  end
+  Coveralls.wear!
+rescue LoadError => e
+  STDERR.puts "Coverage Skipped: #{e.message}"
+end
 
 # Heuristically detect the input stream
 def detect_format(stream)

@@ -3,7 +3,9 @@
 [Microdata][] parser for RDF.rb.
 
 [![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)](https://badge.fury.io/rb/rdf-microdata)
-[![Build Status](https://secure.travis-ci.org/ruby-rdf/rdf-microdata.png?branch=master)](https://travis-ci.org/ruby-rdf/rdf-microdata)
+[![Build Status](https://github.com/ruby-rdf/rdf-microdata/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/rdf-microdata/actions?query=workflow%3ACI)
+[![Coverage Status](https://coveralls.io/repos/ruby-rdf/rdf-microdata/badge.svg?branch=develop)](https://coveralls.io/github/ruby-rdf/rdf-microdata?branch=develop)
+[![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
 
 ## DESCRIPTION
 RDF::Microdata is a Microdata reader for Ruby using the [RDF.rb][RDF.rb] library suite.
@@ -45,10 +47,11 @@ GRDDL-type triple generation, such as for html>head>title anchor tags.
 If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert content type `text/html` or file extension `.html`, as this is also asserted by RDFa. Instead, the RDFa reader will invoke the microdata reader if an `@itemscope` attribute is detected.
   
 ## Dependencies
-* [RDF.rb](https://rubygems.org/gems/rdf) (>= 3.1)
-* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (>= 3.1)
-* [HTMLEntities](https://rubygems.org/gems/htmlentities) ('>= 4.3.0')
-* [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.10)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
+* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
+* [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
+* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.10)
 * Soft dependency on [Nokogumbo](https://github.com/rubys/nokogumbo) (~> 2.0)
 
 ## Documentation
@@ -90,7 +93,9 @@ The reader exposes a `#rdfa` method, which can be used to retrieve the transform
   list in the the `README`. Alphabetical order applies.
 * Do note that in order for us to merge any non-trivial changes (as a rule
   of thumb, additions larger than about 15 lines of code), we need an
-  explicit [public domain dedication][PDD] on record from you.
+  explicit [public domain dedication][PDD] on record from you,
+  which you will be asked to agree to on the first commit to a repo within the organization.
+  Note that the agreement applies to all repos in the [Ruby RDF](https://github.com/ruby-rdf/) organization.
 
 ## License
 
@@ -107,7 +112,7 @@ see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [RDF.rb]:           https://github.com/ruby-rdf/rdf
 [YARD]:             https://yardoc.org/
 [YARD-GS]:          https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
-[PDD]:              https://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
+[PDD]:              https://unlicense.org/#unlicensing-contributions
 [Microdata]:        https://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
 [Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
 [Microdata doc]:    https://rubydoc.info/github/ruby-rdf/rdf-microdata/frames
