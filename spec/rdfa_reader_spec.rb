@@ -848,6 +848,21 @@ describe RDF::Microdata::RdfaReader do
 
         expect(parse(md, vocab_expansion: true)).to be_equivalent_graph(ttl, logger: @logger)
       end
+
+      it "always expands (schemas)" do
+        md = %q(
+          <div itemscope='' itemtype='https://schema.org/Person'>
+            <link itemprop='additionalType' href='http://xmlns.com/foaf/0.1/Person' />
+          </div>
+        )
+        ttl = %q(
+          [ a <https://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person>;
+            <https://schema.org/additionalType> <http://xmlns.com/foaf/0.1/Person>
+          ] .
+        )
+
+        expect(parse(md, vocab_expansion: true)).to be_equivalent_graph(ttl, logger: @logger)
+      end
     end
 
     context "test-files", skip: true do
