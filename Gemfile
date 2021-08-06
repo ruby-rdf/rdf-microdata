@@ -5,7 +5,6 @@ gemspec
 gem "rdf",            git: "https://github.com/ruby-rdf/rdf",      branch: "develop"
 gem "rdf-rdfa",       git: "https://github.com/ruby-rdf/rdf-rdfa", branch: "develop"
 gem "rdf-xsd",        git: "https://github.com/ruby-rdf/rdf-xsd",  branch: "develop"
-gem "nokogumbo",      '~> 2.0'
 
 group :development do
   gem "json-ld",            git: "https://github.com/ruby-rdf/json-ld",      branch: "develop"

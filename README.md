@@ -15,7 +15,6 @@ RDF::Microdata parses [Microdata][] into statements or triples using the rules d
 
 * Microdata parser.
 * Uses Nokogiri for parsing HTML
-* If available, uses [Nokogumbo][] gem for are pure-HTML5 parser with better error detection.
 
 Install with 'gem install rdf-microdata'
 
@@ -52,7 +51,6 @@ If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert cont
 * [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.1)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
 * [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.10)
-* Soft dependency on [Nokogumbo](https://github.com/rubys/nokogumbo) (~> 2.0)
 
 ## Documentation
 Full documentation available on [Rubydoc.info][Microdata doc]
@@ -116,4 +114,3 @@ see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [Microdata]:        https://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
 [Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
 [Microdata doc]:    https://rubydoc.info/github/ruby-rdf/rdf-microdata/frames
-[Nokogumbo]:        https://github.com/rubys/nokogumbo/#readme
