@@ -17,6 +17,7 @@ require 'rdf/spec/matchers'
   c.include(RDF::Spec::Matchers)
 end
 
+require 'byebug'; byebug
 begin
   require 'simplecov'
   require 'simplecov-lcov'
@@ -35,7 +36,6 @@ begin
   SimpleCov.start do
     add_filter "/spec/"
   end
-  Coveralls.wear!
 rescue LoadError => e
   STDERR.puts "Coverage Skipped: #{e.message}"
 end
