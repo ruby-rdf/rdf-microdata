@@ -4,7 +4,6 @@ $:.unshift File.dirname(__FILE__)
 require "bundler/setup"
 require 'rspec'
 require 'rdf/isomorphic'
-require 'rdf/microdata'
 require 'rdf/turtle'
 require 'rdf/spec'
 require 'rdf/spec/matchers'
@@ -17,11 +16,9 @@ require 'rdf/spec/matchers'
   c.include(RDF::Spec::Matchers)
 end
 
-require 'byebug'; byebug
 begin
   require 'simplecov'
   require 'simplecov-lcov'
-  require 'coveralls'
 
   SimpleCov::Formatter::LcovFormatter.config do |config|
     #Coveralls is coverage by default/lcov. Send info results
@@ -39,6 +36,7 @@ begin
 rescue LoadError => e
   STDERR.puts "Coverage Skipped: #{e.message}"
 end
+require 'rdf/microdata'
 
 # Heuristically detect the input stream
 def detect_format(stream)
