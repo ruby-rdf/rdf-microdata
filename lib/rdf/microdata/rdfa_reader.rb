@@ -1,5 +1,4 @@
 require 'rdf/rdfa'
-require 'nokogumbo'
 
 module RDF::Microdata
   ##
@@ -42,8 +41,12 @@ module RDF::Microdata
         # Otherwise, default is utf-8
         options[:encoding] ||= 'utf-8'
         options[:encoding] = options[:encoding].to_s if options[:encoding]
-        input = input.read if input.respond_to?(:read)
-        ::Nokogiri::HTML5(input.force_encoding(options[:encoding]))
+        begin
+          input = input.read if input.respond_to?(:read)
+          ::Nokogiri::HTML5(input.force_encoding(options[:encoding]), max_parse_errors: 1000)
+        rescue LoadError, NoMethodError
+          ::Nokogiri::HTML.parse(input, base_uri.to_s, options[:encoding])
+        end
       end
 
       # For all members having @itemscope
