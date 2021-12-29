@@ -22,7 +22,7 @@ Install with 'gem install rdf-microdata'
 Microdata to RDF transformation is undergoing active development. This implementation attempts to be up-to-date
 as of the time of release, and is being used in developing the [Microdata RDF][] specification.
 
-This implementation includes support for the proposed [@itemprop-reverse](https://www.w3.org/wiki/WebSchemas/InverseProperties#Proposed_Action:_New_attribute_.40itemprop-reverse) attribute.
+This implementation includes support for the proposed [``@itemprop-reverse``](https://www.w3.org/wiki/WebSchemas/InverseProperties#Proposed_Action:_New_attribute_.40itemprop-reverse) attribute.
 
 ### Microdata Registry
 The parser uses a build-in version of the [Microdata RDF][] registry.
