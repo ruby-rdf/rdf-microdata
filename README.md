@@ -71,7 +71,7 @@ The reader exposes a `#rdfa` method, which can be used to retrieve the transform
 
 ## Resources
 * [RDF.rb][RDF.rb]
-* [Documentation](https://www.rubydoc.info/github/ruby-rdf/rdf-microdata/)
+* [Documentation](https://ruby-rdf.github.io/rdf-microdata/)
 * [History](file:History.md)
 * [Microdata][]
 * [Microdata RDF][]
@@ -113,4 +113,4 @@ see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [PDD]:              https://unlicense.org/#unlicensing-contributions
 [Microdata]:        https://dev.w3.org/html5/md/Overview.html                                      "HTML Microdata"
 [Microdata RDF]:    https://dvcs.w3.org/hg/htmldata/raw-file/default/microdata-rdf/index.html     "Microdata to RDF"
-[Microdata doc]:    https://rubydoc.info/github/ruby-rdf/rdf-microdata/frames
+[Microdata doc]:    https://ruby-rdf.github.io/rdf-microdata/frames

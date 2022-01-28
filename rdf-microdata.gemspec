@@ -6,10 +6,17 @@ Gem::Specification.new do |gem|
   gem.date                  = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name                  = "rdf-microdata"
-  gem.homepage              = "https://ruby-rdf.github.com/rdf-microdata"
+  gem.homepage              = "https://github.com/ruby-rdf/rdf-microdata"
   gem.license               = 'Unlicense'
   gem.summary               = "Microdata reader for Ruby."
   gem.description           = 'Reads HTML Microdata as RDF.'
+  gem.metadata           = {
+    "documentation_uri" => "https://ruby-rdf.github.io/rdf-microdata",
+    "bug_tracker_uri"   => "https://github.com/ruby-rdf/rdf-microdata/issues",
+    "homepage_uri"      => "https://github.com/ruby-rdf/rdf-microdata",
+    "mailing_list_uri"  => "https://lists.w3.org/Archives/Public/public-rdf-ruby/",
+    "source_code_uri"   => "https://github.com/ruby-rdf/rdf-microdata",
+  }
 
   gem.authors               = %w(Gregg Kellogg)
   gem.email                 = 'public-rdf-ruby@w3.org'
