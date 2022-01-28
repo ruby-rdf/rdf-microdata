@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: History
+  
+    &mdash; Microdata reader for RDF.rb.
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "History";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: History</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h3 id="label-0.2.5">0.2.5</h3>
+<ul><li>
+<p>If RDFa is loaded, don’t assert text/html and :html content-type/extension, as RDFa will call out based on presence of @itemscope</p>
+</li></ul>
+
+<h3 id="label-0.2.4">0.2.4</h3>
+<ul><li>
+<p>Update contextual case based on LC spec change to use current_name instead of current_type when creating a predicate URI in contextual.</p>
+</li><li>
+<p>Add hCard and hCalendar vocabulary definitions.</p>
+</li><li>
+<p>Make sure registry_uri is processed for each invocation, allowing it to be passed as a parameter.</p>
+</li><li>
+<p>Add –registry argument to script/parse to allow it to be specified.</p>
+</li></ul>
+
+<h3 id="label-0.2.3">0.2.3</h3>
+<ul><li>
+<p>Update to latest processing rules, including the use of a registry.</p>
+</li><li>
+<p>Updated microdata namespace.</p>
+</li><li>
+<p>Matcher output in TTL.</p>
+</li><li>
+<p>Complete REXML and Nokogori proxies.</p>
+</li><li>
+<p>Added etc/registry.json as a copy of the registry used internally.</p>
+</li><li>
+<p>Update examples.</p>
+</li><li>
+<p>Parse with linkeddata options.</p>
+</li><li>
+<p>Use bundler for specs, if installed.</p>
+</li><li>
+<p>Always place md:item in a list.</p>
+</li><li>
+<p>Don’t use nokogiri with jruby.</p>
+</li><li>
+<p>Depend on Nokogiri only for development.</p>
+</li><li>
+<p>Some examples.</p>
+</li><li>
+<p>Progress on separating HTML parsing to Nokogiri and REXML.</p>
+</li><li>
+<p>Sync with first HTML Data TF version of spec.</p>
+</li><li>
+<p>Recognize @datetime values with lexical form of xsd:duration and generate appropriately typed lite…</p>
+</li><li>
+<p>Generate lists for multi-valued properties.</p>
+</li><li>
+<p>Remove fallback_name and change fallback_type to current_type</p>
+</li><li>
+<p>Simplify generate_triples logic by removing old type and URI munging.</p>
+</li></ul>
+
+<h3 id="label-0.2.2">0.2.2</h3>
+<ul><li>
+<p>Remove non @item* processing</p>
+</li><li>
+<p>Sync to HTML Data TF version of spec: <a href="http://dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html">dvcs.w3.org/hg/htmldata/raw-file/24af1cde0da1/microdata-rdf/index.html</a></p>
+
+<h3 id="label-0.2.2">0.2.2</h3>
+</li><li>
+<p>RDF.rb 0.3.4 compatibility.</p>
+</li><li>
+<p>Added format detection.</p>
+</li></ul>
+
+<h3 id="label-0.2.1">0.2.1</h3>
+<ul><li>
+<p>Fixed support for using the document base-uri to resolve relative URIs.</p>
+</li></ul>
+
+<h3 id="label-0.2.0">0.2.0</h3>
+<ul><li>
+<p>There is no longer any official way to generate RDF and use gem as an experimentation platform.</p>
+</li><li>
+<p>Use rdf_term-type property generation and remove option to set it.</p>
+</li><li>
+<p>Don’t generate triple for html&gt;head&gt;title</p>
+</li><li>
+<p>@datetime values are scanned lexically to find appropriate datatype</p>
+</li></ul>
+
+<h3 id="label-0.1.3">0.1.3</h3>
+<ul><li>
+<p>Fixed ruby 1.8 regular expression bug.</p>
+</li></ul>
+
+<h3 id="label-0.1.2">0.1.2</h3>
+<ul><li>
+<p>Added :rdf_terms option to Reader to generate more RDF-friendly URIs from terms.</p>
+</li></ul>
+
+<h3 id="label-0.1.1">0.1.1</h3>
+<ul><li>
+<p>Fixed problem generating appropriate property URIs in Ruby 1.8.</p>
+</li></ul>
+
+<h3 id="label-0.1.0">0.1.0</h3>
+<ul><li>
+<p>Complete parser generates RDF.</p>
+</li></ul>
+
+<h3 id="label-0.0.1">0.0.1</h3>
+<ul><li>
+<p>Initial release</p>
+</li></ul>
+</div></div>
+
+      <div id="footer">
+  Generated on Fri Jan 28 00:15:22 2022 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.27 (ruby-3.1.0).
+</div>
+
+    </div>
+  </body>
+</html>
