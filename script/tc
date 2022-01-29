@@ -33,7 +33,6 @@ def run_tc(tc, **options)
     result = nil
     graph = RDF::Graph.new
 
-    #require 'byebug'; byebug
     if tc.positive_test?
       begin
         graph << reader
@@ -46,7 +45,6 @@ def run_tc(tc, **options)
       begin
         graph << reader
         STDERR.puts "Expected exception" if options[:verbose]
-        require 'byebug'; byebug
         result = "failed"
       rescue RDF::ReaderError
         result = "passed"

@@ -24,6 +24,7 @@ describe RDF::Microdata::Reader do
                   %w(0075 0078).include?(t.name.split.last) && skip("Differences in number parsing")
                   %w(0081 0082 0084).include?(t.name.split.last) && skip("No @itemprop-reverse")
                   %w(0064).include?(t.name.split.last) && pending("Double use of itemref with different vocabularies")
+                  %w(0085).include?(t.name.split.last) && pending("Broke in Nokogiri 13.0")
                 end
 
                 reader = RDF::Microdata::Reader.open(t.action,
