@@ -15,7 +15,7 @@ module RDF
   #     end
   #   end
   #
-  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/
+  # @see https://ruby-rdf.github.io/rdf/
   # @see https://www.w3.org/TR/2011/WD-microdata-20110525/
   #
   # @author [Gregg Kellogg](https://greggkellogg.net/)
