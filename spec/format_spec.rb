@@ -30,12 +30,12 @@ describe RDF::Microdata::Format do
     end
   end
 
-  # This interferes with RDFa.
-  #describe "#to_sym" do
-  #  specify {expect(described_class.to_sym).to eq :microdata}
-  #end
+  describe "#to_sym" do
+    specify {expect(described_class.to_sym).to eq :microdata}
+  end
 
-  describe "#to_uri" do
+  # This interferes with RDFa.
+  describe "#to_uri", skip: true do
     specify {expect(described_class.to_uri).to eq RDF::URI('http://www.w3.org/ns/formats/microdata')}
   end
 
