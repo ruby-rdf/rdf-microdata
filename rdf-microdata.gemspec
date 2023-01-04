@@ -31,7 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf-rdfa',        '~> 3.2'
   gem.add_runtime_dependency     'rdf-xsd',         '~> 3.2'
   gem.add_runtime_dependency     'htmlentities',    '~> 4.3'
-  gem.add_runtime_dependency     'nokogiri' ,       '~> 1.13'
+  gem.add_runtime_dependency     'nokogiri' ,       '~> 1.13', '>= 1.13.4'
 
   gem.add_development_dependency 'equivalent-xml' , '~> 0.6'
   gem.add_development_dependency 'yard' ,           '~> 0.9'
