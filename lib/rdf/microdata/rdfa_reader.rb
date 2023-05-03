@@ -97,7 +97,6 @@ module RDF::Microdata
             # Add @vocab to referenced using the closest ansestor having @vocab of item.
             # If the element with id reference has no resource attribute, add a resource attribute whose value is a NUMBER SIGN U+0023 followed by reference to the element.
             # If the element with id reference has no typeof attribute, add a typeof="rdfa:Pattern" attribute to the element.
-            # FIXME: This broke in Nokogiri 13.0
             referenced.wrap(%(<div vocab="#{item_vocab}" resource="##{ref}" typeof="rdfa:Pattern" />))
 
             # Add a link child element to the element that represents the item, with a rel="rdfa:copy" attribute and an href attribute whose value is a NUMBER SIGN U+0023 followed by reference
