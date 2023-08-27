@@ -48,7 +48,7 @@ If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert cont
 ## Dependencies
 * [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.3)
 * [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.3)
-* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.2)
+* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.3)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
 * [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.15)
 
