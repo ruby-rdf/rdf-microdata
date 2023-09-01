@@ -34,6 +34,11 @@ describe RDF::Microdata::Format do
     specify {expect(described_class.to_sym).to eq :microdata}
   end
 
+  # This interferes with RDFa.
+  describe "#to_uri", skip: true do
+    specify {expect(described_class.to_uri).to eq RDF::URI('http://www.w3.org/ns/formats/microdata')}
+  end
+
   describe ".detect" do
     {
       itemprop:  '<div itemprop="bar"></div>',

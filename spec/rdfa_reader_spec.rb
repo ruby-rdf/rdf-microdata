@@ -629,7 +629,8 @@ describe RDF::Microdata::RdfaReader do
       
         ],
       }.each do |name, (md, nt)|
-        it "parses #{name}", pending: "Broke in Nokogiri 13.0" do
+        it "parses #{name}" do
+          pending "Broke in Nokogiri 13.0" if RUBY_VERSION < "2.7"
           expect(parse(md)).to be_equivalent_graph(nt, logger: @logger)
         end
       end

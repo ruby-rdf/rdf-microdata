@@ -2,7 +2,7 @@
 
 [Microdata][] parser for RDF.rb.
 
-[![Gem Version](https://badge.fury.io/rb/rdf-microdata.png)](https://badge.fury.io/rb/rdf-microdata)
+[![Gem Version](https://badge.fury.io/rb/rdf-microdata.svg)](https://badge.fury.io/rb/rdf-microdata)
 [![Build Status](https://github.com/ruby-rdf/rdf-microdata/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/rdf-microdata/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/rdf-microdata/badge.svg?branch=develop)](https://coveralls.io/github/ruby-rdf/rdf-microdata?branch=develop)
 [![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
@@ -46,11 +46,11 @@ GRDDL-type triple generation, such as for html>head>title anchor tags.
 If the `RDFa` parser is available, {RDF::Microdata::Format} will not assert content type `text/html` or file extension `.html`, as this is also asserted by RDFa. Instead, the RDFa reader will invoke the microdata reader if an `@itemscope` attribute is detected.
   
 ## Dependencies
-* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.2)
-* [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.2)
-* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.2)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.3)
+* [RDF::RDFa](https://rubygems.org/gems/rdf-xsd) (~> 3.3)
+* [RDF::XSD](https://rubygems.org/gems/rdf-xsd) (~> 3.3)
 * [HTMLEntities](https://rubygems.org/gems/htmlentities) ('~> 4.3')
-* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.12)
+* [Nokogiri](https://rubygems.org/gems/nokogiri) (~> 1.15)
 
 ## Documentation
 Full documentation available on [Rubydoc.info][Microdata doc]
