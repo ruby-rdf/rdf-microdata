@@ -79,6 +79,10 @@ The reader exposes a `#rdfa` method, which can be used to retrieve the transform
 ## Author
 * [Gregg Kellogg](https://github.com/gkellogg) - <https://greggkellogg.net/>
 
+## Change Log
+
+See [Release Notes on GitHub](https://github.com/ruby-rdf/rdf-microdata/releases)
+
 ## Contributing
 
 * Do your best to adhere to the existing coding conventions and idioms.

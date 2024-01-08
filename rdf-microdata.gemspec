@@ -34,6 +34,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'nokogiri' ,       '~> 1.15', '>= 1.15.4'
 
   gem.add_development_dependency 'equivalent-xml' , '~> 0.6'
+  gem.add_development_dependency 'getoptlong',      '~> 0.2'
   gem.add_development_dependency 'yard' ,           '~> 0.9'
   gem.add_development_dependency 'rspec',           '~> 3.12'
   gem.add_development_dependency 'rspec-its',       '~> 1.3'
